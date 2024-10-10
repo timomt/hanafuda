@@ -1,2 +1,24 @@
-# IntelliJ IDEA project files
+# sbt specific
+target/
+project/target/
+project/project/
+.history
+.cache
+.lib/
+
+# Scala-IDE specific
+.scala_dependencies
+.worksheet
+
+# IntelliJ IDEA specific
 .idea/
+*.iws
+*.iml
+*.ipr
+out/
+
+# MacOS specific
+.DS_Store
+
+# Windows specific
+Thumbs.db
