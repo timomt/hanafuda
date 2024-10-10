@@ -22,3 +22,6 @@ out/
 
 # Windows specific
 Thumbs.db
+
+# BSP
+.bsp/
