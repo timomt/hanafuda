@@ -20,7 +20,7 @@ def main(): Unit = {
         s"""╔══════╗
            |║$month║
            |║$cardType║
-           |║$cardPlant║
+           |║Goodbye║
            |╚══════╝
            |""".stripMargin.split("\n")
     }
