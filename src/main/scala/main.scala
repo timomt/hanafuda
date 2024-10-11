@@ -33,7 +33,7 @@ def main(): Unit = {
     val firstRow = Array.fill(5)((("*" * 8 + "\n") * 5).split("\n"))
     firstRow(0) = ((" " * 8 + "\t" + "\n") * 5).split("\n")
     val secondRow = Array.fill(5)((("*" * 8 + "\n") * 5).split("\n"))
-    secondRow(0) = ("*"*8 + "\t" + "\n*Card- *\t\n*stack *\t\n" + ("*"*8+"\t\n")*2).split("\n")
+    secondRow(0) = ("*"* 8 + "\t" + "\n*Card- *\t\n*stack *\t\n" + ("*" * 8 +"\t\n")*2).split("\n")
 
     // Player cards
     val cardLines = (1 to numberOfCards).map { _ =>
@@ -47,6 +47,7 @@ def main(): Unit = {
     val horizontalCards = cardLines.transpose.map(_.mkString(separator)).mkString("\n")
 
     // Print the board row by row
+
     print("\u001b[2J\u001b[H") // Clear the terminal and move to first line
     println("\n" + opponentRow.transpose.map(_.mkString(separator)).mkString("\n") + "\n")
     println(firstRow.transpose.map(_.mkString(separator)).mkString("\n") + "\n")

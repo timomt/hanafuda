@@ -1,3 +1,8 @@
+# Scala
+*.class
+*.tasty
+*.sc
+
 # sbt specific
 target/
 project/target/
