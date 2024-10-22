@@ -17,14 +17,6 @@ enum CardPlant {
     }
 }
 
-enum CardAnimal {
-    case Crane, Cuckoo, Boar, Deer, Butterflies, Moon, Geese, Sake_cup, Swallow, Lightning, Phoenix
-}
-
-enum CardObject{
-    case Red_poem_tanzaku, Plain, Nightingale, Bridge, Red_tanzaku, Blue_tanzaku, Rain
-}
-
 enum CardMonth {
     case JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER
 
@@ -45,7 +37,7 @@ enum CardMonth {
 }
 
 enum CardType {
-    case Bright, Animal, Ribbon, Chaff
+    case Hikari, Tane, Tanzaku, Kasu
 }
 
 enum CardName {
@@ -54,6 +46,7 @@ enum CardName {
          Boar, Moon, Geese, Sake_cup, Deer, Rain, Swallow, Lightning, Phoenix
 
     def unicode: String = this match {
+        // TODO: Implement unicode for each card name (max 6 characters)
         case Red_poem_tanzaku => "Red_PT"
         case default => this.toString
     }
@@ -69,19 +62,3 @@ case class Card(month:CardMonth, cardType: CardType, cardName:CardName, points:I
            |""".stripMargin.split("\n")
     }
 }
-
-case class CardCustom(top:String, middle:String, bottom:String) {
-    def unicode: Array[String] = {
-        s"""╔══════╗
-           |║$top║
-           |║$middle║
-           |║$bottom║
-           |╚══════╝
-           |""".stripMargin.split("\n")
-    }
-}
-
-// TODO: Implement createStack function that returns an array of 48 valid cards
-/* def createStack(): Array[Card] = {
-
-} */

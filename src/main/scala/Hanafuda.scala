@@ -4,14 +4,14 @@ import scala.util.Random
 def main(): Unit = {
     // Create a deck of cards
     
-    val card = Card(CardMonth.JANUARY, CardType.Bright, CardName.Red_poem_tanzaku, 10)
+    /*val card = Card(CardMonth.JANUARY, CardType.Hikari, CardName.Red_poem_tanzaku, 10)
     val cardEmpty = CardCustom(" "*6, " "*6, " "*6)
     val numberOfCards = 8
     val separator = " "
     
     // Opponent cards
     val opponentRow = Array.fill(8)(cardEmpty.unicode)
-    println(opponentRow.transpose.map(_.mkString(separator)).mkString("\n") + "\n")
+    println(opponentRow.transpose.map(_.mkString(separator)).mkString("\n") + "\n")*/
 
     // Public cards
    /* val firstRow = Array.fill(5)((("*" * 8 + "\n") * 5).split("\n"))
