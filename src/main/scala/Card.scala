@@ -37,33 +37,33 @@ enum CardMonth {
 }
 
 enum CardType {
-    case Hikari, Tane, Tanzaku, Kasu
+    case HIKARI, TANE, TANZAKU, KASU
 }
 
 enum CardName {
-    case Crane, Nightingale, Poetry_tanzaku, Curtain,
-         Cuckoo, Plain_tanzaku, Bridge, Butterflies, Blue_tanzaku,
-         Boar, Moon, Geese, Sake_cup, Deer, Rain, Swallow, Lightning, Phoenix
+    case CRANE, PLAIN, NIGHTINGALE, POETRY_TANZAKU, CURTAIN,
+         CUCKOO, BRIDGE, BUTTERFLIES, BLUE_TANZAKU,
+         BOAR, MOON, GEESE, SAKE_CUP, DEER, RAIN, SWALLOW, LIGHTNING, PHOENIX
 
     def unicode: String = this match {
-        case Crane => "Crane "
-        case Nightingale => "Night."
-        case Poetry_tanzaku => "Po_tan"
-        case Curtain => "Curt. "
-        case Cuckoo => "Cuckoo"
-        case Plain_tanzaku => "Pl_tan"
-        case Bridge => "Bridge"
-        case Butterflies => "Butter"
-        case Blue_tanzaku => "Bl_tan"
-        case Boar => " Boar "
-        case Moon => " Moon "
-        case Geese => "Geese "
-        case Sake_cup => "Sake_c"
-        case Deer => " Deer "
-        case Rain => " Rain "
-        case Swallow => "Swall."
-        case Lightning => "Light."
-        case Phoenix => "Phoen."
+        case PLAIN => "Plane "
+        case CRANE => "Crane "
+        case NIGHTINGALE => "Night."
+        case POETRY_TANZAKU => "Po_tan"
+        case CURTAIN => "Curt. "
+        case CUCKOO => "Cuckoo"
+        case BRIDGE => "Bridge"
+        case BUTTERFLIES => "Butter"
+        case BLUE_TANZAKU => "Bl_tan"
+        case BOAR => " Boar "
+        case MOON => " Moon "
+        case GEESE => "Geese "
+        case SAKE_CUP => "Sake_c"
+        case DEER => " Deer "
+        case RAIN => " Rain "
+        case SWALLOW => "Swall."
+        case LIGHTNING => "Light."
+        case PHOENIX => "Phoen."
         case default => this.toString
     }
 }
