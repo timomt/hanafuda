@@ -46,7 +46,6 @@ enum CardName {
          Boar, Moon, Geese, Sake_cup, Deer, Rain, Swallow, Lightning, Phoenix
 
     def unicode: String = this match {
-        // TODO: Implement unicode for each card name (max 6 characters)
         case Crane => "Crane "
         case Red_poem_tanzaku => "Red_PT"
         case Plain => "Plain "
