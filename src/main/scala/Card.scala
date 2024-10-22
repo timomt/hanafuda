@@ -41,35 +41,35 @@ enum CardType {
 }
 
 enum CardName {
-    case Crane, Red_poem_tanzaku, Plain, Nightingale, Curtain,
-         Cuckoo, Bridge, Red_tanzaku, Butterflies, Blue_tanzaku,
+    case Crane, Poetry, Nightingale, Poetry_tanzaku, Curtain,
+         Cuckoo, Plain_zanzaku, Bridge, Butterflies, Blue_tanzaku,
          Boar, Moon, Geese, Sake_cup, Deer, Rain, Swallow, Lightning, Phoenix
 
     def unicode: String = this match {
         case Crane => "Crane "
-        case Red_poem_tanzaku => "Red_PT"
-        case Plain => "Plain "
+        case Poetry => "Poetry"
         case Nightingale => "Night."
-        case Curtain => "Curtn "
+        case Poetry_tanzaku => "Po_tan"
+        case Curtain => "Curt. "
         case Cuckoo => "Cuckoo"
+        case Plain_zanzaku => "Pl_tan"
         case Bridge => "Bridge"
-        case Red_tanzaku => "Red_TZ"
         case Butterflies => "Butter"
-        case Blue_tanzaku => "Blue_T"
+        case Blue_tanzaku => "Bl_tan"
         case Boar => " Boar "
         case Moon => " Moon "
         case Geese => "Geese "
         case Sake_cup => "Sake_c"
         case Deer => " Deer "
         case Rain => " Rain "
-        case Swallow => "Swallo"
-        case Lightning => "Lightn"
-        case Phoenix => "Phoenx"
+        case Swallow => "Swall."
+        case Lightning => "Light."
+        case Phoenix => "Phoen."
         case default => this.toString
     }
 }
 
-case class Card(month:CardMonth, cardType: CardType, cardName:CardName, points:Int) {
+case class Card(month:CardMonth, cardType: CardType, cardName:CardName) {
     def unicode: Array[String] = {
         s"""╔══════╗
            |║$month║

@@ -11,3 +11,5 @@ lazy val root = (project in file("."))
       coverageFailOnMinimum := true,
       coverageHighlighting := true
   )
+
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18" % Test
