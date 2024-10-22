@@ -41,18 +41,17 @@ enum CardType {
 }
 
 enum CardName {
-    case Crane, Poetry, Nightingale, Poetry_tanzaku, Curtain,
-         Cuckoo, Plain_zanzaku, Bridge, Butterflies, Blue_tanzaku,
+    case Crane, Nightingale, Poetry_tanzaku, Curtain,
+         Cuckoo, Plain_tanzaku, Bridge, Butterflies, Blue_tanzaku,
          Boar, Moon, Geese, Sake_cup, Deer, Rain, Swallow, Lightning, Phoenix
 
     def unicode: String = this match {
         case Crane => "Crane "
-        case Poetry => "Poetry"
         case Nightingale => "Night."
         case Poetry_tanzaku => "Po_tan"
         case Curtain => "Curt. "
         case Cuckoo => "Cuckoo"
-        case Plain_zanzaku => "Pl_tan"
+        case Plain_tanzaku => "Pl_tan"
         case Bridge => "Bridge"
         case Butterflies => "Butter"
         case Blue_tanzaku => "Bl_tan"
