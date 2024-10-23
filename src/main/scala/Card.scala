@@ -61,7 +61,7 @@ enum CardName {
         case DEER => " Deer "
         case RAIN => " Rain "
         case SWALLOW => "Swall."
-        case LIGHTNING => "Light."
+        case LIGHTNING => "Lightn"
         case PHOENIX => "Phoen."
     }
 }
