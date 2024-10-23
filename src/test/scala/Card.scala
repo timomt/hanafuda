@@ -1,4 +1,4 @@
-/*package main.test
+package test
 
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
@@ -12,4 +12,3 @@ class CardSpec extends AnyFunSuite with Matchers {
   }
 }
 
- */
