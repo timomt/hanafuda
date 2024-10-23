@@ -1,7 +1,6 @@
 
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
-import main.scala.Card
 
 class CardPlantSpec extends AnyFunSuite with Matchers {
   test("CardPlant should return correct unicode for each plant") {
@@ -38,8 +37,8 @@ class CardMonthSpec extends AnyFunSuite with Matchers {
 
 class CardNameSpec extends AnyFunSuite with Matchers {
   test("CardName should return correct unicode for each card name") {
-    CardName.CRANE.unicode should be ("Crane ")
     CardName.PLAIN.unicode should be ("Plane ")
+    CardName.CRANE.unicode should be ("Crane ")
     CardName.NIGHTINGALE.unicode should be ("Night.")
     CardName.POETRY_TANZAKU.unicode should be ("Po_tan")
     CardName.CURTAIN.unicode should be ("Curt. ")
@@ -54,13 +53,29 @@ class CardNameSpec extends AnyFunSuite with Matchers {
     CardName.DEER.unicode should be (" Deer ")
     CardName.RAIN.unicode should be (" Rain ")
     CardName.SWALLOW.unicode should be ("Swall.")
-    CardName.LIGHTNING.unicode should be ("Lightn")
+    CardName.LIGHTNING.unicode should be ("Light.")
     CardName.PHOENIX.unicode should be ("Phoen.")
   }
 }
 
 class CardSpec extends AnyFunSuite with Matchers {
-  test 
+  test("Card should return correct unicode representation for all combinations") {
+    for {
+      month <- CardMonth.values
+      cardType <- CardType.values
+      cardName <- CardName.values
+    } {
+      val card = Card(month, cardType, cardName)
+      val expected = Array(
+        s"""╔══════╗
+           |║$month║
+           |║$cardType║
+           |║$cardName║
+           |╚══════╝
+           |""".stripMargin.split("\n")
+      )
+      card.unicode should be(expected.flatten)
+    }
   }
 }
 
