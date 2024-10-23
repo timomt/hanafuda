@@ -1,4 +1,3 @@
-
 enum CardPlant {
     case Pine, Plum, Cherry, Wisteria, Iris, Peony, Bush_Clover, Susuki_Grass, Chrysanthemum, Willow, Paulownia
 
