@@ -64,7 +64,6 @@ enum CardName {
         case SWALLOW => "Swall."
         case LIGHTNING => "Light."
         case PHOENIX => "Phoen."
-        case default => this.toString
     }
 }
 
