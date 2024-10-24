@@ -60,4 +60,11 @@ class DeckSpec extends AnyFlatSpec {
         assert(newDeck.cards.length === 43)
         assert(cards.length === 5)
     }
+
+    it should "return an empty list and the same deck if the deck is empty" in {
+        val deck = Deck(List.empty)
+        val (cards, newDeck) = Deck.pollMultiple(deck, 5)
+        assert(cards === List.empty)
+        assert(newDeck === deck)
+    }
 }

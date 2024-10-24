@@ -1,4 +1,3 @@
-
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 
@@ -66,7 +65,6 @@ class CardTypeSpec extends AnyFunSuite with Matchers {
     CardType.KASU.unicode should be(" Kasu ")
   }
 }
-
 
 class CardSpec extends AnyFunSuite with Matchers {
   test("Card should return correct unicode representation for all combinations") {

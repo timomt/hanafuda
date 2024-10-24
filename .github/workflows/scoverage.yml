@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - timos-playground
   pull_request:
     branches:
       - main
