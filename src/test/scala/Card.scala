@@ -58,6 +58,16 @@ class CardNameSpec extends AnyFunSuite with Matchers {
   }
 }
 
+class CardTypeSpec extends AnyFunSuite with Matchers {
+  test("CardType should return correct unicode for each card type") {
+    CardType.HIKARI.unicode should be("Hikari")
+    CardType.TANE.unicode should be(" Tane ")
+    CardType.TANZAKU.unicode should be("Tanz. ")
+    CardType.KASU.unicode should be(" Kasu ")
+  }
+}
+
+
 class CardSpec extends AnyFunSuite with Matchers {
   test("Card should return correct unicode representation for all combinations") {
     for {
