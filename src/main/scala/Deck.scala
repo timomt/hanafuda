@@ -1,6 +1,9 @@
+import scala.util.Random
 
-class Deck {
-    val cards: Array[Card] = Array(
+case class Deck(cards: List[Card])
+
+object Deck {
+    def defaultDeck(): Deck = Deck(List(
         Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE),
         Card(CardMonth.JANUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU),
         Card(CardMonth.JANUARY, CardType.KASU, CardName.PLAIN),
@@ -60,5 +63,25 @@ class Deck {
         Card(CardMonth.DECEMBER, CardType.KASU, CardName.PLAIN),
         Card(CardMonth.DECEMBER, CardType.KASU, CardName.PLAIN),
         Card(CardMonth.DECEMBER, CardType.KASU, CardName.PLAIN)
-    )
+    ))
+
+    def poll(deck: Deck): (Option[Card], Deck) = {
+        if (deck.cards.isEmpty) {
+            (None, deck)
+        } else {
+            val rand = Random.nextInt(deck.cards.length)
+            val card = deck.cards(rand)
+            (Some(card), Deck(deck.cards.patch(rand, List.empty, 1)))
+        }
+    }
+
+    def pollMultiple(deck: Deck, n: Int): (List[Card], Deck) = {
+        (1 to n).foldLeft((List.empty, deck)) { case ((cards, currentDeck), _) =>
+            val (polledCard, polledDeck) = poll(currentDeck)
+            polledCard match {
+                case Some(c) => (cards :+ c, polledDeck)
+                case None => (cards, polledDeck)
+            }
+        }
+    }
 }

@@ -68,9 +68,9 @@ class CardSpec extends AnyFunSuite with Matchers {
       val card = Card(month, cardType, cardName)
       val expected = Array(
         s"""╔══════╗
-           |║$month║
-           |║$cardType║
-           |║$cardName║
+           |║${month.unicode}║
+           |║${cardType.unicode}║
+           |║${cardName.unicode}║
            |╚══════╝
            |""".stripMargin.split("\n")
       )
@@ -78,4 +78,3 @@ class CardSpec extends AnyFunSuite with Matchers {
     }
   }
 }
-

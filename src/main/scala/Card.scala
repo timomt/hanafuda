@@ -37,6 +37,13 @@ enum CardMonth {
 
 enum CardType {
     case HIKARI, TANE, TANZAKU, KASU
+    
+    def unicode: String = this match {
+        case HIKARI => "Hikari"
+        case TANE => " Tane "
+        case TANZAKU => "Tanz. "
+        case KASU => " Kasu "
+    }
 }
 
 enum CardName {
@@ -69,9 +76,9 @@ enum CardName {
 case class Card(month:CardMonth, cardType: CardType, cardName:CardName) {
     def unicode: Array[String] = {
         s"""╔══════╗
-           |║$month║
-           |║$cardType║
-           |║$cardName║
+           |║${month.unicode}║
+           |║${cardType.unicode}║
+           |║${cardName.unicode}║
            |╚══════╝
            |""".stripMargin.split("\n")
     }
