@@ -64,7 +64,6 @@ object Deck {
         Card(CardMonth.DECEMBER, CardType.KASU, CardName.PLAIN),
         Card(CardMonth.DECEMBER, CardType.KASU, CardName.PLAIN)
     ))
-
     def poll(deck: Deck): (Option[Card], Deck) = {
         if (deck.cards.isEmpty) {
             (None, deck)
