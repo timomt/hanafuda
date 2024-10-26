@@ -1,0 +1,7 @@
+object GameManager{
+  //gameStart
+
+  //voidAndRedealt
+
+  //
+}
