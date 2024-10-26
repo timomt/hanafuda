@@ -74,12 +74,12 @@ enum CardName {
 }
 
 case class Card(month:CardMonth, cardType: CardType, cardName:CardName) {
-    def unicode: Array[String] = {
+    def unicode: List[String] = {
         s"""╔══════╗
            |║${month.unicode}║
            |║${cardType.unicode}║
            |║${cardName.unicode}║
            |╚══════╝
-           |""".stripMargin.split("\n")
+           |""".stripMargin.split("\n").toList
     }
 }
