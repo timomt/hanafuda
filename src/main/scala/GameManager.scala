@@ -1,3 +1,5 @@
+import scala.io.StdIn.readLine
+
 /*
 * case class Player(...)
 * name:= Name of the player
@@ -36,12 +38,40 @@ object GameManager {
         GameState(playerList, updatedDeck, updatedDeck)
     }
 
+    // players liste, erstes element in liste aktueller player
+
     /*
     * TODO: implement def nextTurn(...)
-    *  Lets a player poll a card from deck and match it with the cards on board.
+    *  Lets a player poll a card from hand or deck and match it with the cards on board.
     *  returns the updated GameState
     * */
-    //def nextTurn(game: GameState): GameState = {}
+    def nextTurn(game: GameState): GameState = {
+        val newPlayers = game.players.reverse
+        val currentPlayer = game.players.head
+        val choosenCard = selectCard(currentPlayer)
+        val valid = checkMatch(choosenCard, game.board)
+        if (valid) {
+            val updatedBoardDeck = game.board.copy(cards = game.board.cards.filterNot(_ == choosenCard))
+            val updatedHandDeck = currentPlayer.hand.copy(cards = currentPlayer.hand.cards.filterNot(_ == choosenCard))
+            val updatedSideDeck = currentPlayer.side.copy(cards = currentPlayer.side.cards :+ choosenCard)
+            game
+        } else {
+            game
+        }
+    }
+
+    def selectCard(currentPlayer: Player): Card = {
+        //welche karte möchtest du nehmen?
+        println("Welche Karte möchtest du legen/ kombinieren ?")
+        //kontrollieren ob Karte kombinierbar mit karten auf tisch
+        val input = readLine()
+        val cardIndex = input.toInt - 1
+        currentPlayer.hand.cards(cardIndex)
+    }
+
+    def checkMatch(card: Card, board: Deck): Boolean = {
+        board.cards.exists((_.month == card.month))
+    }
 
     /*
     * TODO: implement def evaluateScore(...)
