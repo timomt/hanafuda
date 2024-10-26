@@ -2,7 +2,7 @@ object Hanafuda {
     @main
     def main(): Unit = {
         val game = GameManager.newGame()
-        println(game)
+        println(TUIManager.printBoard(game))
         
         /*var deck = Deck.defaultDeck()
         val (cardRow, newDeck) = Deck.pollMultiple(deck, 8)
