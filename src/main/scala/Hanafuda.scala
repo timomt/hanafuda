@@ -4,7 +4,7 @@ object Hanafuda {
         val game = GameManager.newGame()
         println(TUIManager.printBoard(game))
         println(GameManager.nextTurn(game))
-        println(TUIManager.printBoard(game))
+        println(TUIManager.printBoard(game.copy(players = game.players.tail :+ game.players.head)))
         
         /*var deck = Deck.defaultDeck()
         val (cardRow, newDeck) = Deck.pollMultiple(deck, 8)
