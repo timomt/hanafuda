@@ -48,22 +48,59 @@ object GameManager {
     def nextTurn(game: GameState): GameState = {
         val newPlayers = game.players.reverse
         val currentPlayer = game.players.head
+
+        // Karte wählen und legen/ komnbinieren
+        println("Spieler: " + currentPlayer.name + " ist am Zug")
         val choosenCard = selectCard(currentPlayer)
-        val valid = checkMatch(choosenCard, game.board)
-        if (valid) {
-            val updatedBoardDeck = game.board.copy(cards = game.board.cards.filterNot(_ == choosenCard))
-            val updatedHandDeck = currentPlayer.hand.copy(cards = currentPlayer.hand.cards.filterNot(_ == choosenCard))
-            val updatedSideDeck = currentPlayer.side.copy(cards = currentPlayer.side.cards :+ choosenCard)
-            game
-        } else {
-            game
+
+        val input = Iterator.continually {
+            println("Drücke Enter um eine Karte zu legen und eine neue zu ziehen oder gib 'combine' ein um eine Karte zu kombinieren:")
+            readLine()
+        }.find(input => input == "" || input == "combine").getOrElse("")
+
+        input match {
+            case "" => // karte auf den Tisch legen und eine neue ziehen
+                println("Wähle eine Karte von deiner Hand (Index):")
+                val cardIndex = readLine().toInt - 1
+                val choosenCard = currentPlayer.hand.cards(cardIndex)
+                val (newCard, newDeck) = Deck.poll(game.deck)
+                val updatedHandDeck = currentPlayer.hand.copy(cards = currentPlayer.hand.cards.filterNot(_ == choosenCard) :+ newCard.get)
+                val updatedBoardDeck = game.board.copy(cards = game.board.cards :+ choosenCard)
+                val updatedPlayer = currentPlayer.copy(hand = updatedHandDeck)
+                val updatedPlayers = newPlayers.reverse :+ updatedPlayer
+                return game.copy(players = updatedPlayers, deck = newDeck, board = updatedBoardDeck)
+            case "combine" =>
+                var valid = checkMatch(choosenCard, game.board)
+                while (valid) {
+                    println("Karte passt. Drücke Enter um weiter zu kombinieren oder gib 'stop' ein um zu beenden:")
+                    val combineInput = readLine()
+                    combineInput match {
+                        case "stop" =>
+                            valid = false
+                        case _ =>
+                            val updatedBoardDeck = game.board.copy(cards = game.board.cards.filterNot(_ == choosenCard))
+                            val updatedHandDeck = currentPlayer.hand.copy(cards = currentPlayer.hand.cards.filterNot(_ == choosenCard))
+                            val updatedSideDeck = currentPlayer.side.copy(cards = currentPlayer.side.cards :+ choosenCard)
+                            val updatedPlayer = currentPlayer.copy(hand = updatedHandDeck, side = updatedSideDeck)
+                            val updatedPlayers = newPlayers.reverse :+ updatedPlayer
+                            val updatedGame = game.copy(players = updatedPlayers, board = updatedBoardDeck)
+                            println("Wähle eine weitere Karte zum Kombinieren:")
+                            val newChoosenCard = selectCard(currentPlayer)
+                            valid = checkMatch(newChoosenCard, updatedGame.board)
+                    }
+                }
+            case _ =>
+                println("Ungültige Eingabe. Versuche es erneut.")
         }
+        val updatedPlayers = newPlayers.reverse :+ currentPlayer
+        val newDeck = game.deck
+        val updatedBoardDeck = game.board
+        game.copy(players = updatedPlayers, deck = newDeck, board = updatedBoardDeck)
     }
 
     def selectCard(currentPlayer: Player): Card = {
-        //welche karte möchtest du nehmen?
-        println("Welche Karte möchtest du legen/ kombinieren ?")
-        //kontrollieren ob Karte kombinierbar mit karten auf tisch
+        // welche karte möchtest du nehmen?
+        println("Welche Karte wählst du?")
         val input = readLine()
         val cardIndex = input.toInt - 1
         currentPlayer.hand.cards(cardIndex)
