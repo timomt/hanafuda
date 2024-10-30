@@ -47,17 +47,6 @@ object TUIManager extends Observer {
         "\u001b[2J\u001b[1;1H" + "Hanafuda Overview\ncollectible, mine, theirs\n\n"
             + "Gokō (五光) \"Five Hikari\"\t10pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
             + "Shikō (四光) \"Four Hikari\"\t8pts.\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
-            + "Ame-Shikō (雨四光) \"Rainy Four Hikari\"\t7pts.\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName == CardName.RAIN).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
-            + "Sankō (三光) \"Three Hikari\"\t6pts.\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN && c.cardName != CardName.LIGHTNING).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
-            + "Tsukimi-zake (月見酒) \"Moon Viewing\"\t5pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.TANZAKU).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
-            + "Hanami-zake (花見酒) \"Cherry Blossom Viewing\"\t5pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.TANZAKU).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
-            + "Inoshikachō (猪鹿蝶) \"Boar, Deer, Butterfly\"\t5pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.TANZAKU).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
-            + "Tane (タネ) \"plain\"\t1pt.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.TANZAKU).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
-            + "Akatan Aotan no Chōfuku (赤短青短の重複) \"Red Poem, Blue Poem\"\t10pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.TANZAKU).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
-            + "Akatan (赤短) \"Red Poem\"\t5pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.TANZAKU).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
-            + "Aotan (青短) \"Blue Poem\"\t5pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.TANZAKU).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
-            + "Tanzaku (短冊) \"Ribbons\"\t1pt.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.TANZAKU).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
-            + "Kasu (カス) \" \"\t1pt.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.TANZAKU).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n")
     }
 
     /*
