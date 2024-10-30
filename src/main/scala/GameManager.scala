@@ -69,7 +69,7 @@ object GameManager {
             val updatedPlayers = updatedPlayer :: otherPlayers
             return game.copy(players = updatedPlayers, deck = newDeck, board = updatedBoardDeck)
         case "combine" =>
-            var valid = checkMatch(choosenCard, game.board)
+            var valid = checkMatch(choosenCard, game.board) //!!!!!!
             while (valid) {
                 println("Karte passt. Drücke Enter um weiter zu kombinieren oder gib 'stop' ein um zu beenden: \n")
                 val combineInput = readLine()
@@ -102,6 +102,7 @@ object GameManager {
                                 println("Ungültige Eingabe. Versuche es erneut.")
                         }
                 }
+                // deafult case legen und ziehen
             }
             val updatedPlayers = currentPlayer :: otherPlayers
             val newDeck = game.deck
