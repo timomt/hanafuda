@@ -1,15 +1,19 @@
+import controller.GameController
+import view.TUIManager
+
+/*
+* object Hanafuda
+* entry point of this application.
+* */
 object Hanafuda {
     @main
     def main(): Unit = {
-        val game = GameManager.newGame()
-        println(TUIManager.printBoard(game))
-        println(GameManager.nextTurn(game))
-        println(TUIManager.printBoard(game))
-        
-        /*var deck = Deck.defaultDeck()
-        val (cardRow, newDeck) = Deck.pollMultiple(deck, 8)
-        deck = newDeck
-        val lineToPrint = cardRow.map(_.unicode)
-        println(lineToPrint.transpose.map(_.mkString(" ")).mkString("\n") + "\n")*/
+        GameController.add(TUIManager)
+        GameController.newGame()
+
+        while (true) {
+            val input = scala.io.StdIn.readLine(s"Enter your move: ")
+            GameController.processInput(input)
+        }
     }
 }
