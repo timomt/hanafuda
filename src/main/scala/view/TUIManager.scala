@@ -1,13 +1,26 @@
+package view
+import controller.Observer
+import model.{Card, CardName, CardType, Deck, GameState}
+
 /*
+* MVC: View
 * object TUIManager
-* an object to manage the text user interface
+* an object to manage the text user interface.
 * */
-object TUIManager {
+object TUIManager extends Observer {
+    /*
+    * def update(...)
+    * updates the TUI according to the current GameState.
+    * */
+    override def update(gameState: GameState): Unit = {
+        println(printBoard(gameState))
+    }
+    
     /*
     * def printBoard(...)
-    * returns a String representation of the provided GameState
+    * returns a String representation of the provided GameState.
     * */
-    def printBoard(game: GameState): String = {
+    private def printBoard(game: GameState): String = {
         val card = s"""╔══════╗
                       |║      ║
                       |║      ║
@@ -27,9 +40,10 @@ object TUIManager {
 
     /*
     * def printOverview(...)
-    * returns a String representation of the overview of all (un)collected cards and their value
+    * returns a String representation of the overview of all (un)collected cards and their value.
+    * TODO: implement all rules for card combinations and display them accordingly
     * */
-    def printOverview(game: GameState): String = {
+    private def printOverview(game: GameState): String = {
         "\u001b[2J\u001b[1;1H" + "Hanafuda Overview\ncollectible, mine, theirs\n\n"
             + "Gokō (五光) \"Five Hikari\"\t10pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
             + "Shikō (四光) \"Four Hikari\"\t8pts.\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
@@ -37,7 +51,7 @@ object TUIManager {
 
     /*
     * def colorizeOverviewCard(...)
-    * returns the colorized unicode representation of given card depending on who owns it
+    * returns the colorized unicode representation of given card depending on who owns it.
     * */
     private def colorizeOverviewCard(game: GameState, card: Card): List[String] = card match {
         case c if game.players.head.side.cards.contains(card) => c.unicode.prepended("\u001b[32m")
