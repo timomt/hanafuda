@@ -1,7 +1,5 @@
 package model
 
-import scala.io.StdIn.readLine
-
 /*
 * case class Player(...)
 * name:= Name of the player
