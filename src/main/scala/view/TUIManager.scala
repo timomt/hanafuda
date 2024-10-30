@@ -44,7 +44,7 @@ object TUIManager extends Observer {
     * TODO: implement all rules for card combinations and display them accordingly
     * */
     private def printOverview(game: GameState): String = {
-        "\u001b[2J\u001b[1;1H" + "Hanafuda Overview\ncollectible, mine, theirs\n\n"
+        "\u001b[2J\u001b[1;1H" + "Hanafuda Overview\ncollectible, mine, theirs\n\n"git
             + "Gokō (五光) \"Five Hikari\"\t10pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
             + "Shikō (四光) \"Four Hikari\"\t8pts.\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
             + "Ame-Shikō (雨四光) \"Rainy Four Hikari\"\t7pts.\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName == CardName.RAIN).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
