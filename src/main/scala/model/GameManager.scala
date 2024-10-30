@@ -1,3 +1,5 @@
+package model
+
 import scala.io.StdIn.readLine
 
 /*
@@ -22,10 +24,10 @@ case class GameState(players: List[Player], deck: Deck, board: Deck)
 * An object to perform operations on GameState instances
 * */
 object GameManager {
-
     /*
     * def newGame(): GameState
-    * Returns a new GameState as default game setup
+    * Returns a new GameState as default game setup.
+    * TODO: initialize a default game according to koi-koi rules.
     * */
     def newGame(): GameState = {
         val (board, deck) = Deck.pollMultiple(Deck.defaultDeck(), 8)
@@ -35,9 +37,19 @@ object GameManager {
                 (players :+ Player("Test", Deck(cards), Deck(List.empty), 0), newDeck)
             }
         }
-        GameState(playerList, updatedDeck, updatedDeck)
+        model.GameState(playerList, updatedDeck, updatedDeck)
+    }
+    
+    
+    /*
+    * def matchCards(...)
+    * matches the two given cards.
+    * */
+    def matchCards(game: GameState, ownCard:Int, pickedCard:Int): GameState = {
+        game
     }
 
+    /*
     // players liste, erstes element in liste aktueller player
 
     /*
@@ -127,5 +139,5 @@ object GameManager {
     * TODO: implement def evaluateScore(...)
     *  Evaluates the highest possible score of each player and returns a tuple of the result.
     *  The first tuple value is the score of the player of the current turn (game.players[0])*/
-        //def evaluateScore(game: GameState): (Int, Int) = {}
-    }
+        //def evaluateScore(game: GameState): (Int, Int) = {}*/
+}
