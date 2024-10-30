@@ -43,8 +43,8 @@ object TUIManager extends Observer {
     * returns a String representation of the overview of all (un)collected cards and their value.
     * TODO: implement all rules for card combinations and display them accordingly
     * */
-    private def printOverview(game: GameState): String = {
-        "\u001b[2J\u001b[1;1H" + "Hanafuda Overview\ncollectible, mine, theirs\n\n"
+    def printOverview(game: GameState): String = {
+        "\u001b[2J\u001b[1;1H" + "Hanafuda Overview\ncollectible,\u001b[32m mine\u001b[0m,\u001b[31m theirs\u001b[0m\n\n"
             + "Gokō (五光) \"Five Hikari\"\t10pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
             + "Shikō (四光) \"Four Hikari\"\t8pts.\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
     }
@@ -54,8 +54,8 @@ object TUIManager extends Observer {
     * returns the colorized unicode representation of given card depending on who owns it.
     * */
     private def colorizeOverviewCard(game: GameState, card: Card): List[String] = card match {
-        case c if game.players.head.side.cards.contains(card) => c.unicode.prepended("\u001b[32m")
-        case c if game.players(1).side.cards.contains(card) => c.unicode.prepended("\u001b[31m")
-        case c => c.unicode.prepended("\u001b[0m")
+        case c if game.players.head.side.cards.contains(card) => c.unicode.map(line => s"\u001b[32m$line\u001b[0m")
+        case c if game.players(1).side.cards.contains(card) => c.unicode.map(line => s"\u001b[31m$line\u001b[0m")
+        case _ => card.unicode.map(line => s"\u001b[0m$line\u001b[0m")
     }
 }
