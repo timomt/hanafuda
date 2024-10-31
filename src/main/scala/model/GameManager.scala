@@ -27,12 +27,13 @@ object GameManager {
     * Returns a new GameState as default game setup.
     * TODO: initialize a default game according to koi-koi rules.
     * */
-    def newGame(): GameState = {
+    def newGame(firstPlayer: String, secondPlayer: String): GameState = {
         val (board, deck) = Deck.pollMultiple(Deck.defaultDeck(), 8)
         val (playerList, updatedDeck) = (1 to 2).foldLeft((List.empty[Player], deck)) {
-            case ((players, currentDeck), _) => {
+            case ((players, currentDeck), n) => {
                 val (cards, newDeck) = Deck.pollMultiple(currentDeck, 8)
-                (players :+ Player("Test", Deck(cards), Deck(List.empty), 0), newDeck)
+                val name = if(n == 1) firstPlayer else secondPlayer
+                (players :+ Player(name, Deck(cards), Deck(List.empty), 0), newDeck)
             }
         }
         model.GameState(playerList, updatedDeck, updatedDeck)
