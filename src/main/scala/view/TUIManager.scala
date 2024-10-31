@@ -39,6 +39,44 @@ object TUIManager extends Observer {
     }
 
     /*
+    * def printHelp(...)
+    * returns a String of the help page.
+    * */
+    def printHelp(): String = {
+        val helpText =
+            """[2J[1;1H
+              |╔════════════════════════════════════════════════════════════════════════╗
+              |║                                Hanafuda Help                           ║
+              |╠════════════════════════════════════════════════════════════════════════╣
+              |║ Welcome to Hanafuda! Here are the commands you can use:                ║
+              |║                                                                        ║
+              |║ 1. start <firstPlayer> <secondPlayer>                                  ║
+              |║    - Starts a new game with the given player names.                    ║
+              |║                                                                        ║
+              |║ 2. continue                                                            ║
+              |║    - return to the current game            .                            ║
+              |║                                                                        ║
+              |║ 2. match <x> <y>                                                       ║
+              |║    - Matches cards at positions x and y on the board.                  ║
+              |║                                                                        ║
+              |║ 3. test colors                                                         ║
+              |║    - Tests the colors of the cards.                                    ║
+              |║                                                                        ║
+              |║ 4. combinations                                                        ║
+              |║    - Displays the possible combinations of cards.                      ║
+              |║                                                                        ║
+              |║ 5. help                                                                ║
+              |║    - Displays this help page.                                          ║
+              |║                                                                        ║
+              |║ 6. exit                                                                ║
+              |║    - Exits the game.                                                   ║
+              |║                                                                        ║
+              |╚════════════════════════════════════════════════════════════════════════╝
+              |""".stripMargin
+        helpText
+    }
+
+    /*
     * def printOverview(...)
     * returns a String representation of the overview of all (un)collected cards and their value.
     * TODO: implement all rules for card combinations and display them accordingly
