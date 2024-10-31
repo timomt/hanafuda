@@ -30,12 +30,35 @@ object TUIManager extends Observer {
         val cardSpacer = ((" " * 8 + "\n") * 4 + " " * 8).split("\n").toList
 
         val topRow = List.fill(8)(card).transpose.map(_.mkString(" ")).mkString("\n")
-        val upperMiddleRow = game.board.cards.slice(0, 4).map(_.unicode).prependedAll(List.fill(2)(cardSpacer)).transpose.map(_.mkString(" ")).mkString("\n")
-        val lowerMiddleRow = game.board.cards.slice(4, 8).map(_.unicode).prependedAll(List.fill(2)(cardSpacer)).transpose.map(_.mkString(" ")).mkString("\n")
+
+        val upperMiddleRow = game.board.cards.slice(0, 4).map(_.unicode)
+            .prependedAll(game.queued match {
+                case Some(c) => List.fill(1)(cardSpacer).prepended(c.unicode)
+                case None => List.fill(2)(cardSpacer)
+            })
+            .appendedAll(List.fill(1)(cardSpacer))
+            .appendedAll(game.matched.cards.slice(0, game.matched.cards.size/2).map(_.unicode))
+            .transpose.map(_.mkString(" ")).mkString("\n")
+
+        val lowerMiddleRow = game.board.cards.slice(4, 8).map(_.unicode).prependedAll(List.fill(2)(cardSpacer))
+            .appendedAll(List.fill(1)(cardSpacer))
+            .appendedAll(game.matched.cards.slice(game.matched.cards.size/2, game.matched.cards.size).map(_.unicode))
+            .transpose.map(_.mkString(" ")).mkString("\n")
+
         val bottomRow = game.players.head.hand.cards.map(_.unicode).transpose.map(_.mkString(" ")).mkString("\n")
 
+        val stdoutRow = game.stdout match {
+            case Some(stdout) => s"\n[]: $stdout\n"
+            case None => ""
+        }
+
+        val stderrRow = game.stderr match {
+            case Some(stderr) => s"\n[error]: $stderr\n"
+            case None => ""
+        }
+
         "\u001b[2J\u001b[1;1H" + s"Current player: ${game.players.head.name}\n"
-            + topRow + "\n\n" + upperMiddleRow + "\n" + lowerMiddleRow + "\n\n" + bottomRow
+            + topRow + "\n\n" + upperMiddleRow + "\n" + lowerMiddleRow + "\n\n" + bottomRow + stdoutRow + stderrRow
     }
 
     /*
@@ -54,7 +77,7 @@ object TUIManager extends Observer {
               |║    - Starts a new game with the given player names.                    ║
               |║                                                                        ║
               |║ 2. continue                                                            ║
-              |║    - return to the current game            .                            ║
+              |║    - return to the current game.                                       ║
               |║                                                                        ║
               |║ 2. match <x> <y>                                                       ║
               |║    - Matches cards at positions x and y on the board.                  ║
