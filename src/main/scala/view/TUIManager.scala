@@ -8,6 +8,7 @@ import model.{Card, CardName, CardType, Deck, GameState}
 * an object to manage the text user interface.
 * */
 object TUIManager extends Observer {
+    //TODO: spoiler protection
     /*
     * def update(...)
     * updates the TUI according to the current GameState.
@@ -29,19 +30,19 @@ object TUIManager extends Observer {
                       |""".stripMargin.split("\n").toList
         val cardSpacer = ((" " * 8 + "\n") * 4 + " " * 8).split("\n").toList
 
-        val topRow = List.fill(8)(card).transpose.map(_.mkString(" ")).mkString("\n")
+        val topRow = List.fill(game.players(1).hand.cards.size)(card).transpose.map(_.mkString(" ")).mkString("\n")
 
         val upperMiddleRow = game.board.cards.slice(0, 4).map(_.unicode)
             .prependedAll(game.queued match {
                 case Some(c) => List.fill(1)(cardSpacer).prepended(c.unicode)
                 case None => List.fill(2)(cardSpacer)
             })
-            .appendedAll(List.fill(1)(cardSpacer))
+            .appendedAll(List.fill(5 - game.board.cards.slice(0, 4).size)(cardSpacer))
             .appendedAll(game.matched.cards.slice(0, game.matched.cards.size/2).map(_.unicode))
             .transpose.map(_.mkString(" ")).mkString("\n")
 
         val lowerMiddleRow = game.board.cards.slice(4, 8).map(_.unicode).prependedAll(List.fill(2)(cardSpacer))
-            .appendedAll(List.fill(1)(cardSpacer))
+            .appendedAll(List.fill(5 - game.board.cards.slice(4, 8).size)(cardSpacer))
             .appendedAll(game.matched.cards.slice(game.matched.cards.size/2, game.matched.cards.size).map(_.unicode))
             .transpose.map(_.mkString(" ")).mkString("\n")
 
