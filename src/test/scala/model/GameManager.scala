@@ -1,3 +1,5 @@
+package model
+
 object GameManager {
   //ToDo: methode to start a new game
 
