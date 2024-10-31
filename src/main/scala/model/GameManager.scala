@@ -54,7 +54,7 @@ object GameManager {
                     (players :+ Player(name, Deck(cards), Deck(List.empty), 0), newDeck)
                 }
             }
-            model.GameState(playerList, updatedDeck, Deck(board), Deck(List.empty), MatchType.RANDOM, None, None, None)
+            model.GameState(playerList, updatedDeck, Deck(board), Deck(List.empty), MatchType.PLANNED, None, None, None)
         }
     }
 }
