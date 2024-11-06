@@ -1,16 +1,26 @@
 package model
 
-object GameManager {
-  //ToDo: methode to start a new game
+import org.scalatest.flatspec.AnyFlatSpec
 
-  //ToDo: If a full month has been dealt to the field, the round is void and redealt.
-
-  //ToDo: If there are ¾ of a month dealt to the field, combine the three into one stack, the player who plays the final card of the month gets all of that month
-
-  //ToDo: If either player has a dealt Yaku (hand) the round is ended and they are awarded the points
-  //      "„Yaku“ (eine gewinnbringende Kombination von Karten)"
-  //      Four Hands: 4 cards of the same month: 6pts
-  //      Sticky: 2 cards from 4 different months: 6pts
-
-
+class GameManagerSpec extends AnyFlatSpec {
+    "newGame()" should "return a game initialized with the given player names" in {
+        val firstName = "5r2313^2_23sad"
+        val secondName = "51280qehd0_.1q2du9132312"
+        val game = GameManager.newGame(firstName, secondName)
+        assert(game.players.head.name === firstName)
+        assert(game.players(1).name === secondName)
+    }
+    
+    it should "not deal a full month" in {
+        val game = GameManager.newGame(" ", " ")
+        assert(game.board.cards.groupBy(_.month).forall((_, list) => list.size < 4))
+    }
+    
+    it should "group 3 cards of the same month together" in {
+        
+    }
+    
+    it should "end if a player is dealt a yaku" in {
+        
+    }
 }
