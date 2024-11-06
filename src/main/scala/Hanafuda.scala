@@ -5,6 +5,7 @@ import view.TUIManager
 * object Hanafuda
 * entry point of this application.
 * */
+
 object Hanafuda {
     @main
     def main(): Unit = {
