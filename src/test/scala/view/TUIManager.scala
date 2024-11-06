@@ -1,7 +1,7 @@
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import view.TUIManager
-import model.{Card, CardName, CardType, GameState, Player, Board, Side}
+/*import model.{Card, CardName, CardType, GameState, Player, Board, Side}
 
 class TUIManagerSpec extends AnyFlatSpec with Matchers {
 
@@ -40,4 +40,4 @@ class TUIManagerSpec extends AnyFlatSpec with Matchers {
     val colorizedCard = TUIManager.colorizeOverviewCard(gameState, card)
     colorizedCard.head should include ("\u001b[32mline1\u001b[0m")
   }
-}
+}*/

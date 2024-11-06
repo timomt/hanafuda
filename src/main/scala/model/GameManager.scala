@@ -38,15 +38,26 @@ object GameManager {
     /*
     * def newGame(): GameState
     * Returns a new GameState as default game setup.
-    * TODO: initialize a default game according to koi-koi rules.
+    * TODO: check for instant win
     * */
     @tailrec
     def newGame(firstPlayer: String, secondPlayer: String): GameState = {
-        val (board, deck) = Deck.pollMultiple(Deck.defaultDeck(), 8)
-        if (board.groupBy(_.month).exists(cards => cards.size == 4)) {
+        val (polledBoard, deck) = Deck.pollMultiple(Deck.defaultDeck(), 8)
+
+        // If 4 cards of the same month are dealt, shuffle again
+        if (polledBoard.groupBy(_.month).exists(cards => cards.size == 4)) {
             newGame(firstPlayer, secondPlayer)
-        } //else if () //TODO: implement 3/4 of month dealt
+        }
         else {
+            // If 3 cards of the same month are dealt, group them
+            val groupedMonths = polledBoard.groupBy(_.month).collect {
+                case (month, cards) if cards.size == 3 => month
+            }.toSet
+            val actualBoard = polledBoard.map { card =>
+                if (groupedMonths.contains(card.month)) card.copy(grouped = true)
+                else card
+            }
+
             val (playerList, updatedDeck) = (1 to 2).foldLeft((List.empty[Player], deck)) {
                 case ((players, currentDeck), n) => {
                     val (cards, newDeck) = Deck.pollMultiple(currentDeck, 8)
@@ -54,7 +65,7 @@ object GameManager {
                     (players :+ Player(name, Deck(cards), Deck(List.empty), 0), newDeck)
                 }
             }
-            model.GameState(playerList, updatedDeck, Deck(board), Deck(List.empty), MatchType.RANDOM, None, None, None)
+            model.GameState(playerList, updatedDeck, Deck(actualBoard), Deck(List.empty), MatchType.PLANNED, None, None, None)
         }
     }
 }

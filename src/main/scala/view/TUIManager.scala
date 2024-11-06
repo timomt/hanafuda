@@ -8,6 +8,9 @@ import model.{Card, CardName, CardType, Deck, GameState}
 * an object to manage the text user interface.
 * */
 object TUIManager extends Observer {
+    private val clearScreen: String = "\u001b[2J\u001b[3J\u001b[1;1H"
+    
+    //TODO: spoiler protection
     /*
     * def update(...)
     * updates the TUI according to the current GameState.
@@ -19,7 +22,7 @@ object TUIManager extends Observer {
     /*
     * def printBoard(...)
     * returns a String representation of the provided GameState.
-    * */
+    * */ //TODO: fix unlimited board size
     private def printBoard(game: GameState): String = {
         val card = s"""╔══════╗
                       |║      ║
@@ -29,19 +32,19 @@ object TUIManager extends Observer {
                       |""".stripMargin.split("\n").toList
         val cardSpacer = ((" " * 8 + "\n") * 4 + " " * 8).split("\n").toList
 
-        val topRow = List.fill(8)(card).transpose.map(_.mkString(" ")).mkString("\n")
+        val topRow = List.fill(game.players(1).hand.cards.size)(card).transpose.map(_.mkString(" ")).mkString("\n")
 
         val upperMiddleRow = game.board.cards.slice(0, 4).map(_.unicode)
             .prependedAll(game.queued match {
                 case Some(c) => List.fill(1)(cardSpacer).prepended(c.unicode)
                 case None => List.fill(2)(cardSpacer)
             })
-            .appendedAll(List.fill(1)(cardSpacer))
+            .appendedAll(List.fill(5 - game.board.cards.slice(0, 4).size)(cardSpacer))
             .appendedAll(game.matched.cards.slice(0, game.matched.cards.size/2).map(_.unicode))
             .transpose.map(_.mkString(" ")).mkString("\n")
 
         val lowerMiddleRow = game.board.cards.slice(4, 8).map(_.unicode).prependedAll(List.fill(2)(cardSpacer))
-            .appendedAll(List.fill(1)(cardSpacer))
+            .appendedAll(List.fill(5 - game.board.cards.slice(4, 8).size)(cardSpacer))
             .appendedAll(game.matched.cards.slice(game.matched.cards.size/2, game.matched.cards.size).map(_.unicode))
             .transpose.map(_.mkString(" ")).mkString("\n")
 
@@ -57,7 +60,7 @@ object TUIManager extends Observer {
             case None => ""
         }
 
-        "\u001b[2J\u001b[1;1H" + s"Current player: ${game.players.head.name}\n"
+        clearScreen + s"Current player: ${game.players.head.name}\n"
             + topRow + "\n\n" + upperMiddleRow + "\n" + lowerMiddleRow + "\n\n" + bottomRow + stdoutRow + stderrRow
     }
 
@@ -67,7 +70,7 @@ object TUIManager extends Observer {
     * */
     def printHelp(): String = {
         val helpText =
-            """[2J[1;1H
+            clearScreen + """
               |╔════════════════════════════════════════════════════════════════════════╗
               |║                                Hanafuda Help                           ║
               |╠════════════════════════════════════════════════════════════════════════╣
@@ -100,47 +103,9 @@ object TUIManager extends Observer {
     }
 
     /*
-    * def printHelp(...)
-    * returns a String of the help page.
-    * */
-    def printHelp(): String = {
-        val helpText =
-            """[2J[1;1H
-              |╔════════════════════════════════════════════════════════════════════════╗
-              |║                                Hanafuda Help                           ║
-              |╠════════════════════════════════════════════════════════════════════════╣
-              |║ Welcome to Hanafuda! Here are the commands you can use:                ║
-              |║                                                                        ║
-              |║ 1. start <firstPlayer> <secondPlayer>                                  ║
-              |║    - Starts a new game with the given player names.                    ║
-              |║                                                                        ║
-              |║ 2. continue                                                            ║
-              |║    - return to the current game            .                            ║
-              |║                                                                        ║
-              |║ 2. match <x> <y>                                                       ║
-              |║    - Matches cards at positions x and y on the board.                  ║
-              |║                                                                        ║
-              |║ 3. test colors                                                         ║
-              |║    - Tests the colors of the cards.                                    ║
-              |║                                                                        ║
-              |║ 4. combinations                                                        ║
-              |║    - Displays the possible combinations of cards.                      ║
-              |║                                                                        ║
-              |║ 5. help                                                                ║
-              |║    - Displays this help page.                                          ║
-              |║                                                                        ║
-              |║ 6. exit                                                                ║
-              |║    - Exits the game.                                                   ║
-              |║                                                                        ║
-              |╚════════════════════════════════════════════════════════════════════════╝
-              |""".stripMargin
-        helpText
-    }
-
-    /*
     * def printOverview(...)
     * returns a String representation of the overview of all (un)collected cards and their value.
-    * TODO: implement all rules for card combinations and display them accordingly
+    * TODO: display fitting card combination
     * */
     def printOverview(game: GameState): String = {
         val goko = "Gokō (五光) \"Five Hikari\"\t10pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
@@ -155,14 +120,12 @@ object TUIManager extends Observer {
         val akatan = "Akatan (赤短) \"Red Poem\"\t5pts.\n" + Deck.defaultDeck().cards.filter(_.cardName == CardName.POETRY_TANZAKU).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
         val aotan = "Aotan (青短) \"Blue Poem\"\t5pts.\n" + Deck.defaultDeck().cards.filter(_.cardName == CardName.BLUE_TANZAKU).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
         val tanzaku = "Tanzaku (短冊) \"Ribbons\"\t1pt.\n" + Deck.defaultDeck().cards.filter(c => c.cardName == CardName.POETRY_TANZAKU || c.cardName == CardName.BLUE_TANZAKU).take(4).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
-        val kasu = "Kasu (カス) \" \"\t1pt.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.KASU).take(10).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
+        val kasu = "Kasu (カス) \" \"\t1pt.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.KASU).take(10).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n"
 
-        val overview = goko + shiko + ameShiko + sanko + tsukimiZake + hanamiZake + inoshikacho + tane + akatanAotan + akatan + aotan + tanzaku + kasu
-
+        val overview = clearScreen + goko + shiko + ameShiko + sanko + tsukimiZake + hanamiZake + inoshikacho + tane + akatanAotan + akatan + aotan + tanzaku + kasu
         overview
     }
-
-
+    
     /*
     * def colorizeOverviewCard(...)
     * returns the colorized unicode representation of given card depending on who owns it.

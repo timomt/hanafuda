@@ -113,8 +113,9 @@ enum CardName {
 /*
 * case class Card(..)
 * a class to represent a hanafuda playing card.
+* grouped := true if 3 cards of the same month have been dealt.
 * */
-case class Card(month:CardMonth, cardType: CardType, cardName:CardName) {
+case class Card(month:CardMonth, cardType: CardType, cardName:CardName, grouped:Boolean = false) {
     /*
     * def unicode
     * returns a List[String] representation of the card
