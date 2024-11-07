@@ -130,7 +130,7 @@ object TUIManager extends Observer {
     * def colorizeOverviewCard(...)
     * returns the colorized unicode representation of given card depending on who owns it.
     * */
-    private def colorizeOverviewCard(game: GameState, card: Card): List[String] = card match {
+    /*private*/ def colorizeOverviewCard(game: GameState, card: Card): List[String] = card match {
         case c if game.players.head.side.cards.contains(card) => c.unicode.map(line => s"\u001b[32m$line\u001b[0m")
         case c if game.players(1).side.cards.contains(card) => c.unicode.map(line => s"\u001b[31m$line\u001b[0m")
         case _ => card.unicode.map(line => s"\u001b[0m$line\u001b[0m")
