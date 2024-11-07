@@ -255,21 +255,21 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
 
       // Expect the first player's card to be colored green
       val expectedGreen = card.unicode.map(line => s"\u001b[32m$line\u001b[0m")
-      //resultPlayer1 shouldEqual expectedGreen
+      resultPlayer1 shouldEqual expectedGreen
 
       // Expect the second player's card to be colored red
       val expectedRed = card2.unicode.map(line => s"\u001b[31m$line\u001b[0m")
-      //resultPlayer2 shouldEqual expectedRed
+      resultPlayer2 shouldEqual expectedRed
 
       // Verify that the text without ANSI codes remains the same (to confirm color correctness)
       val strippedResultPlayer1 = resultPlayer1.map(_.replaceAll("\u001B\\[[;\\d]*m", ""))
       val strippedResultPlayer2 = resultPlayer2.map(_.replaceAll("\u001B\\[[;\\d]*m", ""))
 
-      val expectedOutput_player1: List[String] = card.unicode
-      val expectedOutput_player2: List[String] = card2.unicode
+      val expectedOutputPlayer1: List[String] = card.unicode
+      val expectedOutputPlayer2: List[String] = card2.unicode
 
-      //strippedResultPlayer1 shouldEqual expectedOutput_player1
-      strippedResultPlayer2 shouldEqual expectedOutput_player2
+      strippedResultPlayer1 shouldEqual expectedOutputPlayer1
+      strippedResultPlayer2 shouldEqual expectedOutputPlayer2
     }
   }
 }
