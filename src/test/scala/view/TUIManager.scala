@@ -6,25 +6,36 @@ import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import model.GameManager
 import org.scalatest.matchers.should.Matchers._
-//import org.scalatestplus.mockito.MockitoSugar
-//import org.mockito.Mockito._
+import org.mockito.Mockito._
 
 class TUIManagerSpec extends AnyFunSpec with Matchers{
 
   GameController.add(TUIManager)
+/*
+  describe("printBoard"){
+    it("should print the board correctly"){
+
+    }
+  }
+
+ */
+
+
   describe("update") {
     it("should update printBoard with the correct GameState") {
       val gameState = GameManager.newGame("Player1", "Player2")
-      TUIManager.update(gameState)
-      val outputStream = new java.io.ByteArrayOutputStream()
-      Console.withOut(outputStream) {
-        TUIManager.update(gameState)
-      }
-      val output = outputStream.toString
-      // Add assertions to verify the output
-      output should include ("expected content")
+
+      // Create a spy of TUIManager
+      val tuiManager = spy(TUIManager)
+
+      // Call the method you want to test
+      tuiManager.update(gameState)
+
+      // Verify that printBoard was called with the expected GameState
+      verify(tuiManager).printBoard(gameState)
     }
   }
+
 
 
   describe("printHelp") {
