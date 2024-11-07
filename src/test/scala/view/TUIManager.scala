@@ -4,13 +4,28 @@ import view.TUIManager
 import controller.GameController
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-//import org.scalatest.matchers.should.Matchers
 import model.GameManager
 import org.scalatest.matchers.should.Matchers._
+import org.scalatestplus.mockito.MockitoSugar
+import org.mockito.Mockito._
 
-class TUIManagerSpec extends AnyFunSpec with Matchers {
+class TUIManagerSpec extends AnyFunSpec with Matchers with MockitoSugar{
 
   GameController.add(TUIManager)
+  describe("update") {
+    it("should update printBoard with the correct GameState") {
+      val mockGameState = mock[GameState]
+      val tuiManager = spy(TUIManager)
+
+      doNothing().when(tuiManager).printBoard(mockGameState)
+
+      tuiManager.update(mockGameState)
+
+      verify(tuiManager).printBoard(mockGameState)
+    }
+  }
+
+
   describe("printHelp") {
     it("should print the help text correctly") {
       val expectedHelpText =
