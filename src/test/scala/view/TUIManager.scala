@@ -99,7 +99,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
     }
   }
 
-  describe("print overview") {
+  describe("printOverview") {
     it("should printOverview/ combinations correctly") {
       // Call the printOverview method
       val gameState = GameManager.newGame("Player1", "Player2")
