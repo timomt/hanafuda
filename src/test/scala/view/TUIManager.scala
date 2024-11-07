@@ -1,7 +1,7 @@
-import org.scalatest.flatspec.AnyFlatSpec
+/*import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import view.TUIManager
-/*import model.{Card, CardName, CardType, GameState, Player, Board, Side}
+import model.{Card, CardName, CardType, GameState, Player, Board, Side}
 
 class TUIManagerSpec extends AnyFlatSpec with Matchers {
 
