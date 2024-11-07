@@ -12,14 +12,33 @@ class GameManagerSpec extends AnyFlatSpec {
     }
     
     it should "not deal a full month" in {
-        val game = GameManager.newGame(" ", " ")
+        val game = GameManager.newGame(" ", " ",
+            Some(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR))))
+        println(game)
         assert(game.board.cards.groupBy(_.month).forall((_, list) => list.size < 4))
     }
     
     it should "group 3 cards of the same month together" in {
-        
+        val game = GameManager.newGame(" ", " ",
+            Some(List(Card(CardMonth.NOVEMBER, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.JANUARY, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.JANUARY, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR))))
+        assert(game.board.cards.forall(c => c.month == CardMonth.MARCH && c.grouped || c.month != CardMonth.MARCH && !c.grouped))
     }
-    
+
+    //TODO: implement functionality
     it should "end if a player is dealt a yaku" in {
         
     }
