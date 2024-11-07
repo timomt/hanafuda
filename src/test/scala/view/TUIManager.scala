@@ -47,8 +47,34 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
 }
 
   describe("update") {
-    it("should update the TUI according to the current GameState") {
-      val gameState = GameManager.newGame("Player1", "Player2")
+    it("should update the TUI correctly for an empty game state") {
+      val emptyGameState = GameState(
+        List(Player("Player1", Deck(List.empty), Deck(List.empty), 0), Player("Player2", Deck(List.empty), Deck(List.empty), 0)),
+        Deck(List.empty),
+        Deck(List.empty),
+        Deck(List.empty),
+        MatchType.PLANNED,
+        None,
+        None,
+        None
+      )
+      val result = TUIManager.printBoard(emptyGameState)
+      assert(TUIManager.printBoard(emptyGameState) == result)
+    }
+    it("should update the TUI correctly for a non-empty game state") {
+      val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
+      val player1Deck = Deck(List(card))
+      val player2Deck = Deck(List(card))
+      val gameState = GameState(
+        List(Player("Player1", player1Deck, player1Deck, 0), Player("Player2", player2Deck, player2Deck, 0)),
+        Deck(List(card)),
+        Deck(List(card)),
+        Deck(List(card)),
+        MatchType.PLANNED,
+        None,
+        None,
+        None
+      )
       val result = TUIManager.printBoard(gameState)
       assert(TUIManager.printBoard(gameState) == result)
     }
