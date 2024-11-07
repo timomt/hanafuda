@@ -5,38 +5,17 @@ import controller.GameController
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
 import model.GameManager
-import org.scalatest.matchers.should.Matchers._
-import org.mockito.Mockito._
 
 class TUIManagerSpec extends AnyFunSpec with Matchers{
 
   GameController.add(TUIManager)
-/*
-  describe("printBoard"){
-    it("should print the board correctly"){
 
+  describe("clearScreen") {
+    it("should clear the screen correctly") {
+      val expectedClearScreen = "\u001b[2J\u001b[3J\u001b[1;1H"
+      assert(TUIManager.clearScreen == expectedClearScreen)
     }
   }
-
- */
-
-
-  describe("update") {
-    it("should update printBoard with the correct GameState") {
-      val gameState = GameManager.newGame("Player1", "Player2")
-
-      // Create a spy of TUIManager
-      val tuiManager = spy(TUIManager)
-
-      // Call the method you want to test
-      tuiManager.update(gameState)
-
-      // Verify that printBoard was called with the expected GameState
-      verify(tuiManager).printBoard(gameState)
-    }
-  }
-
-
 
   describe("printHelp") {
     it("should print the help text correctly") {

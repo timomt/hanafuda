@@ -8,7 +8,7 @@ import model.{Card, CardName, CardType, Deck, GameState}
 * an object to manage the text user interface.
 * */
 object TUIManager extends Observer {
-    private val clearScreen: String = "\u001b[2J\u001b[3J\u001b[1;1H"
+    /*private*/ val clearScreen: String = "\u001b[2J\u001b[3J\u001b[1;1H"
     
     //TODO: spoiler protection
     /*
@@ -23,7 +23,7 @@ object TUIManager extends Observer {
     * def printBoard(...)
     * returns a String representation of the provided GameState.
     * */ //TODO: fix unlimited board size
-    private def printBoard(game: GameState): String = {
+    def printBoard(game: GameState): String = {
         val card = s"""╔══════╗
                       |║      ║
                       |║      ║
