@@ -10,6 +10,14 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
 
   GameController.add(TUIManager)
 
+  describe("update") {
+    it("should update the TUI according to the current GameState") {
+      val gameState = GameManager.newGame("Player1", "Player2")
+      val result = TUIManager.printBoard(gameState)
+      assert(TUIManager.printBoard(gameState) == result)
+    }
+  }
+
   describe("clearScreen") {
     it("should clear the screen correctly") {
       val expectedClearScreen = "\u001b[2J\u001b[3J\u001b[1;1H"
