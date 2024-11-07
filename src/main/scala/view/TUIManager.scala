@@ -20,7 +20,7 @@ object TUIManager extends Observer {
     * def printBoard(...)
     * returns a String representation of the provided GameState.
     * */
-    private def printBoard(game: GameState): String = {
+    /*private*/ def printBoard(game: GameState): String = {
         val card = s"""╔══════╗
                       |║      ║
                       |║      ║
