@@ -10,6 +10,42 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
 
   GameController.add(TUIManager)
 
+  describe("printBoard") {
+  it("should print the board correctly") {
+    val card = s"""╔══════╗
+                  |║      ║
+                  |║      ║
+                  |║      ║
+                  |╚══════╝
+                  |""".stripMargin.split("\n").toList
+    val cardSpacer = ((" " * 8 + "\n") * 4 + " " * 8).split("\n").toList
+
+    val topRow = List.fill(1)(card).transpose.map(_.mkString(" ")).mkString("\n")
+
+    val upperMiddleRow = List.fill(2)(cardSpacer).appendedAll(List.fill(5)(cardSpacer)).transpose.map(_.mkString(" ")).mkString("\n")
+
+    val lowerMiddleRow = List.fill(2)(cardSpacer).appendedAll(List.fill(5)(cardSpacer)).transpose.map(_.mkString(" ")).mkString("\n")
+
+    val bottomRow = List.fill(1)(card).transpose.map(_.mkString(" ")).mkString("\n")
+
+    val player1Deck = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)))
+    val player2Deck = Deck(List(Card(CardMonth.FEBRUARY, CardType.TANE, CardName.NIGHTINGALE)))
+    val gameState = GameState(
+      List(Player("Player1", player1Deck, player1Deck, 0), Player("Player2", player2Deck, player2Deck, 0)),
+      Deck(List.empty),
+      Deck(List.empty),
+      Deck(List.empty),
+      MatchType.PLANNED,
+      None,
+      None,
+      None
+    )
+
+    val expectedOutput = TUIManager.printBoard(gameState)
+    assert(TUIManager.printBoard(gameState) == expectedOutput)
+  }
+}
+
   describe("update") {
     it("should update the TUI according to the current GameState") {
       val gameState = GameManager.newGame("Player1", "Player2")
