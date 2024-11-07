@@ -18,7 +18,7 @@ class Observable {
     * private var subscribers
     * a Vector of all Observers subscribed to this instance.
     * */
-    private var subscribers: Vector[Observer] = Vector()
+    var subscribers: Vector[Observer] = Vector()
     
     /*
     * def add(...)

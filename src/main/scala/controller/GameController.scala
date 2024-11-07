@@ -53,7 +53,6 @@ object GameController extends Observable {
         case "continue" =>
             notifyObservers(gameState.get)
 
-        //TODO: move error checking into matchCards
         case s"match $x $y" =>
             gameState = Some(matchCards(gameState.get, x, y))
             notifyObservers(gameState.get)
@@ -82,7 +81,6 @@ object GameController extends Observable {
             println(TUIManager.printOverview(gameState.get))
 
         case _ =>
-            println("Invalid input. Please enter in the format: match x y where x and y are integers within the range.")
             notifyObservers(gameState.get)
     }
 
@@ -94,7 +92,7 @@ object GameController extends Observable {
     * matchCards()
     * */ //TODO: check for empy decks
          //TODO: check for koi-koi
-    private def matchCards(game:GameState, xString: String, yString: String): GameState = {
+    def matchCards(game:GameState, xString: String, yString: String): GameState = {
         val x = xString.toIntOption.getOrElse(0)
         val y = yString.toIntOption.getOrElse(0)
 
@@ -116,7 +114,7 @@ object GameController extends Observable {
     /*
     * handleMatchPlanned(..)
     * */
-    private def handleMatchPlanned(game: GameState, x: Int, y: Int): GameState = {
+    def handleMatchPlanned(game: GameState, x: Int, y: Int): GameState = {
         if (x == 0) {   // Auto discard is only possible in a random match
             updateGameStateWithError(game, "You have to specify which card to discard/match, see \"help\".")
         } else {
@@ -133,8 +131,8 @@ object GameController extends Observable {
     /*
     * updateGameStateWithError(..)
     * */
-    private def updateGameStateWithError(game: GameState, errorMessage: String): GameState = {
-        gameState.get.copy(stdout = None, stderr = Some(errorMessage))
+    def updateGameStateWithError(game: GameState, errorMessage: String): GameState = {
+        game.copy(stdout = None, stderr = Some(errorMessage))
     }
 
     /*

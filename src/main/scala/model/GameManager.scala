@@ -39,21 +39,23 @@ object GameManager {
     * def newGame(): GameState
     * Returns a new GameState as default game setup.
     * TODO: check for instant win
+    * customBoard := used for testing purposes.
     * */
     @tailrec
-    def newGame(firstPlayer: String, secondPlayer: String): GameState = {
+    def newGame(firstPlayer: String, secondPlayer: String, customBoard: Option[List[Card]] = None): GameState = {
         val (polledBoard, deck) = Deck.pollMultiple(Deck.defaultDeck(), 8)
-
+        val actualPolledBoard = customBoard.getOrElse(polledBoard)
+        
         // If 4 cards of the same month are dealt, shuffle again
-        if (polledBoard.groupBy(_.month).exists(cards => cards.size == 4)) {
+        if (actualPolledBoard.groupBy(_.month).exists((_, cards) => cards.size >= 4)) {
             newGame(firstPlayer, secondPlayer)
         }
         else {
             // If 3 cards of the same month are dealt, group them
-            val groupedMonths = polledBoard.groupBy(_.month).collect {
+            val groupedMonths = actualPolledBoard.groupBy(_.month).collect {
                 case (month, cards) if cards.size == 3 => month
             }.toSet
-            val actualBoard = polledBoard.map { card =>
+            val actualBoard = actualPolledBoard.map { card =>
                 if (groupedMonths.contains(card.month)) card.copy(grouped = true)
                 else card
             }
