@@ -327,19 +327,19 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
         None
       )
 
-      // Call the colorizeOverviewCard method for each player
+      // colorizeOverviewCard method
       val resultPlayer1: List[String] = TUIManager.colorizeOverviewCard(gameState, player1.side.cards.head)
       val resultPlayer2: List[String] = TUIManager.colorizeOverviewCard(gameState, player2.side.cards.head)
 
-      // Expect the first player's card to be colored green
+      // first player's card colored green
       val expectedGreen = card.unicode.map(line => s"\u001b[32m$line\u001b[0m")
       resultPlayer1 shouldEqual expectedGreen
 
-      // Expect the second player's card to be colored red
+      // the second player's card colored red
       val expectedRed = card2.unicode.map(line => s"\u001b[31m$line\u001b[0m")
       resultPlayer2 shouldEqual expectedRed
 
-      // Verify that the text without ANSI codes remains the same (to confirm color correctness)
+      // without ANSI codes the text should remain the same
       val strippedResultPlayer1 = resultPlayer1.map(_.replaceAll("\u001B\\[[;\\d]*m", ""))
       val strippedResultPlayer2 = resultPlayer2.map(_.replaceAll("\u001B\\[[;\\d]*m", ""))
 
@@ -348,6 +348,8 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
 
       strippedResultPlayer1 shouldEqual expectedOutputPlayer1
       strippedResultPlayer2 shouldEqual expectedOutputPlayer2
+
+      //test
     }
   }
 }
