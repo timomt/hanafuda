@@ -10,10 +10,10 @@ object Hanafuda {
     @main
     def main(): Unit = {
         GameController.add(TUIManager)
-        GameController.newGame()
+        GameController.processInput("help")
 
         while (true) {
-            val input = scala.io.StdIn.readLine(s"Enter your move: ")
+            val input = scala.io.StdIn.readLine(s"\n")
             GameController.processInput(input)
         }
     }
