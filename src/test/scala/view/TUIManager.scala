@@ -10,91 +10,6 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
 
   GameController.add(TUIManager)
 
-  /*
-  describe("printBoard") {
-  it("should print the board correctly") {
-    val card = s"""╔══════╗
-                  |║      ║
-                  |║      ║
-                  |║      ║
-                  |╚══════╝
-                  |""".stripMargin.split("\n").toList
-    val cardSpacer = ((" " * 8 + "\n") * 4 + " " * 8).split("\n").toList
-
-    val topRow = List.fill(1)(card).transpose.map(_.mkString(" ")).mkString("\n")
-
-    val upperMiddleRow = List.fill(2)(cardSpacer).appendedAll(List.fill(5)(cardSpacer)).transpose.map(_.mkString(" ")).mkString("\n")
-
-    val lowerMiddleRow = List.fill(2)(cardSpacer).appendedAll(List.fill(5)(cardSpacer)).transpose.map(_.mkString(" ")).mkString("\n")
-
-    val bottomRow = List.fill(1)(card).transpose.map(_.mkString(" ")).mkString("\n")
-
-    val player1Deck = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)))
-    val player2Deck = Deck(List(Card(CardMonth.FEBRUARY, CardType.TANE, CardName.NIGHTINGALE)))
-    val gameState = GameState(
-      List(Player("Player1", player1Deck, player1Deck, 0), Player("Player2", player2Deck, player2Deck, 0)),
-      Deck(List.empty),
-      Deck(List.empty),
-      Deck(List.empty),
-      MatchType.PLANNED,
-      None,
-      None,
-      None
-    )
-
-    val expectedOutput = TUIManager.printBoard(gameState)
-    assert(TUIManager.printBoard(gameState) == expectedOutput)
-
-    it("should handle queued card correctly") {
-      val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
-      val cardSpacer = ((" " * 8 + "\n") * 4 + " " * 8).split("\n").toList
-      val gameState = GameState(
-        List(Player("Player1", Deck(List(card)), Deck(List(card)), 0), Player("Player2", Deck(List(card)), Deck(List(card)), 0)),
-        Deck(List(card)),
-        Deck(List(card)),
-        Deck(List(card)),
-        MatchType.PLANNED,
-        Some(card),
-        None,
-        None
-      )
-      val result = TUIManager.printBoard(gameState)
-      assert(result.contains(card.unicode.mkString("\n")))
-    }
-
-    it("should handle stdout correctly") {
-      val gameState = GameState(
-        List(Player("Player1", Deck(List.empty), Deck(List.empty), 0), Player("Player2", Deck(List.empty), Deck(List.empty), 0)),
-        Deck(List.empty),
-        Deck(List.empty),
-        Deck(List.empty),
-        MatchType.PLANNED,
-        None,
-        Some("Test stdout"),
-        None
-      )
-      val result = TUIManager.printBoard(gameState)
-      assert(result.contains("\n[]: Test stdout\n"))
-    }
-
-    it("should handle stderr correctly") {
-      val gameState = GameState(
-        List(Player("Player1", Deck(List.empty), Deck(List.empty), 0), Player("Player2", Deck(List.empty), Deck(List.empty), 0)),
-        Deck(List.empty),
-        Deck(List.empty),
-        Deck(List.empty),
-        MatchType.PLANNED,
-        None,
-        None,
-        Some("Test stderr")
-      )
-      val result = TUIManager.printBoard(gameState)
-      assert(result.contains("\n[error]: Test stderr\n"))
-      }
-    }
-}
-
-   */
   describe("printBoard") {
     it("should handle queued card correctly") {
       val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
@@ -200,7 +115,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
         None
       )
 
-      // Capture the output printed to the console
+      // printed output to the console
       val outputStream = new java.io.ByteArrayOutputStream()
       Console.withOut(outputStream) {
         TUIManager.update(gameState)
