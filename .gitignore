@@ -30,3 +30,6 @@ Thumbs.db
 
 # BSP
 .bsp/
+
+sonar-project.properties
+.scannerwork/

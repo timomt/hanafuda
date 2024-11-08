@@ -35,17 +35,23 @@ object TUIManager extends Observer {
         val topRow = List.fill(game.players(1).hand.cards.size)(card).transpose.map(_.mkString(" ")).mkString("\n")
 
         val upperMiddleRow = game.board.cards.slice(0, 4).map(_.unicode)
-            .prependedAll(game.queued match {
+            .prependedAll(game.queuedCard match {
                 case Some(c) => List.fill(1)(cardSpacer).prepended(c.unicode)
                 case None => List.fill(2)(cardSpacer)
             })
             .appendedAll(List.fill(5 - game.board.cards.slice(0, 4).size)(cardSpacer))
-            .appendedAll(game.matched.cards.slice(0, game.matched.cards.size/2).map(_.unicode))
+            .appendedAll(game.matchedDeck match {
+                case Some(d) => d.cards.slice(0, d.cards.size/2).map(_.unicode)
+                case None => List.fill(2)(cardSpacer)
+            })
             .transpose.map(_.mkString(" ")).mkString("\n")
 
         val lowerMiddleRow = game.board.cards.slice(4, 8).map(_.unicode).prependedAll(List.fill(2)(cardSpacer))
             .appendedAll(List.fill(5 - game.board.cards.slice(4, 8).size)(cardSpacer))
-            .appendedAll(game.matched.cards.slice(game.matched.cards.size/2, game.matched.cards.size).map(_.unicode))
+            .appendedAll(game.matchedDeck match {
+                case Some(d) => d.cards.slice(d.cards.size/2, d.cards.size).map(_.unicode)
+                case None => List.fill(2)(cardSpacer)
+            })
             .transpose.map(_.mkString(" ")).mkString("\n")
 
         val bottomRow = game.players.head.hand.cards.map(_.unicode).transpose.map(_.mkString(" ")).mkString("\n")
