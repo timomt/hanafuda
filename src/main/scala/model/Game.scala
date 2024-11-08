@@ -1,5 +1,7 @@
 package model
 
+import scala.collection.immutable.List as game
+
 /*
 * case class Player(...)
 * name:= Name of the player
@@ -8,10 +10,6 @@ package model
 * score:= The current highest possible score of combinations
 * */
 case class Player(name: String, hand: Deck, side: Deck, score: Int)
-
-enum DisplayType {
-    case GAME, COMBINATIONS, HELP, SPOILER
-}
 
 /*
 * case class GameState(...)
@@ -28,36 +26,20 @@ trait GameState {
     def board: Deck
     def stdout: Option[String]
     def stderr: Option[String]
-    def displayType: DisplayType
     def matchedDeck: Option[Deck] = None
     def queuedCard: Option[Card] = None
     def handleMatch(xS: String, yS: String): GameState
     def handleDiscard(xS: String): GameState
     def updateGameStateWithError(errorMessage: String): GameState
-    def updateGameStateWithDisplayType(display: DisplayType): GameState
-
-    /*TODO
-    * def evaluateScore()
-    * returns a tuple representation of the current maximum score of this GameState.
-    * the first element belongs to players.head, the second to players(1).
-    * */
-    def evaluateScore(): (Int, Int) = {
-        ???
-    }
 }
 
-case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, displayType: DisplayType = DisplayType.GAME, stdout: Option[String], stderr: Option[String]) extends GameState {
+case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, stdout: Option[String], stderr: Option[String]) extends GameState {
     /*
     * updateGameStateWithError(..)
     * */
     def updateGameStateWithError(errorMessage: String): GameState = {
         this.copy(stdout = None, stderr = Some(errorMessage))
     }
-
-    def updateGameStateWithDisplayType(display: DisplayType): GameState = {
-        this.copy(displayType = display)
-    }
-
 
     /*
     * handleDiscard(..)
@@ -78,8 +60,7 @@ case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, disp
                     stderr = None,
                     queued = updatedQueued.get,
                     matched = Deck(List.empty),
-                    stdout = Some(s"Discarded card $x."),
-                    displayType = DisplayType.GAME
+                    stdout = Some(s"Discarded card $x.")
                 )
             }
         } else {
@@ -102,18 +83,17 @@ case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, disp
                 val (updatedQueued, updatedDeck) = Deck.poll(this.deck)
                 if (this.board.cards(y - 1).grouped) { // Collect a whole month
                     val updatedPlayers = List(this.players.head.copy(
-                        hand = Deck(this.players.head.hand.cards.patch(x - 1, Nil, 1)),
+                        hand = Deck(this.players.head.hand.cards.patch(x - 1, Nil, 0)),
                         side = Deck(List(this.players.head.hand.cards(x - 1)).appendedAll(this.board.cards.filter(c => c.month == this.players.head.hand.cards(x - 1).month)))
                     ), this.players(1))
                     GameStateRandom(
                         players = updatedPlayers,
-                        board = Deck(this.board.cards.filterNot(c => c.month == this.players.head.hand.cards(x - 1).month)),
+                        board = Deck(this.board.cards.filterNot(c => c.month == this.players.head.hand.cards(x - 1))),
                         stdout = Some(s"Matched a whole month (${this.players.head.hand.cards(x - 1).month})."),
                         stderr = None,
                         deck = updatedDeck,
                         matched = Deck(List.empty),
-                        queued = updatedQueued.get,
-                        displayType = DisplayType.GAME
+                        queued = updatedQueued.get
                     )
                 } else { // Default match
                     val updatedMatched = Deck(List(this.players.head.hand.cards(x - 1), this.board.cards(y - 1)))
@@ -126,8 +106,7 @@ case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, disp
                         stdout = Some(s"Matched $x with $y."),
                         stderr = None,
                         deck = updatedDeck,
-                        queued = updatedQueued.get,
-                        displayType = DisplayType.GAME
+                        queued = updatedQueued.get
                     )
                 }
             } else { // Match is not valid (different months)
@@ -137,22 +116,18 @@ case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, disp
     }
 }
 
-case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, matched: Deck, queued: Card, displayType: DisplayType = DisplayType.GAME, stdout: Option[String], stderr: Option[String]) extends GameState {
+case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, matched: Deck, queued: Card, stdout: Option[String], stderr: Option[String]) extends GameState {
     /*
     * override class specific values
     * */
     override def matchedDeck: Option[Deck] = Some(matched)
     override def queuedCard: Option[Card] = Some(queued)
 
-    def updateGameStateWithDisplayType(display: DisplayType): GameState = {
-        this.copy(displayType = display)
-    }
-
     /*
     * updateGameStateWithError(..)
     * */
     def updateGameStateWithError(errorMessage: String): GameState = {
-        this.copy(stdout = None, stderr = Some(errorMessage), displayType = DisplayType.GAME)
+        this.copy(stdout = None, stderr = Some(errorMessage))
     }
 
     /*
@@ -163,15 +138,14 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
             updateGameStateWithError("You can not discard a card when it is possible to match, look closer.")
         } else {    // Discard card
             val updatedPlayers = List(this.players(1), this.players.head.copy(
-                side = Deck(this.players.head.side.cards.appendedAll(this.matched.cards))
+                side = Deck(this.players.head.side.cards.appended(this.queued).appendedAll(this.matched.cards))
             ))
             GameStatePlanned(
                 deck = this.deck,
                 players = updatedPlayers,
                 board = Deck(this.board.cards.appended(this.queued)),
                 stdout = Some("Discarded drawn card."),
-                stderr = None,
-                displayType = DisplayType.SPOILER
+                stderr = None
             )
         }
     }
@@ -199,8 +173,7 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                         players = updatedPlayers,
                         board = Deck(this.board.cards.filterNot(c => c.month == this.queued.month)),
                         stdout = Some(s"Matched a whole month (${this.queued.month})."),
-                        stderr = None,
-                        displayType = DisplayType.SPOILER
+                        stderr = None
                     )
                 } else { // Default match
                     val updatedPlayers = List(this.players(1), this.players.head.copy(
@@ -213,8 +186,7 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                         players = updatedPlayers,
                         board = Deck(this.board.cards.patch(y - 1, Nil, 1)),
                         stdout = Some(s"Matched drawn card with $y."),
-                        stderr = None,
-                        displayType = DisplayType.SPOILER
+                        stderr = None
                     )
                 }
             } else { // Match is not valid (different months)

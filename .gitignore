@@ -31,7 +31,5 @@ Thumbs.db
 # BSP
 .bsp/
 
-# Sonarqube
 sonar-project.properties
 .scannerwork/
-sonarqube.sh
