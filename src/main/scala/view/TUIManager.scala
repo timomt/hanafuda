@@ -8,7 +8,7 @@ import model.{Card, CardName, CardType, Deck, GameState}
 * an object to manage the text user interface.
 * */
 object TUIManager extends Observer {
-    private val clearScreen: String = "\u001b[2J\u001b[3J\u001b[1;1H"
+    val clearScreen: String = "\u001b[2J\u001b[3J\u001b[1;1H"
     
     //TODO: spoiler protection
     /*
@@ -23,7 +23,7 @@ object TUIManager extends Observer {
     * def printBoard(...)
     * returns a String representation of the provided GameState.
     * */ //TODO: fix unlimited board size
-    private def printBoard(game: GameState): String = {
+    def printBoard(game: GameState): String = {
         val card = s"""╔══════╗
                       |║      ║
                       |║      ║
@@ -130,7 +130,7 @@ object TUIManager extends Observer {
     * def colorizeOverviewCard(...)
     * returns the colorized unicode representation of given card depending on who owns it.
     * */
-    private def colorizeOverviewCard(game: GameState, card: Card): List[String] = card match {
+    def colorizeOverviewCard(game: GameState, card: Card): List[String] = card match {
         case c if game.players.head.side.cards.contains(card) => c.unicode.map(line => s"\u001b[32m$line\u001b[0m")
         case c if game.players(1).side.cards.contains(card) => c.unicode.map(line => s"\u001b[31m$line\u001b[0m")
         case _ => card.unicode.map(line => s"\u001b[0m$line\u001b[0m")
