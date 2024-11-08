@@ -92,7 +92,7 @@ object GameController extends Observable {
     * matchCards()
     * */ //TODO: check for empy decks
          //TODO: check for koi-koi
-    def matchCards(game:GameState, xString: String, yString: String): GameState = {
+    private def matchCards(game:GameState, xString: String, yString: String): GameState = {
         val x = xString.toIntOption.getOrElse(0)
         val y = yString.toIntOption.getOrElse(0)
 
@@ -114,7 +114,7 @@ object GameController extends Observable {
     /*
     * handleMatchPlanned(..)
     * */
-    def handleMatchPlanned(game: GameState, x: Int, y: Int): GameState = {
+    private def handleMatchPlanned(game: GameState, x: Int, y: Int): GameState = {
         if (x == 0) {   // Auto discard is only possible in a random match
             updateGameStateWithError(game, "You have to specify which card to discard/match, see \"help\".")
         } else {
@@ -131,7 +131,7 @@ object GameController extends Observable {
     /*
     * updateGameStateWithError(..)
     * */
-    def updateGameStateWithError(game: GameState, errorMessage: String): GameState = {
+    private def updateGameStateWithError(game: GameState, errorMessage: String): GameState = {
         game.copy(stdout = None, stderr = Some(errorMessage))
     }
 
