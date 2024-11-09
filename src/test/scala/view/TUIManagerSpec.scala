@@ -102,7 +102,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
   }
 
   describe("update") {
-    it("should call printBoard and print the correct output for a given game state") {
+    it("should call printBoard and print the correct output for a game state") {
       val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
       val gameState = GameState(
         List(Player("Player1", Deck(List(card)), Deck(List(card)), 0), Player("Player2", Deck(List(card)), Deck(List(card)), 0)),
@@ -139,6 +139,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
       val result = TUIManager.printBoard(emptyGameState)
       assert(TUIManager.printBoard(emptyGameState) == result)
     }
+
     it("should update the TUI correctly for a non-empty game state") {
       val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
       val player1Deck = Deck(List(card))
@@ -327,15 +328,14 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
         None
       )
 
-      // colorizeOverviewCard method
       val resultPlayer1: List[String] = TUIManager.colorizeOverviewCard(gameState, player1.side.cards.head)
       val resultPlayer2: List[String] = TUIManager.colorizeOverviewCard(gameState, player2.side.cards.head)
 
-      // first player's card colored green
+      // green
       val expectedGreen = card.unicode.map(line => s"\u001b[32m$line\u001b[0m")
       resultPlayer1 shouldEqual expectedGreen
 
-      // the second player's card colored red
+      // red
       val expectedRed = card2.unicode.map(line => s"\u001b[31m$line\u001b[0m")
       resultPlayer2 shouldEqual expectedRed
 
