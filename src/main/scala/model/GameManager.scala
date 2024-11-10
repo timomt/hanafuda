@@ -1,7 +1,6 @@
 package model
 
 import scala.annotation.tailrec
-import scala.collection.immutable.List as name
 
 /*
 * object GameManager
