@@ -1,83 +1,48 @@
-import org.scalatest.funsuite.AnyFunSuite
-import model.{Card, CardMonth, CardName, CardType, Deck, GameState, Player}
-import view.TUIManager
-import controller.GameController
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import model.GameManager
+import model.{Card, CardMonth, CardName, CardType, Deck, GameManager, GameState, GameStatePlanned, Player}
+import view.TUIManager
+import controller.GameController
 
-class TUIManagerSpec extends AnyFunSpec with Matchers{
+class TUIManagerSpec extends AnyFunSpec with Matchers {
 
   GameController.add(TUIManager)
 
+  //this a testable and repeatable test Gamestate
+
+
   describe("printBoard") {
-    it("should handle queued card correctly") {
+    it("should print the board correctly") {
       val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
-      val gameState = GameState(
-        List(Player("Player1", Deck(List(card)), Deck(List(card)), 0), Player("Player2", Deck(List(card)), Deck(List(card)), 0)),
-        Deck(List(card)),
-        Deck(List(card)),
-        Deck(List(card)),
-        MatchType.PLANNED,
-        Some(card),
-        None,
-        None
+      val game = GameStatePlanned(
+        players = List(
+          Player("Test1", Deck(List(card)), Deck(List.empty), 0),
+          Player("Test2", Deck(List.empty), Deck(List.empty), 2)),
+        deck = Deck.defaultDeck(),
+        board = Deck(List.empty),
+        stdout = None,
+        stderr = None
       )
-      val result = TUIManager.printBoard(gameState)
+      val result = TUIManager.printBoard(game)
       assert(result.contains(card.unicode.mkString("\n")))
     }
 
-    it("should handle stdout correctly") {
-      val gameState = GameState(
-        List(Player("Player1", Deck(List.empty), Deck(List.empty), 0), Player("Player2", Deck(List.empty), Deck(List.empty), 0)),
-        Deck(List.empty),
-        Deck(List.empty),
-        Deck(List.empty),
-        MatchType.PLANNED,
-        None,
-        Some("Test stdout"),
-        None
-      )
-      val result = TUIManager.printBoard(gameState)
-      assert(result.contains("\n[]: Test stdout\n"))
-    }
+  it("should handle matched deck upper half correctly") {
+  val card1 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
+  val card2 = Card(CardMonth.FEBRUARY, CardType.TANE, CardName.NIGHTINGALE)
+  val game = GameStatePlanned(
+    players = List(
+      Player("Test1", Deck(List(card1)), Deck(List.empty), 0),
+      Player("Test2", Deck(List.empty), Deck(List.empty), 2)
+    ),
+    deck = Deck.defaultDeck(),
+    board = Deck(List.empty),
+    stdout = None,
+    stderr = None)
 
-    it("should handle stderr correctly") {
-      val gameState = GameState(
-        List(Player("Player1", Deck(List.empty), Deck(List.empty), 0), Player("Player2", Deck(List.empty), Deck(List.empty), 0)),
-        Deck(List.empty),
-        Deck(List.empty),
-        Deck(List.empty),
-        MatchType.PLANNED,
-        None,
-        None,
-        Some("Test stderr")
-      )
-      val result = TUIManager.printBoard(gameState)
-      assert(result.contains("\n[error]: Test stderr\n"))
-    }
-
-    it("should handle matched cards unicode correctly") {
-      val card1 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
-      val card2 = Card(CardMonth.FEBRUARY, CardType.TANE, CardName.NIGHTINGALE)
-      val gameState = GameState(
-        List(Player("Player1", Deck(List(card1)), Deck(List(card1)), 0), Player("Player2", Deck(List(card2)), Deck(List(card2)), 0)),
-        Deck(List(card1, card2)),
-        Deck(List(card1, card2)),
-        Deck(List(card1, card2)),
-        MatchType.PLANNED,
-        None,
-        None,
-        None
-      )
-
-      // Manually set the matched cards
-      val updatedGameState = gameState.copy(matched = Deck(List(card1, card2)))
-
-      val result = TUIManager.printBoard(updatedGameState)
-      val expectedUnicode = TUIManager.printBoard(updatedGameState)
-      assert(result.contains(expectedUnicode))
-    }
+  val result = TUIManager.printBoard(game)
+  assert(result.contains(card1.unicode.mkString("\n")))
+}
     it("should handle lower middle row cards correctly") {
       val card1 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
       val card2 = Card(CardMonth.FEBRUARY, CardType.TANE, CardName.NIGHTINGALE)
@@ -85,37 +50,74 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
       val card4 = Card(CardMonth.APRIL, CardType.TANE, CardName.CUCKOO)
       val card5 = Card(CardMonth.MAY, CardType.TANE, CardName.BRIDGE)
 
-      val gameState = GameState(
+      val gameState = GameStatePlanned(
         List(Player("Player1", Deck(List(card1)), Deck(List(card1)), 0), Player("Player2", Deck(List(card2)), Deck(List(card2)), 0)),
         Deck(List(card1, card2, card3, card4, card5)),
         Deck(List(card1, card2, card3, card4, card5)),
-        Deck(List(card1, card2, card3, card4, card5)),
-        MatchType.PLANNED,
-        None,
         None,
         None
       )
 
       val result = TUIManager.printBoard(gameState)
-      assert(result.contains(result))
+      assert(result.contains(card1.unicode.mkString("\n")))
+    }
+
+    it("should handle matched deck lower half correctly") {
+      val card1 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
+      val card2 = Card(CardMonth.FEBRUARY, CardType.TANE, CardName.NIGHTINGALE)
+      val game = GameStatePlanned(
+        players = List(
+          Player("Test1", Deck(List(card2)), Deck(List.empty), 0),
+          Player("Test2", Deck(List.empty), Deck(List.empty), 2)),
+        deck = Deck.defaultDeck(),
+        board = Deck(List.empty),
+        stdout = None,
+        stderr = None
+      )
+      val result = TUIManager.printBoard(game)
+      assert(result.contains(card2.unicode.mkString("\n")))
+    }
+
+    it("should handle stdout correctly") {
+      val game = GameStatePlanned(
+        players = List(
+          Player("Test1", Deck(List.empty), Deck(List.empty), 0),
+          Player("Test2", Deck(List.empty), Deck(List.empty), 2)),
+        deck = Deck.defaultDeck(),
+        board = Deck(List.empty),
+        stdout = Some("Test stdout"),
+        stderr = None
+      )
+      val result = TUIManager.printBoard(game)
+      assert(result.contains("\n[]: Test stdout\n"))
+    }
+
+    it("should handle stderr correctly") {
+      val game = GameStatePlanned(
+        players = List(
+          Player("Test1", Deck(List.empty), Deck(List.empty), 0),
+          Player("Test2", Deck(List.empty), Deck(List.empty), 2)),
+        deck = Deck.defaultDeck(),
+        board = Deck(List.empty),
+        stdout = None,
+        stderr = Some("Test stderr")
+      )
+      val result = TUIManager.printBoard(game)
+      assert(result.contains("\n[error]: Test stderr\n"))
     }
   }
 
   describe("update") {
     it("should call printBoard and print the correct output for a game state") {
       val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
-      val gameState = GameState(
+      val gameState = GameStatePlanned(
         List(Player("Player1", Deck(List(card)), Deck(List(card)), 0), Player("Player2", Deck(List(card)), Deck(List(card)), 0)),
         Deck(List(card)),
         Deck(List(card)),
-        Deck(List(card)),
-        MatchType.PLANNED,
-        None,
         None,
         None
       )
 
-      // printed output to the console
       val outputStream = new java.io.ByteArrayOutputStream()
       Console.withOut(outputStream) {
         TUIManager.update(gameState)
@@ -126,13 +128,10 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
     }
 
     it("should update the TUI correctly for an empty game state") {
-      val emptyGameState = GameState(
+      val emptyGameState = GameStatePlanned(
         List(Player("Player1", Deck(List.empty), Deck(List.empty), 0), Player("Player2", Deck(List.empty), Deck(List.empty), 0)),
         Deck(List.empty),
         Deck(List.empty),
-        Deck(List.empty),
-        MatchType.PLANNED,
-        None,
         None,
         None
       )
@@ -144,13 +143,10 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
       val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
       val player1Deck = Deck(List(card))
       val player2Deck = Deck(List(card))
-      val gameState = GameState(
+      val gameState = GameStatePlanned(
         List(Player("Player1", player1Deck, player1Deck, 0), Player("Player2", player2Deck, player2Deck, 0)),
         Deck(List(card)),
         Deck(List(card)),
-        Deck(List(card)),
-        MatchType.PLANNED,
-        None,
         None,
         None
       )
@@ -206,11 +202,9 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
 
   describe("printOverview") {
     it("should printOverview/ combinations correctly") {
-      // Call the printOverview method
       val gameState = GameManager.newGame("Player1", "Player2")
       val result: String = TUIManager.printOverview(gameState)
 
-      // Strip ANSI escape codes from the result
       val strippedResult = result.replaceAll("\u001B\\[[;\\d]*m", "").replaceAll("\u001B\\[\\d+J", "").replaceAll("\u001B\\[\\d+;\\d+H", "")
 
       val expectedOutput: String =
@@ -312,18 +306,14 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
 
   describe("colorizeOverviewCard") {
     it("should colorize the cards correctly for each player") {
-      // Create two players each with one card in their deck
       val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
       val card2 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PHOENIX)
       val player1 = Player("Player1", Deck(List(card)), Deck(List(card)), 0)
       val player2 = Player("Player2", Deck(List(card2)), Deck(List(card2)), 0)
-      val gameState = GameState(
+      val gameState = GameStatePlanned(
         List(player1, player2),
         Deck(List(card)),
         Deck(List(card)),
-        Deck(List(card)),
-        MatchType.PLANNED,
-        None,
         None,
         None
       )
@@ -331,15 +321,12 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
       val resultPlayer1: List[String] = TUIManager.colorizeOverviewCard(gameState, player1.side.cards.head)
       val resultPlayer2: List[String] = TUIManager.colorizeOverviewCard(gameState, player2.side.cards.head)
 
-      // green
       val expectedGreen = card.unicode.map(line => s"\u001b[32m$line\u001b[0m")
       resultPlayer1 shouldEqual expectedGreen
 
-      // red
       val expectedRed = card2.unicode.map(line => s"\u001b[31m$line\u001b[0m")
       resultPlayer2 shouldEqual expectedRed
 
-      // without ANSI codes the text should remain the same
       val strippedResultPlayer1 = resultPlayer1.map(_.replaceAll("\u001B\\[[;\\d]*m", ""))
       val strippedResultPlayer2 = resultPlayer2.map(_.replaceAll("\u001B\\[[;\\d]*m", ""))
 
@@ -348,8 +335,6 @@ class TUIManagerSpec extends AnyFunSpec with Matchers{
 
       strippedResultPlayer1 shouldEqual expectedOutputPlayer1
       strippedResultPlayer2 shouldEqual expectedOutputPlayer2
-
-      //test
     }
   }
 }
