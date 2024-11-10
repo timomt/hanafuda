@@ -1,11 +1,10 @@
 package controller
 
 import controller.GameController.notifyObservers
-import model.CardMonth.MARCH
-import model.CardName.CURTAIN
-import model.CardType.HIKARI
-import model.{Card, Deck, GameManager, GameState, Player}
+import model.{GameManager, GameState}
 import view.TUIManager
+
+// TODO: outsource all TUIManager calls into TUIManager update
 
 /*
 * MVC: Controller

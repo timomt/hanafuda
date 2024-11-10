@@ -1,7 +1,5 @@
 package model
 
-import scala.collection.immutable.List as game
-
 /*
 * case class Player(...)
 * name:= Name of the player
@@ -83,12 +81,12 @@ case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, stdo
                 val (updatedQueued, updatedDeck) = Deck.poll(this.deck)
                 if (this.board.cards(y - 1).grouped) { // Collect a whole month
                     val updatedPlayers = List(this.players.head.copy(
-                        hand = Deck(this.players.head.hand.cards.patch(x - 1, Nil, 0)),
+                        hand = Deck(this.players.head.hand.cards.patch(x - 1, Nil, 1)),
                         side = Deck(List(this.players.head.hand.cards(x - 1)).appendedAll(this.board.cards.filter(c => c.month == this.players.head.hand.cards(x - 1).month)))
                     ), this.players(1))
                     GameStateRandom(
                         players = updatedPlayers,
-                        board = Deck(this.board.cards.filterNot(c => c.month == this.players.head.hand.cards(x - 1))),
+                        board = Deck(this.board.cards.filterNot(c => c.month == this.players.head.hand.cards(x - 1).month)),
                         stdout = Some(s"Matched a whole month (${this.players.head.hand.cards(x - 1).month})."),
                         stderr = None,
                         deck = updatedDeck,
@@ -138,7 +136,7 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
             updateGameStateWithError("You can not discard a card when it is possible to match, look closer.")
         } else {    // Discard card
             val updatedPlayers = List(this.players(1), this.players.head.copy(
-                side = Deck(this.players.head.side.cards.appended(this.queued).appendedAll(this.matched.cards))
+                side = Deck(this.players.head.side.cards.appendedAll(this.matched.cards))
             ))
             GameStatePlanned(
                 deck = this.deck,

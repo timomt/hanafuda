@@ -1,5 +1,5 @@
 import org.scalatest.funsuite.AnyFunSuite
-import model.{Card, CardMonth, CardName, CardType, Deck, GameState, MatchType, Player}
+import model.{Card, CardMonth, CardName, CardType, Deck, GameState, Player}
 import view.TUIManager
 import controller.GameController
 import org.scalatest.funspec.AnyFunSpec
