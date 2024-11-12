@@ -16,14 +16,14 @@ object GameController extends Observable {
     * gameState
     * the current state of the game operated by this object.
     * */
-    private var gameState: Option[GameState] = None
+    /*private*/ var gameState: Option[GameState] = None
 
     /*
     * def newGame()
     * initializes/overwrites this objects gameState with a default game
     * and notifies observers of the new GameState.
     * */
-    private def newGame(firstPlayer: String, secondPlayer: String): Unit = {
+    /*private*/ def newGame(firstPlayer: String, secondPlayer: String): Unit = {
         gameState = Some(GameManager.newGame(firstPlayer, secondPlayer))
         notifyObservers(gameState.get)
     }
