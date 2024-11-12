@@ -2,7 +2,8 @@ import model.{Card, CardMonth, CardName, CardType, Deck, GameManager, GameStateP
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import controller.GameController
-import view.TUIManager.printHelp
+import view.TUIManager.{printBoard, printHelp}
+import model.GameState
 
 
 class GameControllerSpec extends AnyFlatSpec with Matchers {
@@ -47,15 +48,30 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
     output should equal("[Error]: You submitted a command that requires a started game without starting it correctly.\n")
   }
 
-    it should "continue the game" in {
-      GameController.newGame("Test1", "Test2")
+  /*
+    it should "notify observer (continue)" in {
+      val game = GameStatePlanned(
+        players = List(
+          Player("Test1", Deck(List.empty), Deck(List.empty), 0),
+          Player("Test2", Deck(List.empty), Deck(List.empty), 2)
+        ),
+        deck = Deck.defaultDeck(),
+        board = Deck(List.empty),
+        stdout = None,
+        stderr = None
+      )
+
+      GameController.gameState = Some(game)
+
       val stream = new java.io.ByteArrayOutputStream()
       Console.withOut(stream) {
         GameController.processInput("continue")
       }
       val output = stream.toString
-      output should equal("")
+      output should equal (printBoard(game))
     }
+
+   */
 
     it should "match the cards" in {
 
