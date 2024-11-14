@@ -1,10 +1,7 @@
 package controller
 
 import controller.GameController.notifyObservers
-import model.{GameManager, GameState}
-import view.TUIManager
-
-// TODO: outsource all TUIManager calls into TUIManager update
+import model.{DisplayType, GameManager, GameState}
 
 /*
 * MVC: Controller
@@ -36,7 +33,8 @@ object GameController extends Observable {
     * */
     def processInput(input: String): Unit = input match {
         case "help" =>
-            print(TUIManager.printHelp())
+            gameState = Some(gameState.get.updateGameStateWithDisplayType(DisplayType.HELP))
+            notifyObservers(gameState.get)
 
         case "exit" =>
             sys.exit(0)
@@ -49,6 +47,7 @@ object GameController extends Observable {
 
         // All following cases assert gameState is Some
         case "continue" =>
+            gameState = Some(gameState.get.updateGameStateWithDisplayType(DisplayType.GAME))
             notifyObservers(gameState.get)
 
         case s"match $x $y" =>
@@ -67,29 +66,16 @@ object GameController extends Observable {
             gameState = Some(gameState.get.handleDiscard("0"))
             notifyObservers(gameState.get)
 
-        case "new" => {
+        case "new" => 
             gameState = Some(GameManager.newGame(gameState.get.players.head.name, gameState.get.players(1).name))
             notifyObservers(gameState.get)
-        }
-        /*
-        case "test colors" =>
-            val updatedFirstPlayer = gameState.get.players.head.copy(side = gameState.get.players.head.side.copy(cards = gameState.get.players.head.side.cards :+ Card(MARCH, HIKARI, CURTAIN, false)))
-            val newPlayersList = gameState.get.players.tail :+ updatedFirstPlayer
-            //val newPlayersList = updatedFirstPlayer :: gameState.players.tail
-            val newState = GameState(newPlayersList, gameState.get.deck, gameState.get.board, gameState.get.matched, MatchType.RANDOM, None, None, None)
-            println(TUIManager.printOverview(newState))*/
 
         case "combinations" =>
-            println(TUIManager.printOverview(gameState.get))
+            gameState = Some(gameState.get.updateGameStateWithDisplayType(DisplayType.COMBINATIONS))
+            notifyObservers(gameState.get)
 
         case _ =>
             gameState = Some(gameState.get.updateGameStateWithError("Wrong usage, see \"help\"."))
             notifyObservers(gameState.get)
     }
-
-    /*
-    * TODO: implement def evaluateScore(...)
-    *  Evaluates the highest possible score of each player and returns a tuple of the result.
-    *  The first tuple value is the score of the player of the current turn (game.players[0])*/
-    //def evaluateScore(game: GameState): (Int, Int) = {}*/
 }

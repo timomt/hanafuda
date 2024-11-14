@@ -44,7 +44,8 @@ object GameManager {
                 deck = updatedDeck,
                 board = Deck(actualBoard),
                 stdout = None,
-                stderr = None
+                stderr = None,
+                displayType = DisplayType.GAME
             )
         }
     }
