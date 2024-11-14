@@ -69,7 +69,6 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     stdout = None,
     stderr = None
   )
-  println(gameState)
 
   describe("printBoard") {
     it("should print the board correctly") {
