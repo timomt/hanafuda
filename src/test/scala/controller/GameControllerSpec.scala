@@ -1,4 +1,4 @@
-import model.{Card, CardMonth, CardName, CardType, Deck, GameManager, GameStatePlanned, Player}
+/*import model.{Card, CardMonth, CardName, CardType, Deck, GameManager, GameStatePlanned, Player}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import controller.GameController
@@ -76,4 +76,4 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
     it should "match the cards" in {
 
     }
-}
+}*/

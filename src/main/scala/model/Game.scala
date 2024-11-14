@@ -29,6 +29,14 @@ trait GameState {
     def handleMatch(xS: String, yS: String): GameState
     def handleDiscard(xS: String): GameState
     def updateGameStateWithError(errorMessage: String): GameState
+    /*TODO
+    * def evaluateScore()
+    * returns a tuple representation of the current maximum score of this GameState.
+    * the first element belongs to players.head, the second to players(1).
+    * */
+    def evaluateScore(): (Int, Int) = {
+        ???
+    }
 }
 
 case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, stdout: Option[String], stderr: Option[String]) extends GameState {

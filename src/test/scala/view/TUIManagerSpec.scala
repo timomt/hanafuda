@@ -1,6 +1,6 @@
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import model.{Card, CardMonth, CardName, CardType, Deck, GameManager, GameState, GameStatePlanned, Player}
+import model.{Card, CardMonth, CardName, CardType, Deck, GameManager, GameStatePlanned, Player}
 import view.TUIManager
 import controller.GameController
 
