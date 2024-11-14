@@ -160,6 +160,107 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
       assert(TUIManager.printBoard(game) == actualOutput)
     }
 
+    it("print board with matched cards correctly") {
+      val game = GameStateRandom(
+        players = List(
+          Player(
+            name = "Test1",
+            hand = player1Deck,
+            side = Deck(List.empty),
+            score = 0
+          ),
+          Player(
+            name = "Test2",
+            hand = player2Deck,
+            side = Deck(List.empty),
+            score = 0
+          )
+        ),
+        deck = Deck.defaultDeck(),
+        board = tableDeck,
+        matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN))),
+        queued = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN),
+        stdout = None,
+        stderr = None
+      )
+      val actualOutput =
+        "\u001b[2J\u001b[3J\u001b[1;1HCurrent player: Test1\n" +
+          "╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝\n" +
+          "\n" +
+          "╔══════╗          ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗         \n" +
+          "║ Jan. ║          ║ May  ║ ║ May  ║ ║ May  ║ ║ May  ║         \n" +
+          "║Hikari║          ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║         \n" +
+          "║Plane ║          ║Bridge║ ║Plane ║ ║Plane ║ ║Plane ║         \n" +
+          "╚══════╝          ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝         \n" +
+          "                  ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗          ╔══════╗\n" +
+          "                  ║ Jun. ║ ║ Jun. ║ ║ Jun. ║ ║ Jun. ║          ║ Jan. ║\n" +
+          "                  ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║          ║Hikari║\n" +
+          "                  ║Butter║ ║Bl_tan║ ║Plane ║ ║Plane ║          ║Plane ║\n" +
+          "                  ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝          ╚══════╝\n" +
+          "\n" +
+          "╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗\n" +
+          "║ Jan. ║ ║ Jan. ║ ║ Jan. ║ ║ Jan. ║ ║ Feb. ║ ║ Feb. ║ ║ Feb. ║ ║ Feb. ║\n" +
+          "║Hikari║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║ ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║\n" +
+          "║Crane ║ ║Po_tan║ ║Plane ║ ║Plane ║ ║Night.║ ║Po_tan║ ║Plane ║ ║Plane ║\n" +
+          "╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝"
+      assert(TUIManager.printBoard(game) == actualOutput)
+    }
+
+    it("print board with two matched cards correctly") {
+      val matched_deck = Deck(List(Deck.defaultDeck().cards(1),
+                                   Deck.defaultDeck().cards(2)))
+      val game = GameStateRandom(
+        players = List(
+          Player(
+            name = "Test1",
+            hand = player1Deck,
+            side = Deck(List.empty),
+            score = 0
+          ),
+          Player(
+            name = "Test2",
+            hand = player2Deck,
+            side = Deck(List.empty),
+            score = 0
+          )
+        ),
+        deck = Deck.defaultDeck(),
+        board = tableDeck,
+        matched = matched_deck,
+        queued = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN),
+        stdout = None,
+        stderr = None
+      )
+      val actualOutput =
+        "\u001b[2J\u001b[3J\u001b[1;1HCurrent player: Test1\n" +
+          "╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝\n" +
+          "\n" +
+          "╔══════╗          ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗          ╔══════╗\n" +
+          "║ Jan. ║          ║ May  ║ ║ May  ║ ║ May  ║ ║ May  ║          ║ Jan. ║\n" +
+          "║Hikari║          ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║          ║Tanz. ║\n" +
+          "║Plane ║          ║Bridge║ ║Plane ║ ║Plane ║ ║Plane ║          ║Po_tan║\n" +
+          "╚══════╝          ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝          ╚══════╝\n" +
+          "                  ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗          ╔══════╗\n" +
+          "                  ║ Jun. ║ ║ Jun. ║ ║ Jun. ║ ║ Jun. ║          ║ Jan. ║\n" +
+          "                  ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║          ║ Kasu ║\n" +
+          "                  ║Butter║ ║Bl_tan║ ║Plane ║ ║Plane ║          ║Plane ║\n" +
+          "                  ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝          ╚══════╝\n" +
+          "\n" +
+          "╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗\n" +
+          "║ Jan. ║ ║ Jan. ║ ║ Jan. ║ ║ Jan. ║ ║ Feb. ║ ║ Feb. ║ ║ Feb. ║ ║ Feb. ║\n" +
+          "║Hikari║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║ ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║\n" +
+          "║Crane ║ ║Po_tan║ ║Plane ║ ║Plane ║ ║Night.║ ║Po_tan║ ║Plane ║ ║Plane ║\n" +
+          "╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝"
+      assert(TUIManager.printBoard(game) == actualOutput)
+    }
 
     it("should handle stdout correctly") {
       val game = GameStatePlanned(
@@ -280,6 +381,39 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
             |""".stripMargin
 
       assert(TUIManager.printHelp() == expectedHelpText)
+    }
+  }
+
+  describe("printSpoiler") {
+    it("should print the spoiler text correctly") {
+      val expectedSpoilerText =
+        "\u001b[2J\u001b[3J\u001b[1;1H" +
+          """
+            |╔════════════════════════════════════════════════════════════════════════╗
+            |║                          Spoiler Protection                            ║
+            |╠════════════════════════════════════════════════════════════════════════╣
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                  Type "continue" to advance the game                   ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |╚════════════════════════════════════════════════════════════════════════╝
+            |""".stripMargin
+
+      assert(TUIManager.printSpoiler() == expectedSpoilerText)
     }
   }
 
