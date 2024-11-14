@@ -1,6 +1,6 @@
 package view
 import controller.Observer
-import model.{Card, CardName, CardType, Deck, GameState}
+import model.{Card, CardName, CardType, Deck, GameState, DisplayType}
 
 /*
 * MVC: View
@@ -16,7 +16,11 @@ object TUIManager extends Observer {
     * updates the TUI according to the current GameState.
     * */
     override def update(gameState: GameState): Unit = {
-        println(printBoard(gameState))
+        gameState.displayType match
+            case DisplayType.GAME => println(printBoard(gameState))
+            case DisplayType.COMBINATIONS => println(printOverview(gameState))
+            case DisplayType.HELP => println(printHelp())
+            case DisplayType.SPOILER => println(printSpoiler())
     }
     
     /*
@@ -76,7 +80,8 @@ object TUIManager extends Observer {
     * */
     def printHelp(): String = {
         val helpText =
-            clearScreen + """
+            clearScreen +
+            """
               |╔════════════════════════════════════════════════════════════════════════╗
               |║                                Hanafuda Help                           ║
               |╠════════════════════════════════════════════════════════════════════════╣
@@ -91,20 +96,54 @@ object TUIManager extends Observer {
               |║ 2. match <x> <y>                                                       ║
               |║    - Matches cards at positions x and y on the board.                  ║
               |║                                                                        ║
-              |║ 3. test colors                                                         ║
-              |║    - Tests the colors of the cards.                                    ║
+              |║ 3. discard [<x>]                                                       ║
+              |║    - discard card at given number.                                     ║
+              |║    - argument x is only to be provided when discarding from hand       ║
               |║                                                                        ║
-              |║ 4. combinations                                                        ║
+              |║ 4. new                                                                 ║
+              |║    - takes player names and creates a new game from scratch            ║
+              |║                                                                        ║
+              |║ 5. combinations                                                        ║
               |║    - Displays the possible combinations of cards.                      ║
               |║                                                                        ║
-              |║ 5. help                                                                ║
+              |║ 6. help                                                                ║
               |║    - Displays this help page.                                          ║
               |║                                                                        ║
-              |║ 6. exit                                                                ║
+              |║ 7. exit                                                                ║
               |║    - Exits the game.                                                   ║
               |║                                                                        ║
               |╚════════════════════════════════════════════════════════════════════════╝
               |""".stripMargin
+        helpText
+    }
+
+    def printSpoiler(): String = {
+        val helpText =
+            clearScreen +
+              """
+                |╔════════════════════════════════════════════════════════════════════════╗
+                |║                          Spoiler Protection                            ║
+                |╠════════════════════════════════════════════════════════════════════════╣
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                  Type "continue" to advance the game                   ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |╚════════════════════════════════════════════════════════════════════════╝
+                |""".stripMargin
         helpText
     }
 
