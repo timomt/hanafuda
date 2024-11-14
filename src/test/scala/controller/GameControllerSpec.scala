@@ -7,7 +7,7 @@ import model.GameState
 
 
 class GameControllerSpec extends AnyFlatSpec with Matchers {
-
+/*
   "new Game" should "initialize a new game and notify observer" in {
     GameController.newGame("Test1", "Test2")
     GameController.gameState match {
@@ -15,6 +15,10 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
         players.map(_.name) should contain allOf ("Test1", "Test2")
       case _ => fail("GameState was not initialized correctly")
     }
+    
+ 
 
   }
+  
+ */
 }

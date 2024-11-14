@@ -3,6 +3,7 @@ import org.scalatest.matchers.should.Matchers
 import model.{Card, CardMonth, CardName, CardType, Deck, GameManager, GameState, GameStatePlanned, GameStateRandom, Player}
 import view.TUIManager
 import controller.GameController
+import controller.GameController.gameState
 
 class TUIManagerSpec extends AnyFunSpec with Matchers {
 
@@ -58,6 +59,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
 }
    */
 
+  /*
   //this is a testable and repeatable test Gamestate
   val gameState = GameStatePlanned(
     List(
@@ -70,6 +72,46 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     stderr = None
   )
   println(gameState)
+
+  describe("update") {
+    it("should output game") {
+      val outputStream = new java.io.ByteArrayOutputStream()
+      Console.withOut(outputStream) {
+        TUIManager.update(gameState)
+      }
+      val expectedOutput = TUIManager.printBoard(gameState) + "\n"
+      assert(outputStream.toString == expectedOutput)
+    }
+
+    it("should output combinations") {
+      val outputStream = new java.io.ByteArrayOutputStream()
+      Console.withOut(outputStream) {
+        TUIManager.update(gameState)
+      }
+      val expectedOutput = TUIManager.printOverview(gameState) + "\n"
+      assert(outputStream.toString == expectedOutput)
+    }
+
+    it("should output help") {
+      val outputStream = new java.io.ByteArrayOutputStream()
+      Console.withOut(outputStream) {
+        TUIManager.update(gameState)
+      }
+      val expectedOutput = TUIManager.printHelp() + "\n"
+      assert(outputStream.toString == expectedOutput)
+    }
+
+    it("should output spoiler") {
+      val outputStream = new java.io.ByteArrayOutputStream()
+      Console.withOut(outputStream) {
+        TUIManager.printSpoiler()
+      }
+      val expectedOutput = TUIManager.clearScreen + TUIManager.printSpoiler() + "\n"
+      assert(outputStream.toString == expectedOutput)
+    }
+
+  }
+   */
 
   describe("printBoard") {
     it("should print the board correctly") {
@@ -296,10 +338,10 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
       val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
       val gameState = GameStatePlanned(
         List(Player("Player1", Deck(List(card)), Deck(List(card)), 0), Player("Player2", Deck(List(card)), Deck(List(card)), 0)),
-        Deck(List(card)),
-        Deck(List(card)),
-        None,
-        None
+        deck = Deck(List(card)),
+        board = Deck(List(card)),
+        stdout = None,
+        stderr = None
       )
 
       val outputStream = new java.io.ByteArrayOutputStream()
@@ -314,10 +356,10 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     it("should update the TUI correctly for an empty game state") {
       val emptyGameState = GameStatePlanned(
         List(Player("Player1", Deck(List.empty), Deck(List.empty), 0), Player("Player2", Deck(List.empty), Deck(List.empty), 0)),
-        Deck(List.empty),
-        Deck(List.empty),
-        None,
-        None
+        deck = Deck(List.empty),
+        board = Deck(List.empty),
+        stdout = None,
+        stderr = None
       )
       val result = TUIManager.printBoard(emptyGameState)
       assert(TUIManager.printBoard(emptyGameState) == result)
@@ -329,10 +371,10 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
       val player2Deck = Deck(List(card))
       val gameState = GameStatePlanned(
         List(Player("Player1", player1Deck, player1Deck, 0), Player("Player2", player2Deck, player2Deck, 0)),
-        Deck(List(card)),
-        Deck(List(card)),
-        None,
-        None
+        deck = Deck(List(card)),
+        board = Deck(List(card)),
+        stdout = None,
+        stderr = None
       )
       val result = TUIManager.printBoard(gameState)
       assert(TUIManager.printBoard(gameState) == result)
@@ -365,16 +407,20 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
             |║ 2. match <x> <y>                                                       ║
             |║    - Matches cards at positions x and y on the board.                  ║
             |║                                                                        ║
-            |║ 3. test colors                                                         ║
-            |║    - Tests the colors of the cards.                                    ║
+            |║ 3. discard [<x>]                                                       ║
+            |║    - discard card at given number.                                     ║
+            |║    - argument x is only to be provided when discarding from hand       ║
             |║                                                                        ║
-            |║ 4. combinations                                                        ║
+            |║ 4. new                                                                 ║
+            |║    - takes player names and creates a new game from scratch            ║
+            |║                                                                        ║
+            |║ 5. combinations                                                        ║
             |║    - Displays the possible combinations of cards.                      ║
             |║                                                                        ║
-            |║ 5. help                                                                ║
+            |║ 6. help                                                                ║
             |║    - Displays this help page.                                          ║
             |║                                                                        ║
-            |║ 6. exit                                                                ║
+            |║ 7. exit                                                                ║
             |║    - Exits the game.                                                   ║
             |║                                                                        ║
             |╚════════════════════════════════════════════════════════════════════════╝
@@ -419,7 +465,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
 
   describe("printOverview") {
     it("should printOverview/ combinations correctly") {
-      //val gameState = GameManager.newGame("Player1", "Player2")
+      val gameState = GameManager.newGame("Player1", "Player2")
       val result: String = TUIManager.printOverview(gameState)
 
       val strippedResult = result.replaceAll("\u001B\\[[;\\d]*m", "").replaceAll("\u001B\\[\\d+J", "").replaceAll("\u001B\\[\\d+;\\d+H", "")
@@ -529,10 +575,10 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
       val player2 = Player("Player2", Deck(List(card2)), Deck(List(card2)), 0)
       val gameState = GameStatePlanned(
         List(player1, player2),
-        Deck(List(card)),
-        Deck(List(card)),
-        None,
-        None
+        deck = Deck(List(card)),
+        board = Deck(List(card)),
+        stdout = None,
+        stderr = None
       )
 
       val resultPlayer1: List[String] = TUIManager.colorizeOverviewCard(gameState, player1.side.cards.head)
