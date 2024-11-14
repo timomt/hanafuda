@@ -66,7 +66,7 @@ object GameController extends Observable {
             gameState = Some(gameState.get.handleDiscard("0"))
             notifyObservers(gameState.get)
 
-        case "new" => 
+        case "new" =>
             gameState = Some(GameManager.newGame(gameState.get.players.head.name, gameState.get.players(1).name))
             notifyObservers(gameState.get)
 
