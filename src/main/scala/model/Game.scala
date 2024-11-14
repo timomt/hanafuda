@@ -28,14 +28,14 @@ trait GameState {
     def board: Deck
     def stdout: Option[String]
     def stderr: Option[String]
-    def displayType: DisplayType = DisplayType.GAME
+    def displayType: DisplayType
     def matchedDeck: Option[Deck] = None
     def queuedCard: Option[Card] = None
     def handleMatch(xS: String, yS: String): GameState
     def handleDiscard(xS: String): GameState
     def updateGameStateWithError(errorMessage: String): GameState
     def updateGameStateWithDisplayType(display: DisplayType): GameState
-    
+
     /*TODO
     * def evaluateScore()
     * returns a tuple representation of the current maximum score of this GameState.
@@ -46,7 +46,7 @@ trait GameState {
     }
 }
 
-case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, displayType: DisplayType, stdout: Option[String], stderr: Option[String]) extends GameState {
+case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, displayType: DisplayType = DisplayType.GAME, stdout: Option[String], stderr: Option[String]) extends GameState {
     /*
     * updateGameStateWithError(..)
     * */
@@ -137,7 +137,7 @@ case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, disp
     }
 }
 
-case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, matched: Deck, queued: Card, displayType: DisplayType, stdout: Option[String], stderr: Option[String]) extends GameState {
+case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, matched: Deck, queued: Card, displayType: DisplayType = DisplayType.GAME, stdout: Option[String], stderr: Option[String]) extends GameState {
     /*
     * override class specific values
     * */
@@ -147,7 +147,7 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
     def updateGameStateWithDisplayType(display: DisplayType): GameState = {
         this.copy(displayType = display)
     }
-    
+
     /*
     * updateGameStateWithError(..)
     * */
