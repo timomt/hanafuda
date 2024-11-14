@@ -72,38 +72,62 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
   println(gameState)
 
   describe("printBoard") {
-  it("should print the board correctly") {
+    it("should print the board correctly") {
+      val game = GameStatePlanned(
+        players = List(
+          Player("Test1", player1Deck, Deck(List.empty), 0),
+          Player("Test2", player2Deck, Deck(List.empty), 2)
+        ),
+        deck = Deck.defaultDeck(),
+        board = tableDeck,
+        stdout = None,
+        stderr = None
+      )
+      val actualOutput =
+        "\u001b[2J\u001b[3J\u001b[1;1HCurrent player: Test1\n" +
+          "╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝\n" +
+          "\n" +
+          "                  ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗                           \n" +
+          "                  ║ May  ║ ║ May  ║ ║ May  ║ ║ May  ║                           \n" +
+          "                  ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║                           \n" +
+          "                  ║Bridge║ ║Plane ║ ║Plane ║ ║Plane ║                           \n" +
+          "                  ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝                           \n" +
+          "                  ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗                           \n" +
+          "                  ║ Jun. ║ ║ Jun. ║ ║ Jun. ║ ║ Jun. ║                           \n" +
+          "                  ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║                           \n" +
+          "                  ║Butter║ ║Bl_tan║ ║Plane ║ ║Plane ║                           \n" +
+          "                  ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝                           \n" +
+          "\n" +
+          "╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗\n" +
+          "║ Jan. ║ ║ Jan. ║ ║ Jan. ║ ║ Jan. ║ ║ Feb. ║ ║ Feb. ║ ║ Feb. ║ ║ Feb. ║\n" +
+          "║Hikari║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║ ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║\n" +
+          "║Crane ║ ║Po_tan║ ║Plane ║ ║Plane ║ ║Night.║ ║Po_tan║ ║Plane ║ ║Plane ║\n" +
+          "╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝"
+      assert(TUIManager.printBoard(game) == actualOutput)
+    }
+
+
+
+    it("should handle matched deck upper half correctly") {
+    val card1 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
+    val card2 = Card(CardMonth.FEBRUARY, CardType.TANE, CardName.NIGHTINGALE)
     val game = GameStatePlanned(
       players = List(
-        Player("Test1", player1Deck, Deck(List.empty), 0),
-        Player("Test2", player2Deck, Deck(List.empty), 2)
+        Player("Test1", Deck(List(card1)), Deck(List.empty), 0),
+        Player("Test2", Deck(List.empty), Deck(List.empty), 2)
       ),
       deck = Deck.defaultDeck(),
       board = Deck(List.empty),
       stdout = None,
-      stderr = None
-    )
+      stderr = None)
+
     val result = TUIManager.printBoard(game)
-    //assert(result.contains(card.unicode.mkString("\n")))
+    assert(result.contains(card1.unicode.mkString("\n")))
   }
-
-
-  it("should handle matched deck upper half correctly") {
-  val card1 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
-  val card2 = Card(CardMonth.FEBRUARY, CardType.TANE, CardName.NIGHTINGALE)
-  val game = GameStatePlanned(
-    players = List(
-      Player("Test1", Deck(List(card1)), Deck(List.empty), 0),
-      Player("Test2", Deck(List.empty), Deck(List.empty), 2)
-    ),
-    deck = Deck.defaultDeck(),
-    board = Deck(List.empty),
-    stdout = None,
-    stderr = None)
-
-  val result = TUIManager.printBoard(game)
-  assert(result.contains(card1.unicode.mkString("\n")))
-}
     it("should handle lower middle row cards correctly") {
       val card1 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
       val card2 = Card(CardMonth.FEBRUARY, CardType.TANE, CardName.NIGHTINGALE)
