@@ -447,7 +447,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
             |║ 1. start <firstPlayer> <secondPlayer>                                  ║
             |║    - Starts a new game with the given player names.                    ║
             |║                                                                        ║
-            |║ 2. continue                                                            ║
+            |║ 2. continue [shortcut "con"]                                           ║
             |║    - return to the current game.                                       ║
             |║                                                                        ║
             |║ 2. match <x> <y>                                                       ║
@@ -460,7 +460,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
             |║ 4. new                                                                 ║
             |║    - takes player names and creates a new game from scratch            ║
             |║                                                                        ║
-            |║ 5. combinations                                                        ║
+            |║ 5. combinations [shortcut "com"]                                       ║
             |║    - Displays the possible combinations of cards.                      ║
             |║                                                                        ║
             |║ 6. help                                                                ║
