@@ -21,7 +21,6 @@ class GameManagerSpec extends AnyFlatSpec {
                 Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
                 Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
                 Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR))))
-        println(game)
         assert(game.board.cards.groupBy(_.month).forall((_, list) => list.size < 4))
     }
     
