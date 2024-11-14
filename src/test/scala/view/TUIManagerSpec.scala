@@ -1,6 +1,6 @@
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import model.{Card, CardMonth, CardName, CardType, Deck, GameManager, GameStatePlanned, Player}
+import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameManager, GameState, GameStatePlanned, GameStateRandom, Player}
 import view.TUIManager
 import controller.GameController
 import controller.GameController.gameState
@@ -59,7 +59,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
 }
    */
 
-  /*
+
   //this is a testable and repeatable test Gamestate
   val gameState = GameStatePlanned(
     List(
@@ -74,6 +74,18 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
 
   describe("update") {
     it("should output game") {
+      val gameState = GameStatePlanned(
+        List(
+          Player("Player1", player1Deck, Deck(List.empty), 0),
+          Player("Player2", player2Deck, Deck(List.empty), 0)
+        ),
+        tableDeck,
+        Deck(List.empty),
+        stdout = None,
+        stderr = None,
+        displayType = DisplayType.GAME
+      )
+
       val outputStream = new java.io.ByteArrayOutputStream()
       Console.withOut(outputStream) {
         TUIManager.update(gameState)
@@ -83,6 +95,18 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     }
 
     it("should output combinations") {
+      val gameState = GameStatePlanned(
+        List(
+          Player("Player1", player1Deck, Deck(List.empty), 0),
+          Player("Player2", player2Deck, Deck(List.empty), 0)
+        ),
+        tableDeck,
+        Deck(List.empty),
+        stdout = None,
+        stderr = None,
+        displayType = DisplayType.COMBINATIONS
+      )
+
       val outputStream = new java.io.ByteArrayOutputStream()
       Console.withOut(outputStream) {
         TUIManager.update(gameState)
@@ -92,6 +116,18 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     }
 
     it("should output help") {
+      val gameState = GameStatePlanned(
+        List(
+          Player("Player1", player1Deck, Deck(List.empty), 0),
+          Player("Player2", player2Deck, Deck(List.empty), 0)
+        ),
+        tableDeck,
+        Deck(List.empty),
+        stdout = None,
+        stderr = None,
+        displayType = DisplayType.HELP
+      )
+
       val outputStream = new java.io.ByteArrayOutputStream()
       Console.withOut(outputStream) {
         TUIManager.update(gameState)
@@ -101,16 +137,27 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     }
 
     it("should output spoiler") {
+      val gameState = GameStatePlanned(
+        List(
+          Player("Player1", player1Deck, Deck(List.empty), 0),
+          Player("Player2", player2Deck, Deck(List.empty), 0)
+        ),
+        tableDeck,
+        Deck(List.empty),
+        stdout = None,
+        stderr = None,
+        displayType = DisplayType.SPOILER
+      )
+
       val outputStream = new java.io.ByteArrayOutputStream()
       Console.withOut(outputStream) {
-        TUIManager.printSpoiler()
+        TUIManager.update(gameState)
       }
-      val expectedOutput = TUIManager.clearScreen + TUIManager.printSpoiler() + "\n"
+      val expectedOutput = TUIManager.printSpoiler() + "\n"
       assert(outputStream.toString == expectedOutput)
     }
+}
 
-  }
-   */
 
   describe("printBoard") {
     it("should print the board correctly") {
@@ -151,57 +198,156 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
       assert(TUIManager.printBoard(game) == actualOutput)
     }
 
-
-
-    it("should handle matched deck upper half correctly") {
-    val card1 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
-    val card2 = Card(CardMonth.FEBRUARY, CardType.TANE, CardName.NIGHTINGALE)
-    val game = GameStatePlanned(
-      players = List(
-        Player("Test1", Deck(List(card1)), Deck(List.empty), 0),
-        Player("Test2", Deck(List.empty), Deck(List.empty), 2)
-      ),
-      deck = Deck.defaultDeck(),
-      board = Deck(List.empty),
-      stdout = None,
-      stderr = None)
-
-    val result = TUIManager.printBoard(game)
-    assert(result.contains(card1.unicode.mkString("\n")))
-  }
-    it("should handle lower middle row cards correctly") {
-      val card1 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
-      val card2 = Card(CardMonth.FEBRUARY, CardType.TANE, CardName.NIGHTINGALE)
-      val card3 = Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN)
-      val card4 = Card(CardMonth.APRIL, CardType.TANE, CardName.CUCKOO)
-      val card5 = Card(CardMonth.MAY, CardType.TANE, CardName.BRIDGE)
-
-      val gameState = GameStatePlanned(
-        List(Player("Player1", Deck(List(card1)), Deck(List(card1)), 0), Player("Player2", Deck(List(card2)), Deck(List(card2)), 0)),
-        Deck(List(card1, card2, card3, card4, card5)),
-        Deck(List(card1, card2, card3, card4, card5)),
-        None,
-        None
-      )
-
-      val result = TUIManager.printBoard(gameState)
-      assert(result.contains(card1.unicode.mkString("\n")))
-    }
-
-    it("should handle matched deck lower half correctly") {
-      val card1 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
-      val card2 = Card(CardMonth.FEBRUARY, CardType.TANE, CardName.NIGHTINGALE)
-      val game = GameStatePlanned(
+    it("print board with queued correctly") {
+      val game = GameStateRandom(
         players = List(
-          Player("Test1", Deck(List(card2)), Deck(List.empty), 0),
-          Player("Test2", Deck(List.empty), Deck(List.empty), 2)),
+          Player(
+            name = "Test1",
+            hand = player1Deck,
+            side = Deck(List.empty),
+            score = 0
+          ),
+          Player(
+            name = "Test2",
+            hand = player2Deck,
+            side = Deck(List.empty),
+            score = 0
+          )
+        ),
         deck = Deck.defaultDeck(),
-        board = Deck(List.empty),
+        board = tableDeck,
+        matched = Deck(List.empty),
+        queued = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN),
         stdout = None,
         stderr = None
       )
-      val result = TUIManager.printBoard(game)
-      assert(result.contains(card2.unicode.mkString("\n")))
+      val actualOutput =
+        "\u001b[2J\u001b[3J\u001b[1;1HCurrent player: Test1\n" +
+          "╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝\n" +
+          "\n" +
+          "╔══════╗          ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗         \n" +
+          "║ Jan. ║          ║ May  ║ ║ May  ║ ║ May  ║ ║ May  ║         \n" +
+          "║Hikari║          ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║         \n" +
+          "║Plane ║          ║Bridge║ ║Plane ║ ║Plane ║ ║Plane ║         \n" +
+          "╚══════╝          ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝         \n" +
+          "                  ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗         \n" +
+          "                  ║ Jun. ║ ║ Jun. ║ ║ Jun. ║ ║ Jun. ║         \n" +
+          "                  ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║         \n" +
+          "                  ║Butter║ ║Bl_tan║ ║Plane ║ ║Plane ║         \n" +
+          "                  ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝         \n" +
+          "\n" +
+          "╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗\n" +
+          "║ Jan. ║ ║ Jan. ║ ║ Jan. ║ ║ Jan. ║ ║ Feb. ║ ║ Feb. ║ ║ Feb. ║ ║ Feb. ║\n" +
+          "║Hikari║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║ ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║\n" +
+          "║Crane ║ ║Po_tan║ ║Plane ║ ║Plane ║ ║Night.║ ║Po_tan║ ║Plane ║ ║Plane ║\n" +
+          "╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝"
+      assert(TUIManager.printBoard(game) == actualOutput)
+    }
+
+    it("print board with matched cards correctly") {
+      val game = GameStateRandom(
+        players = List(
+          Player(
+            name = "Test1",
+            hand = player1Deck,
+            side = Deck(List.empty),
+            score = 0
+          ),
+          Player(
+            name = "Test2",
+            hand = player2Deck,
+            side = Deck(List.empty),
+            score = 0
+          )
+        ),
+        deck = Deck.defaultDeck(),
+        board = tableDeck,
+        matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN))),
+        queued = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN),
+        stdout = None,
+        stderr = None
+      )
+      val actualOutput =
+        "\u001b[2J\u001b[3J\u001b[1;1HCurrent player: Test1\n" +
+          "╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝\n" +
+          "\n" +
+          "╔══════╗          ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗         \n" +
+          "║ Jan. ║          ║ May  ║ ║ May  ║ ║ May  ║ ║ May  ║         \n" +
+          "║Hikari║          ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║         \n" +
+          "║Plane ║          ║Bridge║ ║Plane ║ ║Plane ║ ║Plane ║         \n" +
+          "╚══════╝          ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝         \n" +
+          "                  ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗          ╔══════╗\n" +
+          "                  ║ Jun. ║ ║ Jun. ║ ║ Jun. ║ ║ Jun. ║          ║ Jan. ║\n" +
+          "                  ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║          ║Hikari║\n" +
+          "                  ║Butter║ ║Bl_tan║ ║Plane ║ ║Plane ║          ║Plane ║\n" +
+          "                  ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝          ╚══════╝\n" +
+          "\n" +
+          "╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗\n" +
+          "║ Jan. ║ ║ Jan. ║ ║ Jan. ║ ║ Jan. ║ ║ Feb. ║ ║ Feb. ║ ║ Feb. ║ ║ Feb. ║\n" +
+          "║Hikari║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║ ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║\n" +
+          "║Crane ║ ║Po_tan║ ║Plane ║ ║Plane ║ ║Night.║ ║Po_tan║ ║Plane ║ ║Plane ║\n" +
+          "╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝"
+      assert(TUIManager.printBoard(game) == actualOutput)
+    }
+
+    it("print board with two matched cards correctly") {
+      val matched_deck = Deck(List(Deck.defaultDeck().cards(1),
+                                   Deck.defaultDeck().cards(2)))
+      val game = GameStateRandom(
+        players = List(
+          Player(
+            name = "Test1",
+            hand = player1Deck,
+            side = Deck(List.empty),
+            score = 0
+          ),
+          Player(
+            name = "Test2",
+            hand = player2Deck,
+            side = Deck(List.empty),
+            score = 0
+          )
+        ),
+        deck = Deck.defaultDeck(),
+        board = tableDeck,
+        matched = matched_deck,
+        queued = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN),
+        stdout = None,
+        stderr = None
+      )
+      val actualOutput =
+        "\u001b[2J\u001b[3J\u001b[1;1HCurrent player: Test1\n" +
+          "╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║ ║      ║\n" +
+          "╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝\n" +
+          "\n" +
+          "╔══════╗          ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗          ╔══════╗\n" +
+          "║ Jan. ║          ║ May  ║ ║ May  ║ ║ May  ║ ║ May  ║          ║ Jan. ║\n" +
+          "║Hikari║          ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║          ║Tanz. ║\n" +
+          "║Plane ║          ║Bridge║ ║Plane ║ ║Plane ║ ║Plane ║          ║Po_tan║\n" +
+          "╚══════╝          ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝          ╚══════╝\n" +
+          "                  ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗          ╔══════╗\n" +
+          "                  ║ Jun. ║ ║ Jun. ║ ║ Jun. ║ ║ Jun. ║          ║ Jan. ║\n" +
+          "                  ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║          ║ Kasu ║\n" +
+          "                  ║Butter║ ║Bl_tan║ ║Plane ║ ║Plane ║          ║Plane ║\n" +
+          "                  ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝          ╚══════╝\n" +
+          "\n" +
+          "╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗ ╔══════╗\n" +
+          "║ Jan. ║ ║ Jan. ║ ║ Jan. ║ ║ Jan. ║ ║ Feb. ║ ║ Feb. ║ ║ Feb. ║ ║ Feb. ║\n" +
+          "║Hikari║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║ ║ Tane ║ ║Tanz. ║ ║ Kasu ║ ║ Kasu ║\n" +
+          "║Crane ║ ║Po_tan║ ║Plane ║ ║Plane ║ ║Night.║ ║Po_tan║ ║Plane ║ ║Plane ║\n" +
+          "╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝ ╚══════╝"
+      assert(TUIManager.printBoard(game) == actualOutput)
     }
 
     it("should handle stdout correctly") {
@@ -327,6 +473,39 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
             |""".stripMargin
 
       assert(TUIManager.printHelp() == expectedHelpText)
+    }
+  }
+
+  describe("printSpoiler") {
+    it("should print the spoiler text correctly") {
+      val expectedSpoilerText =
+        "\u001b[2J\u001b[3J\u001b[1;1H" +
+          """
+            |╔════════════════════════════════════════════════════════════════════════╗
+            |║                          Spoiler Protection                            ║
+            |╠════════════════════════════════════════════════════════════════════════╣
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                  Type "continue" to advance the game                   ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |║                                                                        ║
+            |╚════════════════════════════════════════════════════════════════════════╝
+            |""".stripMargin
+
+      assert(TUIManager.printSpoiler() == expectedSpoilerText)
     }
   }
 
