@@ -108,6 +108,36 @@ object TUIManager extends Observer {
         helpText
     }
 
+    def printSpoiler(): String = {
+        val helpText =
+            clearScreen +
+              """
+                |╔════════════════════════════════════════════════════════════════════════╗
+                |║                          Spoiler Protection                            ║
+                |╠════════════════════════════════════════════════════════════════════════╣
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                  Type "continue" to advance the game                   ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |║                                                                        ║
+                |╚════════════════════════════════════════════════════════════════════════╝
+                |""".stripMargin
+        helpText
+    }
+
     /*
     * def printOverview(...)
     * returns a String representation of the overview of all (un)collected cards and their value.
