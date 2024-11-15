@@ -36,9 +36,4 @@ class GameManagerSpec extends AnyFlatSpec {
                 Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR))))
         assert(game.board.cards.forall(c => c.month == CardMonth.MARCH && c.grouped || c.month != CardMonth.MARCH && !c.grouped))
     }
-
-    //TODO: implement functionality
-    it should "end if a player is dealt a yaku" in {
-        
-    }
 }

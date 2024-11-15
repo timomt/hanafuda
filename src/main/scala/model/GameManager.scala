@@ -14,13 +14,13 @@ object GameManager {
     * customBoard := used for testing purposes.
     * */
     @tailrec
-    def newGame(firstPlayer: String, secondPlayer: String, customBoard: Option[List[Card]] = None): GameState = {
+    def newGame(firstPlayer: String, secondPlayer: String, firstScore: Int = 0, secondScore: Int = 0, customBoard: Option[List[Card]] = None): GameState = {
         val (polledBoard, deck) = Deck.pollMultiple(Deck.defaultDeck(), 8)
         val actualPolledBoard = customBoard.getOrElse(polledBoard)
         
         // If 4 cards of the same month are dealt, shuffle again
         if (actualPolledBoard.groupBy(_.month).exists((_, cards) => cards.size >= 4)) {
-            newGame(firstPlayer, secondPlayer)
+            newGame(firstPlayer, secondPlayer, firstScore, secondScore)
         }
         else {
             // If 3 cards of the same month are dealt, group them
@@ -36,7 +36,8 @@ object GameManager {
                 case ((players, currentDeck), n) => {
                     val (cards, newDeck) = Deck.pollMultiple(currentDeck, 8)
                     val name = if (n == 1) firstPlayer else secondPlayer
-                    (players :+ Player(name, Deck(cards), Deck(List.empty), 0), newDeck)
+                    val score = if (n == 1) firstScore else secondScore
+                    (players :+ Player(name, Deck(cards), Deck(List.empty), score, false), newDeck)
                 }
             }
             model.GameStatePlanned(
@@ -48,5 +49,42 @@ object GameManager {
                 displayType = DisplayType.GAME
             )
         }
+    }
+
+    /*TODO:
+    * If koikoi already called... evaluate depending on who called
+    * if not then GameStatePendingKoiKoi
+    * def koiKoiHandler(..)*/
+    def koiKoiHandler(game: GameState): GameState = {
+        if (game.players.head.calledKoiKoi) {
+            ???
+        } else if (game.players(1).calledKoiKoi) {
+            ???
+        } else {
+            GameStatePendingKoiKoi(
+                players = game.players.reverse,
+                deck = game.deck,
+                board = game.board,
+                displayType = DisplayType.GAME,
+                stdout = Some("You scored a yaku! You can now either finish or call koi-koi."),
+                stderr = None
+            )
+        }
+    }
+
+    /*
+    * def koiKoiCallHandler(..)
+    * supposed to handle the call for koi-koi
+    * */
+    def koiKoiCallHandler(game: GameState): GameState = {
+        ???
+    }
+
+    /*
+    * def finishHandler(..)
+    * supposed to handle the finish call
+    * */
+    def finishHandler(game: GameState): GameState = {
+        ???
     }
 }
