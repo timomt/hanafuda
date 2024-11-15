@@ -20,6 +20,7 @@ object TUIManager extends Observer {
             case DisplayType.COMBINATIONS => println(printOverview(gameState))
             case DisplayType.HELP => println(printHelp())
             case DisplayType.SPOILER => println(printSpoiler())
+            case DisplayType.SUMMARY => println(printSummary(gameState))
     }
     
     /*
@@ -69,7 +70,7 @@ object TUIManager extends Observer {
             case None => ""
         }
 
-        clearScreen + s"Current player: ${game.players.head.name}\n"
+        clearScreen + s"Current player: ${game.players.head.name}\tPoints: ${game.players.head.score}\n"
             + topRow + "\n\n" + upperMiddleRow + "\n" + lowerMiddleRow + "\n\n" + bottomRow + stdoutRow + stderrRow
     }
 
@@ -146,10 +147,41 @@ object TUIManager extends Observer {
         helpText
     }
 
+    // TODO: get good
+    def printSummary(game: GameState): String = {
+        val summary =
+            clearScreen +
+                s"""
+                  |╔════════════════════════════════════════════════════════════════════════╗
+                  |║                                Summary                                 ║
+                  |╠════════════════════════════════════════════════════════════════════════╣
+                  |║                                                                        ║
+                  |║                                                                        ║
+                  |║                                                                        ║
+                  |║                  Player                        Score                   ║
+                  |║                 ${game.players.head.name}\t\t${game.players.head.score}║
+                  |║                 ${game.players(1).name}\t\t${game.players(1).score}    ║
+                  |║                                                                        ║
+                  |║                                                                        ║
+                  |║                                                                        ║
+                  |║                                                                        ║
+                  |║                                                                        ║
+                  |║                                                                        ║
+                  |║                                                                        ║
+                  |║                                                                        ║
+                  |║                                                                        ║
+                  |║                                                                        ║
+                  |║                                                                        ║
+                  |║                                                                        ║
+                  |╚════════════════════════════════════════════════════════════════════════╝
+                  |""".stripMargin
+        summary
+    }
+
     /*
     * def printOverview(...)
     * returns a String representation of the overview of all (un)collected cards and their value.
-    * TODO: display fitting card combination
+    * TODO: display ALL fitting card combinations
     * */
     def printOverview(game: GameState): String = {
         val goko = "Gokō (五光) \"Five Hikari\"\t10pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"

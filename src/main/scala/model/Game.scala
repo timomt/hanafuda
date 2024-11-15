@@ -10,7 +10,7 @@ package model
 case class Player(name: String, hand: Deck, side: Deck, score: Int, calledKoiKoi: Boolean)
 
 enum DisplayType {
-    case GAME, COMBINATIONS, HELP, SPOILER
+    case GAME, COMBINATIONS, HELP, SPOILER, SUMMARY
 }
 
 /*
@@ -154,13 +154,17 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
             val updatedPlayers = List(this.players(1), this.players.head.copy(
                 side = Deck(this.players.head.side.cards.appendedAll(this.matched.cards))
             ))
+            val updatedBoard = Deck(this.board.cards.appended(this.queued))
             if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
-                GameManager.koiKoiHandler(this)
+                GameManager.koiKoiHandler(this.copy(
+                    players = updatedPlayers.reverse,
+                    board = updatedBoard
+                ))
             } else {
                 GameStatePlanned(
                     deck = this.deck,
                     players = updatedPlayers,
-                    board = Deck(this.board.cards.appended(this.queued)),
+                    board = updatedBoard,
                     stdout = Some("Discarded drawn card."),
                     stderr = None,
                     displayType = DisplayType.SPOILER
@@ -187,13 +191,17 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                             .appendedAll(this.matched.cards)
                             .appendedAll(this.board.cards.filter(c => c.month == this.queued.month)))
                     ))
+                    val updatedBoard = Deck(this.board.cards.filterNot(c => c.month == this.queued.month))
                     if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
-                        GameManager.koiKoiHandler(this)
+                        GameManager.koiKoiHandler(this.copy(
+                            players = updatedPlayers.reverse,
+                            board = updatedBoard
+                        ))
                     } else {
                         GameStatePlanned(
                             deck = this.deck,
                             players = updatedPlayers,
-                            board = Deck(this.board.cards.filterNot(c => c.month == this.queued.month)),
+                            board = updatedBoard,
                             stdout = Some(s"Matched a whole month (${this.queued.month})."),
                             stderr = None,
                             displayType = DisplayType.SPOILER
@@ -205,13 +213,17 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                             .appendedAll(List(this.queued, this.board.cards(y - 1)))
                             .appendedAll(this.matched.cards))
                     ))
+                    val updatedBoard = Deck(this.board.cards.patch(y - 1, Nil, 1))
                     if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
-                        GameManager.koiKoiHandler(this)
+                        GameManager.koiKoiHandler(this.copy(
+                            players = updatedPlayers,
+                            board = updatedBoard
+                        ))
                     } else {
                         GameStatePlanned(
                             deck = this.deck,
                             players = updatedPlayers,
-                            board = Deck(this.board.cards.patch(y - 1, Nil, 1)),
+                            board = updatedBoard,
                             stdout = Some(s"Matched drawn card with $y."),
                             stderr = None,
                             displayType = DisplayType.SPOILER

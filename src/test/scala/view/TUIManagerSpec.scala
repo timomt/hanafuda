@@ -63,8 +63,8 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
   //this is a testable and repeatable test Gamestate
   val gameState = GameStatePlanned(
     List(
-      Player("Player1", player1Deck, Deck(List.empty), 0),
-      Player("Player2", player2Deck, Deck(List.empty), 0)
+      Player("Player1", player1Deck, Deck(List.empty), 0, calledKoiKoi = false),
+      Player("Player2", player2Deck, Deck(List.empty), 0, calledKoiKoi = false)
     ),
     tableDeck,
     Deck(List.empty),
@@ -76,8 +76,8 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     it("should output game") {
       val gameState = GameStatePlanned(
         List(
-          Player("Player1", player1Deck, Deck(List.empty), 0),
-          Player("Player2", player2Deck, Deck(List.empty), 0)
+          Player("Player1", player1Deck, Deck(List.empty), 0, calledKoiKoi = false),
+          Player("Player2", player2Deck, Deck(List.empty), 0, calledKoiKoi = false)
         ),
         tableDeck,
         Deck(List.empty),
@@ -97,8 +97,8 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     it("should output combinations") {
       val gameState = GameStatePlanned(
         List(
-          Player("Player1", player1Deck, Deck(List.empty), 0),
-          Player("Player2", player2Deck, Deck(List.empty), 0)
+          Player("Player1", player1Deck, Deck(List.empty), 0, calledKoiKoi = false),
+          Player("Player2", player2Deck, Deck(List.empty), 0, calledKoiKoi = false)
         ),
         tableDeck,
         Deck(List.empty),
@@ -118,8 +118,8 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     it("should output help") {
       val gameState = GameStatePlanned(
         List(
-          Player("Player1", player1Deck, Deck(List.empty), 0),
-          Player("Player2", player2Deck, Deck(List.empty), 0)
+          Player("Player1", player1Deck, Deck(List.empty), 0, calledKoiKoi = false),
+          Player("Player2", player2Deck, Deck(List.empty), 0, calledKoiKoi = false)
         ),
         tableDeck,
         Deck(List.empty),
@@ -139,8 +139,8 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     it("should output spoiler") {
       val gameState = GameStatePlanned(
         List(
-          Player("Player1", player1Deck, Deck(List.empty), 0),
-          Player("Player2", player2Deck, Deck(List.empty), 0)
+          Player("Player1", player1Deck, Deck(List.empty), 0, calledKoiKoi = false),
+          Player("Player2", player2Deck, Deck(List.empty), 0, calledKoiKoi = false)
         ),
         tableDeck,
         Deck(List.empty),
@@ -163,8 +163,8 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     it("should print the board correctly") {
       val game = GameStatePlanned(
         players = List(
-          Player("Test1", player1Deck, Deck(List.empty), 0),
-          Player("Test2", player2Deck, Deck(List.empty), 2)
+          Player("Test1", player1Deck, Deck(List.empty), 0, calledKoiKoi = false),
+          Player("Test2", player2Deck, Deck(List.empty), 2, calledKoiKoi = false)
         ),
         deck = Deck.defaultDeck(),
         board = tableDeck,
@@ -205,13 +205,15 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
             name = "Test1",
             hand = player1Deck,
             side = Deck(List.empty),
-            score = 0
+            score = 0, 
+            calledKoiKoi = false
           ),
           Player(
             name = "Test2",
             hand = player2Deck,
             side = Deck(List.empty),
-            score = 0
+            score = 0, 
+            calledKoiKoi = false
           )
         ),
         deck = Deck.defaultDeck(),
@@ -255,13 +257,15 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
             name = "Test1",
             hand = player1Deck,
             side = Deck(List.empty),
-            score = 0
+            score = 0, 
+            calledKoiKoi = false
           ),
           Player(
             name = "Test2",
             hand = player2Deck,
             side = Deck(List.empty),
-            score = 0
+            score = 0, 
+            calledKoiKoi = false
           )
         ),
         deck = Deck.defaultDeck(),
@@ -307,13 +311,15 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
             name = "Test1",
             hand = player1Deck,
             side = Deck(List.empty),
-            score = 0
+            score = 0, 
+            calledKoiKoi = false
           ),
           Player(
             name = "Test2",
             hand = player2Deck,
             side = Deck(List.empty),
-            score = 0
+            score = 0, 
+            calledKoiKoi = false
           )
         ),
         deck = Deck.defaultDeck(),
@@ -353,8 +359,8 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     it("should handle stdout correctly") {
       val game = GameStatePlanned(
         players = List(
-          Player("Test1", Deck(List.empty), Deck(List.empty), 0),
-          Player("Test2", Deck(List.empty), Deck(List.empty), 2)),
+          Player("Test1", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false),
+          Player("Test2", Deck(List.empty), Deck(List.empty), 2, calledKoiKoi = false)),
         deck = Deck.defaultDeck(),
         board = Deck(List.empty),
         stdout = Some("Test stdout"),
@@ -367,8 +373,8 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     it("should handle stderr correctly") {
       val game = GameStatePlanned(
         players = List(
-          Player("Test1", Deck(List.empty), Deck(List.empty), 0),
-          Player("Test2", Deck(List.empty), Deck(List.empty), 2)),
+          Player("Test1", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false),
+          Player("Test2", Deck(List.empty), Deck(List.empty), 2, calledKoiKoi = false)),
         deck = Deck.defaultDeck(),
         board = Deck(List.empty),
         stdout = None,
@@ -383,7 +389,10 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     it("should call printBoard and print the correct output for a game state") {
       val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
       val gameState = GameStatePlanned(
-        List(Player("Player1", Deck(List(card)), Deck(List(card)), 0), Player("Player2", Deck(List(card)), Deck(List(card)), 0)),
+        List(
+          Player("Player1", Deck(List(card)), Deck(List(card)), 0, calledKoiKoi = false),
+          Player("Player2", Deck(List(card)), Deck(List(card)), 0, calledKoiKoi = false)
+        ),
         deck = Deck(List(card)),
         board = Deck(List(card)),
         stdout = None,
@@ -401,7 +410,10 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
 
     it("should update the TUI correctly for an empty game state") {
       val emptyGameState = GameStatePlanned(
-        List(Player("Player1", Deck(List.empty), Deck(List.empty), 0), Player("Player2", Deck(List.empty), Deck(List.empty), 0)),
+        List(
+          Player("Player1", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false),
+          Player("Player2", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false)
+        ),
         deck = Deck(List.empty),
         board = Deck(List.empty),
         stdout = None,
@@ -416,7 +428,10 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
       val player1Deck = Deck(List(card))
       val player2Deck = Deck(List(card))
       val gameState = GameStatePlanned(
-        List(Player("Player1", player1Deck, player1Deck, 0), Player("Player2", player2Deck, player2Deck, 0)),
+        List(
+          Player("Player1", player1Deck, player1Deck, 0, calledKoiKoi = false),
+          Player("Player2", player2Deck, player2Deck, 0, calledKoiKoi = false)
+        ),
         deck = Deck(List(card)),
         board = Deck(List(card)),
         stdout = None,
@@ -617,8 +632,8 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     it("should colorize the cards correctly for each player") {
       val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
       val card2 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PHOENIX)
-      val player1 = Player("Player1", Deck(List(card)), Deck(List(card)), 0)
-      val player2 = Player("Player2", Deck(List(card2)), Deck(List(card2)), 0)
+      val player1 = Player("Player1", Deck(List(card)), Deck(List(card)), 0, calledKoiKoi = false)
+      val player2 = Player("Player2", Deck(List(card2)), Deck(List(card2)), 0, calledKoiKoi = false)
       val gameState = GameStatePlanned(
         List(player1, player2),
         deck = Deck(List(card)),

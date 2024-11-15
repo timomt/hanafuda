@@ -1,5 +1,7 @@
 package model
 
+import model.DisplayType.SUMMARY
+
 import scala.annotation.tailrec
 
 /*
@@ -14,7 +16,7 @@ object GameManager {
     * customBoard := used for testing purposes.
     * */
     @tailrec
-    def newGame(firstPlayer: String, secondPlayer: String, firstScore: Int = 0, secondScore: Int = 0, customBoard: Option[List[Card]] = None): GameState = {
+    def newGame(firstPlayer: String, secondPlayer: String, firstScore: Int = 0, secondScore: Int = 0, customBoard: Option[List[Card]] = None): GameStatePlanned = {
         val (polledBoard, deck) = Deck.pollMultiple(Deck.defaultDeck(), 8)
         val actualPolledBoard = customBoard.getOrElse(polledBoard)
         
@@ -51,15 +53,31 @@ object GameManager {
         }
     }
 
-    /*TODO:
+    /*
     * If koikoi already called... evaluate depending on who called
     * if not then GameStatePendingKoiKoi
-    * def koiKoiHandler(..)*/
+    * def koiKoiHandler(..)
+    * loser begins new game
+    * */
     def koiKoiHandler(game: GameState): GameState = {
-        if (game.players.head.calledKoiKoi) {
-            ???
-        } else if (game.players(1).calledKoiKoi) {
-            ???
+        if (game.players.head.calledKoiKoi) {   // Reversed -> fulfilled call
+            val (firstS, secS) = evaluateScore(game.players, 2, 1)
+            val newGame = GameManager.newGame(
+                firstPlayer = game.players(1).name,
+                secondPlayer = game.players.head.name,
+                firstScore = secS,
+                secondScore = firstS
+            )
+            newGame.copy(displayType = SUMMARY)
+        } else if (game.players(1).calledKoiKoi) {  // failed call
+            val (firstS, secS) = evaluateScore(game.players, 2, 0)
+            val newGame = GameManager.newGame(
+                firstPlayer = game.players(1).name,
+                secondPlayer = game.players.head.name,
+                firstScore = secS,
+                secondScore = firstS
+            )
+            newGame.copy(displayType = SUMMARY)
         } else {
             GameStatePendingKoiKoi(
                 players = game.players.reverse,
@@ -77,7 +95,14 @@ object GameManager {
     * supposed to handle the call for koi-koi
     * */
     def koiKoiCallHandler(game: GameState): GameState = {
-        ???
+        GameStatePlanned(
+            players = List(game.players.head.copy(calledKoiKoi = true), game.players(1)),
+            deck = game.deck,
+            board = game.board,
+            displayType = DisplayType.GAME,
+            stdout = Some("Continueing game."),
+            stderr = None
+        )
     }
 
     /*
@@ -85,6 +110,27 @@ object GameManager {
     * supposed to handle the finish call
     * */
     def finishHandler(game: GameState): GameState = {
-        ???
+        val (firstS, secS) = evaluateScore(game.players, 1, 1)
+        val newGame = GameManager.newGame(
+            firstPlayer = game.players.head.name,
+            secondPlayer = game.players(1).name,
+            firstScore = firstS,
+            secondScore = secS
+        )
+        newGame.copy(displayType = SUMMARY)
+    }
+
+    /*
+    * */
+    def evaluateScore(players: List[Player], multiplyerFirst: Int, multiplyerSec: Int): (Int, Int) = {
+        val firstScore = players.head.score + multiplyerFirst * yakuCombinations.foldLeft(0) {
+            case (acc, yaku) =>
+                acc + yaku.evaluate(players.head)
+        }
+        val secondScore = players(1).score + multiplyerSec * yakuCombinations.foldLeft(0) {
+            case (acc, yaku) =>
+                acc + yaku.evaluate(players(1))
+        }
+        (firstScore, secondScore)
     }
 }

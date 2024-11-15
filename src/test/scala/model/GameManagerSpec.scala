@@ -12,7 +12,7 @@ class GameManagerSpec extends AnyFlatSpec {
     }
     
     it should "not deal a full month" in {
-        val game = GameManager.newGame(" ", " ",
+        val game = GameManager.newGame(" ", " ", 0, 0,
             Some(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR),
                 Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
                 Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
@@ -25,7 +25,7 @@ class GameManagerSpec extends AnyFlatSpec {
     }
     
     it should "group 3 cards of the same month together" in {
-        val game = GameManager.newGame(" ", " ",
+        val game = GameManager.newGame(" ", " ", 0, 0,
             Some(List(Card(CardMonth.NOVEMBER, CardType.HIKARI, CardName.BOAR),
                 Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR),
                 Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR),

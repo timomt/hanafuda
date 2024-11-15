@@ -45,6 +45,10 @@ object GameController extends Observable {
             }
 
         // All following cases assert gameState is Some
+        case "combinations" | "com" =>
+            gameState = Some(gameState.get.updateGameStateWithDisplayType(DisplayType.COMBINATIONS))
+            notifyObservers(gameState.get)
+
         case i if gameState.get.isInstanceOf[GameStatePendingKoiKoi] => 
             i match {
                 case "koi-koi" =>
@@ -57,6 +61,7 @@ object GameController extends Observable {
                     gameState = Some(gameState.get.updateGameStateWithError("You have to either call \"koi-koi\" or \"finish\"."))
                     notifyObservers(gameState.get)
             }
+            
         case "continue" | "con" =>
             gameState = Some(gameState.get.updateGameStateWithDisplayType(DisplayType.GAME))
             notifyObservers(gameState.get)
@@ -80,11 +85,7 @@ object GameController extends Observable {
         case "new" =>
             gameState = Some(GameManager.newGame(gameState.get.players.head.name, gameState.get.players(1).name, gameState.get.players.head.score, gameState.get.players(1).score))
             notifyObservers(gameState.get)
-
-        case "combinations" | "com" =>
-            gameState = Some(gameState.get.updateGameStateWithDisplayType(DisplayType.COMBINATIONS))
-            notifyObservers(gameState.get)
-
+            
         case _ =>
             gameState = Some(gameState.get.updateGameStateWithError("Wrong usage, see \"help\"."))
             notifyObservers(gameState.get)
