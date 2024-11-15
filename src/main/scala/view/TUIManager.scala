@@ -10,7 +10,6 @@ import model.{Card, CardName, CardType, Deck, GameState, DisplayType}
 object TUIManager extends Observer {
     val clearScreen: String = "\u001b[2J\u001b[3J\u001b[1;1H"
     
-    //TODO: spoiler protection
     /*
     * def update(...)
     * updates the TUI according to the current GameState.
@@ -176,8 +175,8 @@ object TUIManager extends Observer {
     * returns the colorized unicode representation of given card depending on who owns it.
     * */
     def colorizeOverviewCard(game: GameState, card: Card): List[String] = card match {
-        case c if game.players.head.side.cards.contains(card) => c.unicode.map(line => s"\u001b[32m$line\u001b[0m")
-        case c if game.players(1).side.cards.contains(card) => c.unicode.map(line => s"\u001b[31m$line\u001b[0m")
+        case c if game.players.head.side.cards.contains(Card(card.month, card.cardType, card.cardName)) => c.unicode.map(line => s"\u001b[32m$line\u001b[0m")
+        case c if game.players(1).side.cards.contains(Card(card.month, card.cardType, card.cardName)) => c.unicode.map(line => s"\u001b[31m$line\u001b[0m")
         case _ => card.unicode.map(line => s"\u001b[0m$line\u001b[0m")
     }
 }

@@ -13,14 +13,14 @@ object GameController extends Observable {
     * gameState
     * the current state of the game operated by this object.
     * */
-    /*private*/ var gameState: Option[GameState] = None
+    var gameState: Option[GameState] = None
 
     /*
     * def newGame()
     * initializes/overwrites this objects gameState with a default game
     * and notifies observers of the new GameState.
     * */
-    /*private*/ def newGame(firstPlayer: String, secondPlayer: String): Unit = {
+    def newGame(firstPlayer: String, secondPlayer: String): Unit = {
         gameState = Some(GameManager.newGame(firstPlayer, secondPlayer))
         notifyObservers(gameState.get)
     }
@@ -29,7 +29,6 @@ object GameController extends Observable {
     * def processInput(...)
     * processes a String to change the current GameState
     * and notifies observers of the new GameState.
-    * TODO: process input and create new GameState
     * */
     def processInput(input: String): Unit = input match {
         case "help" =>
