@@ -46,7 +46,7 @@ object GameController extends Observable {
             }
 
         // All following cases assert gameState is Some
-        case "continue" =>
+        case "continue" | "con" =>
             gameState = Some(gameState.get.updateGameStateWithDisplayType(DisplayType.GAME))
             notifyObservers(gameState.get)
 
@@ -70,7 +70,7 @@ object GameController extends Observable {
             gameState = Some(GameManager.newGame(gameState.get.players.head.name, gameState.get.players(1).name))
             notifyObservers(gameState.get)
 
-        case "combinations" =>
+        case "combinations" | "com" =>
             gameState = Some(gameState.get.updateGameStateWithDisplayType(DisplayType.COMBINATIONS))
             notifyObservers(gameState.get)
 
