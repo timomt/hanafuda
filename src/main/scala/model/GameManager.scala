@@ -58,7 +58,7 @@ object GameManager {
     * if not then GameStatePendingKoiKoi
     * def koiKoiHandler(..)
     * loser begins new game
-    * */
+    * *///TODO: display which yaku was won
     def koiKoiHandler(game: GameState): GameState = {
         if (game.players.head.calledKoiKoi) {   // Reversed -> fulfilled call
             val (firstS, secS) = evaluateScore(game.players, 2, 1)
@@ -84,7 +84,7 @@ object GameManager {
                 deck = game.deck,
                 board = game.board,
                 displayType = DisplayType.GAME,
-                stdout = Some("You scored a yaku! You can now either finish or call koi-koi."),
+                stdout = Some(s"You scored a yaku: TODO You can now either finish or call koi-koi."),
                 stderr = None
             )
         }

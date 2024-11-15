@@ -147,7 +147,7 @@ object TUIManager extends Observer {
         helpText
     }
 
-    // TODO: get good
+    // TODO: get good (display listing of yakus maybe?)
     def printSummary(game: GameState): String = {
         val summary =
             clearScreen +
