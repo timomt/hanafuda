@@ -1,4 +1,5 @@
-import model.{Card, CardMonth, CardName, CardType, Deck, GameManager, GameStatePlanned, GameStateRandom, Player}
+import model.DisplayType.{SPOILER, SUMMARY}
+import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameManager, GameStatePendingKoiKoi, GameStatePlanned, GameStateRandom, Player}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -157,6 +158,36 @@ class GameSpec extends AnyFlatSpec with Matchers {
         assert(game.handleDiscard("").board.cards === List(
             Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN),
             Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN)))
+    }
+
+    it should "check for koi-koi" in {
+        val game = GameStateRandom(
+            players = List(
+                Player(
+                    name = "",
+                    hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
+                    side = Deck(List(
+                        Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON)
+                    )),
+                    score = 0,
+                    calledKoiKoi = false
+                ),
+                Player(
+                    name = "",
+                    hand = Deck(List.empty),
+                    side = Deck(List.empty),
+                    score = 0,
+                    calledKoiKoi = false
+                )
+            ),
+            deck = Deck.defaultDeck(),
+            board = Deck(List(Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN))),
+            matched = Deck(List(Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP))),
+            queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN),
+            stdout = None,
+            stderr = None
+        )
+        assert(game.handleDiscard("").isInstanceOf[GameStatePendingKoiKoi])
     }
     /* ------------------------- */
 
@@ -333,6 +364,120 @@ class GameSpec extends AnyFlatSpec with Matchers {
         assert(updatedGame.queuedCard.isEmpty)
         assert(updatedGame.matchedDeck.isEmpty)
     }
+    it should "check for koi-koi in default match" in {
+        val game = GameStateRandom(
+            players = List(
+                Player(
+                    name = "",
+                    hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
+                    side = Deck(List.empty),
+                    score = 0,
+                    calledKoiKoi = false
+                ),
+                Player(
+                    name = "",
+                    hand = Deck(List.empty),
+                    side = Deck(List.empty),
+                    score = 0,
+                    calledKoiKoi = false
+                )
+            ),
+            deck = Deck.defaultDeck(),
+            board = Deck(List(Card(CardMonth.AUGUST, CardType.TANE, CardName.PLAIN))),
+            matched = Deck(List(Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP))),
+            queued = Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON),
+            stdout = None,
+            stderr = None
+        )
+        assert(game.handleMatch("1", "").isInstanceOf[GameStatePendingKoiKoi])
+    }
+    it should "check for koi-koi in 3/4 rule" in {
+        val game = GameStateRandom(
+            players = List(
+                Player(
+                    name = "",
+                    hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
+                    side = Deck(List.empty),
+                    score = 0,
+                    calledKoiKoi = false
+                ),
+                Player(
+                    name = "",
+                    hand = Deck(List.empty),
+                    side = Deck(List.empty),
+                    score = 0,
+                    calledKoiKoi = false
+                )
+            ),
+            deck = Deck.defaultDeck(),
+            board = Deck(List(
+                Card(CardMonth.AUGUST, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.AUGUST, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.AUGUST, CardType.TANE, CardName.PLAIN, true)
+            )),
+            matched = Deck(List(Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP))),
+            queued = Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON),
+            stdout = None,
+            stderr = None
+        )
+        assert(game.handleMatch("1", "").isInstanceOf[GameStatePendingKoiKoi])
+    }
 
+    "updateGameStateWithDisplayType[GameStateRandom]" should "set displayType attribute correctly" in {
+        val game = GameStateRandom(
+            players = List(
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false)
+            ),
+            deck = Deck.defaultDeck(),
+            board = Deck(List(
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+            )),
+            stdout = None,
+            stderr = None,
+            matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN))),
+            queued = Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING)
+        )
+        assert(game.updateGameStateWithDisplayType(DisplayType.GAME) === game)
+        assert(game.updateGameStateWithDisplayType(DisplayType.SUMMARY).displayType === DisplayType.SUMMARY)
+        assert(game.updateGameStateWithDisplayType(DisplayType.HELP).displayType === DisplayType.HELP)
+        assert(game.updateGameStateWithDisplayType(DisplayType.SPOILER).displayType === DisplayType.SPOILER)
+        assert(game.updateGameStateWithDisplayType(DisplayType.COMBINATIONS).displayType === DisplayType.COMBINATIONS)
+    }
+    /* ------------------------- */
+    /* ------ GameStatePendingKoiKoi ------ */
+    "updateGameStateWithDisplayType[GameStatePendingKoiKoi]" should "set displayType attribute correctly" in {
+        val game = GameStatePendingKoiKoi(
+            players = List(
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false)
+            ),
+            deck = Deck.defaultDeck(),
+            board = Deck(List(
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+            )),
+            stdout = None,
+            stderr = None
+        )
+        assert(game.updateGameStateWithDisplayType(DisplayType.GAME) === game)
+        assert(game.updateGameStateWithDisplayType(DisplayType.SUMMARY).displayType === DisplayType.SUMMARY)
+        assert(game.updateGameStateWithDisplayType(DisplayType.HELP).displayType === DisplayType.HELP)
+        assert(game.updateGameStateWithDisplayType(DisplayType.SPOILER).displayType === DisplayType.SPOILER)
+        assert(game.updateGameStateWithDisplayType(DisplayType.COMBINATIONS).displayType === DisplayType.COMBINATIONS)
+    }
+
+    "updateGameStateWithError[GameStatePendingKoiKoi], handleDiscard and handleMatch" should "return Some in stderr" in {
+        val game = GameStatePendingKoiKoi(
+            players = List.empty, deck = Deck(List.empty), board = Deck(List.empty),
+            displayType = SPOILER, stdout = None, stderr = None
+        )
+        assert(game.updateGameStateWithError("").stderr.isDefined)
+        assert(game.handleDiscard("").stderr.isDefined)
+        assert(game.handleMatch("", "").stderr.isDefined)
+    }
     /* ------------------------- */
 }
