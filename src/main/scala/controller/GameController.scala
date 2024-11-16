@@ -55,7 +55,8 @@ object GameController extends Observable {
                     gameState = Some(GameManager.koiKoiCallHandler(gameState.get))
                     notifyObservers(gameState.get)
                 case "finish" =>
-                    gameState = Some(GameManager.finishHandler(gameState.get))
+                    val (firstS, secS) = GameManager.evaluateScore(gameState.get.players, 1, 1)
+                    gameState = Some(GameManager.handleKoiKoi(gameState.get.players, firstS, secS))
                     notifyObservers(gameState.get)
                 case _ => 
                     gameState = Some(gameState.get.updateGameStateWithError("You have to either call \"koi-koi\" or \"finish\"."))

@@ -21,6 +21,7 @@ enum DisplayType {
 * matched:= A deck of currently matched cards
 * queued:= The Card on top of stack waiting to be matched
 * *///TODO: check for empy decks
+//TODO: specify exactly what cards in stdout
 trait GameState {
     def players: List[Player]
     def deck: Deck
@@ -216,7 +217,7 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                     val updatedBoard = Deck(this.board.cards.patch(y - 1, Nil, 1))
                     if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
                         GameManager.koiKoiHandler(this.copy(
-                            players = updatedPlayers,
+                            players = updatedPlayers.reverse,
                             board = updatedBoard
                         ))
                     } else {

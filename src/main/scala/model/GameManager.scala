@@ -12,14 +12,13 @@ object GameManager {
     /*
     * def newGame(): GameState
     * Returns a new GameState as default game setup.
-    * TODO: check for instant win
     * customBoard := used for testing purposes.
     * */
     @tailrec
-    def newGame(firstPlayer: String, secondPlayer: String, firstScore: Int = 0, secondScore: Int = 0, customBoard: Option[List[Card]] = None): GameStatePlanned = {
+    def newGame(firstPlayer: String, secondPlayer: String, firstScore: Int = 0, secondScore: Int = 0, customBoard: Option[List[Card]] = None, customHandFirst: Option[Deck] = None, customHandSec: Option[Deck] = None): GameStatePlanned = {
         val (polledBoard, deck) = Deck.pollMultiple(Deck.defaultDeck(), 8)
         val actualPolledBoard = customBoard.getOrElse(polledBoard)
-        
+
         // If 4 cards of the same month are dealt, shuffle again
         if (actualPolledBoard.groupBy(_.month).exists((_, cards) => cards.size >= 4)) {
             newGame(firstPlayer, secondPlayer, firstScore, secondScore)
@@ -34,22 +33,42 @@ object GameManager {
                 else card
             }
 
-            val (playerList, updatedDeck) = (1 to 2).foldLeft((List.empty[Player], deck)) {
-                case ((players, currentDeck), n) => {
-                    val (cards, newDeck) = Deck.pollMultiple(currentDeck, 8)
-                    val name = if (n == 1) firstPlayer else secondPlayer
-                    val score = if (n == 1) firstScore else secondScore
-                    (players :+ Player(name, Deck(cards), Deck(List.empty), score, false), newDeck)
-                }
+            val (playerList, updatedDeck) = initializePlayers(firstPlayer, secondPlayer, firstScore, secondScore, deck, customHandFirst = customHandFirst, customHandSec = customHandSec)
+            if (instantWinCombinations.exists(_.evaluate(playerList.head) > 0)
+                || instantWinCombinations.exists(_.evaluate(playerList(1)) > 0)) {
+                val firstS = calculateInstantWinScore(playerList.head)
+                val secS = calculateInstantWinScore(playerList(1))
+                handleKoiKoi(playerList, firstS, secS)
+            } else {
+                model.GameStatePlanned(
+                    players = playerList,
+                    deck = updatedDeck,
+                    board = Deck(actualBoard),
+                    stdout = None,
+                    stderr = None,
+                    displayType = DisplayType.GAME
+                )
             }
-            model.GameStatePlanned(
-                players = playerList,
-                deck = updatedDeck,
-                board = Deck(actualBoard),
-                stdout = None,
-                stderr = None,
-                displayType = DisplayType.GAME
-            )
+        }
+    }
+
+    /*
+    * Initializes players with their respective cards and scores.
+    * */
+    def initializePlayers(firstPlayer: String, secondPlayer: String, firstScore: Int, secondScore: Int, deck: Deck,  customHandFirst: Option[Deck] = None, customHandSec: Option[Deck] = None): (List[Player], Deck) = {
+        (1 to 2).foldLeft((List.empty[Player], deck)) {
+            case ((players, currentDeck), n) =>
+                val (cards, newDeck) = Deck.pollMultiple(currentDeck, 8)
+                val name = if (n == 1) firstPlayer else secondPlayer
+                val score = if (n == 1) firstScore else secondScore
+                val hand = if (n == 1) customHandFirst else customHandSec
+                (players :+ Player(
+                    name = name,
+                    hand = if hand.isDefined then hand.get else Deck(cards),
+                    side = Deck(List.empty),
+                    score = score,
+                    calledKoiKoi = false), newDeck
+                )
         }
     }
 
@@ -58,36 +77,38 @@ object GameManager {
     * if not then GameStatePendingKoiKoi
     * def koiKoiHandler(..)
     * loser begins new game
-    * *///TODO: display which yaku was won
+    * */
     def koiKoiHandler(game: GameState): GameState = {
-        if (game.players.head.calledKoiKoi) {   // Reversed -> fulfilled call
+        if (game.players.head.calledKoiKoi) {   // fulfilled call
             val (firstS, secS) = evaluateScore(game.players, 2, 1)
-            val newGame = GameManager.newGame(
-                firstPlayer = game.players(1).name,
-                secondPlayer = game.players.head.name,
-                firstScore = secS,
-                secondScore = firstS
-            )
-            newGame.copy(displayType = SUMMARY)
+            handleKoiKoi(game.players, firstS, secS)
         } else if (game.players(1).calledKoiKoi) {  // failed call
             val (firstS, secS) = evaluateScore(game.players, 2, 0)
-            val newGame = GameManager.newGame(
-                firstPlayer = game.players(1).name,
-                secondPlayer = game.players.head.name,
-                firstScore = secS,
-                secondScore = firstS
-            )
-            newGame.copy(displayType = SUMMARY)
+            handleKoiKoi(game.players, firstS, secS)
         } else {
+            val yakuList = yakuCombinations.filter(c => c.evaluate(game.players.head) > 0).map(_.unicode)
             GameStatePendingKoiKoi(
-                players = game.players.reverse,
+                players = game.players,
                 deck = game.deck,
                 board = game.board,
                 displayType = DisplayType.GAME,
-                stdout = Some(s"You scored a yaku: TODO You can now either finish or call koi-koi."),
+                stdout = Some(s"You scored a yaku: \n${yakuList.map(_ + "\n").mkString("\n")} You can now either finish or call koi-koi."),
                 stderr = None
             )
         }
+    }
+
+    /*
+    * Handles the koi-koi call and returns the new game state.
+    * */
+    def handleKoiKoi(players: List[Player], firstS: Int, secS: Int): GameStatePlanned = {
+        val newGame = GameManager.newGame(
+            firstPlayer = players.head.name,
+            secondPlayer = players(1).name,
+            firstScore = firstS,
+            secondScore = secS
+        )
+        newGame.copy(displayType = SUMMARY)
     }
 
     /*
@@ -96,7 +117,7 @@ object GameManager {
     * */
     def koiKoiCallHandler(game: GameState): GameState = {
         GameStatePlanned(
-            players = List(game.players.head.copy(calledKoiKoi = true), game.players(1)),
+            players = List(game.players(1), game.players.head.copy(calledKoiKoi = true)),
             deck = game.deck,
             board = game.board,
             displayType = DisplayType.GAME,
@@ -106,28 +127,24 @@ object GameManager {
     }
 
     /*
-    * def finishHandler(..)
-    * supposed to handle the finish call
+    * Calculates the instant win score for a player.
     * */
-    def finishHandler(game: GameState): GameState = {
-        val (firstS, secS) = evaluateScore(game.players, 1, 1)
-        val newGame = GameManager.newGame(
-            firstPlayer = game.players.head.name,
-            secondPlayer = game.players(1).name,
-            firstScore = firstS,
-            secondScore = secS
-        )
-        newGame.copy(displayType = SUMMARY)
+    private def calculateInstantWinScore(player: Player): Int = {
+        instantWinCombinations.foldLeft(0) {
+            case (acc, yaku) =>
+                acc + yaku.evaluate(player)
+        }
     }
 
     /*
-    * */
-    def evaluateScore(players: List[Player], multiplyerFirst: Int, multiplyerSec: Int): (Int, Int) = {
-        val firstScore = players.head.score + multiplyerFirst * yakuCombinations.foldLeft(0) {
+    * def evaluateScore()
+    * returns a tuple of the maximum score of each player multiplied with the give multipliers */
+    def evaluateScore(players: List[Player], multiplierFirst: Int, multiplierSec: Int): (Int, Int) = {
+        val firstScore = players.head.score + multiplierFirst * yakuCombinations.foldLeft(0) {
             case (acc, yaku) =>
                 acc + yaku.evaluate(players.head)
         }
-        val secondScore = players(1).score + multiplyerSec * yakuCombinations.foldLeft(0) {
+        val secondScore = players(1).score + multiplierSec * yakuCombinations.foldLeft(0) {
             case (acc, yaku) =>
                 acc + yaku.evaluate(players(1))
         }
