@@ -190,7 +190,7 @@ case object KuttsukiCombination extends Combination {
     override val points: Int = 6
     override val unicode: String = "Kuttsuki (くっつき) \"Being dealt four pairs of cards with matching suits.\"\t6pts."
     override def evaluate(player: Player): Int = {
-        if player.hand.cards.forall(c => player.hand.cards.count(_ == c) == 2) then points else 0
-    }
+        if player.hand.cards.nonEmpty && player.hand.cards.forall(c => player.hand.cards.count(_.month == c.month) == 2) then points else 0
+    }   // Interesting: List.forall() always returns true if List.isEmpty
 }
 /* ------------------------------------- */
