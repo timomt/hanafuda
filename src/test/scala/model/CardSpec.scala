@@ -1,3 +1,4 @@
+import model.{Card, CardMonth, CardName, CardPlant, CardType}
 import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.matchers.should.Matchers
 

@@ -1,3 +1,4 @@
+import model.{CardMonth, CardName, CardType, Deck}
 import org.scalatest.flatspec.AnyFlatSpec
 
 class DeckSpec extends AnyFlatSpec {

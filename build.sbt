@@ -9,7 +9,10 @@ lazy val root = (project in file("."))
       coverageMinimumStmtTotal := 100,
       coverageMinimumBranchTotal := 100,
       coverageFailOnMinimum := true,
-      coverageHighlighting := true
+      coverageHighlighting := true,
+      coverageExcludedPackages := ".*Hanafuda.*"
   )
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.2.18" % Test
+
+jacocoReportSettings := JacocoReportSettings().withFormats(JacocoReportFormats.XML, JacocoReportFormats.HTML)
