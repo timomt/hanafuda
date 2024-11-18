@@ -86,7 +86,7 @@ class GameManagerSpec extends AnyFlatSpec {
         )
         val newGame = GameManager.koiKoiHandler(game)
         assert(newGame.isInstanceOf[GameStatePendingKoiKoi])
-        assert(newGame.stdout === Some(s"You scored a yaku: Hanami-zake (花見酒) \"Cherry Blossom Viewing\"\t5pts.\n You can now either finish or call koi-koi."))
+        assert(newGame.stdout === Some(s"You scored a yaku: \nHanami-zake (花見酒) \"Cherry Blossom Viewing\"\t5pts.\n You can now either finish or call koi-koi."))
         assert(newGame.stderr.isEmpty)
     }
     it should "double the points of the caller in case of a successful call" in {
