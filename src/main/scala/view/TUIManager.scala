@@ -1,6 +1,6 @@
 package view
 import controller.Observer
-import model.{Card, CardName, CardType, Deck, GameState, DisplayType}
+import model.{Card, CardName, CardType, Deck, DisplayType, GameState, GameStateSummary, instantWinCombinations, yakuCombinations}
 
 /*
 * MVC: View
@@ -154,35 +154,33 @@ object TUIManager extends Observer {
         helpText
     }
 
-    // TODO: get good (display listing of yakus maybe?)
     def printSummary(game: GameState): String = {
-        val summary =
-            clearScreen +
-                s"""
-                  |╔════════════════════════════════════════════════════════════════════════╗
-                  |║                                Summary                                 ║
-                  |╠════════════════════════════════════════════════════════════════════════╣
-                  |║                                                                        ║
-                  |║                                                                        ║
-                  |║                                                                        ║
-                  |║                  Player                        Score                   ║
-                  |║                 ${game.players.head.name}\t\t${game.players.head.score}║
-                  |║                 ${game.players(1).name}\t\t${game.players(1).score}    ║
-                  |║                                                                        ║
-                  |║                                                                        ║
-                  |║                                                                        ║
-                  |║                                                                        ║
-                  |║                                                                        ║
-                  |║                                                                        ║
-                  |║                                                                        ║
-                  |║                                                                        ║
-                  |║                                                                        ║
-                  |║                                                                        ║
-                  |║                                                                        ║
-                  |║                                                                        ║
-                  |╚════════════════════════════════════════════════════════════════════════╝
-                  |""".stripMargin
-        summary
+        def formatPlayerName(name: String): String = {
+            if (name.length > 20) name.take(17) + "..." else name.padTo(20, ' ')
+        }
+        val summaryHeader = clearScreen +
+            s"""
+               |╔═══════════════════════════════════════════════════════════════════════╗
+               |║                                Summary                                ║
+               |╠═══════════════════════════════════════════════════════════════════════╣
+               |║                         Score of each player                          ║
+               |╠═════════════════════════╦══════════════════════╦══════════════════════╣
+               |║          Yaku           ║ ${formatPlayerName(game.players.head.name)} ║ ${formatPlayerName(game.players(1).name)} ║
+               |╠═════════════════════════╬══════════════════════╬══════════════════════╣
+               |""".stripMargin
+
+        val combinationRows = yakuCombinations.appendedAll(instantWinCombinations).map { combo =>
+            val player1Score = if (game.asInstanceOf[GameStateSummary].outOfCardsEnding) 0 else combo.evaluate(game.players.head)
+            val player2Score = if (game.asInstanceOf[GameStateSummary].outOfCardsEnding) 0 else combo.evaluate(game.players(1))
+            f"║ ${combo.unicodeShort}%-23s ║ $player1Score%-20d ║ $player2Score%-20d ║"
+        }.mkString("\n")
+
+        val summaryFooter =
+            """
+              |╚═════════════════════════╩══════════════════════╩══════════════════════╝
+              |""".stripMargin
+
+        summaryHeader + combinationRows + summaryFooter
     }
 
     /*
@@ -191,6 +189,7 @@ object TUIManager extends Observer {
     * TODO: display ALL fitting card combinations
     * */
     def printOverview(game: GameState): String = {
+        //TODO ameShiko, Sanko, Tane, Tanzaku, Kasu
         val goko = "Gokō (五光) \"Five Hikari\"\t10pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
         val shiko = "Shikō (四光) \"Four Hikari\"\t8pts.\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
         val ameShiko = "Ame-Shikō (雨四光) \"Rainy Four Hikari\"\t7pts.\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.PHOENIX).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"

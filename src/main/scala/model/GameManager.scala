@@ -15,7 +15,7 @@ object GameManager {
     * customBoard := used for testing purposes.
     * */
     @tailrec
-    def newGame(firstPlayer: String, secondPlayer: String, firstScore: Int = 0, secondScore: Int = 0, customBoard: Option[List[Card]] = None, customHandFirst: Option[Deck] = None, customHandSec: Option[Deck] = None): GameStatePlanned = {
+    def newGame(firstPlayer: String, secondPlayer: String, firstScore: Int = 0, secondScore: Int = 0, customBoard: Option[List[Card]] = None, customHandFirst: Option[Deck] = None, customHandSec: Option[Deck] = None): GameState = {
         val (polledBoard, deck) = Deck.pollMultiple(Deck.defaultDeck(), 8)
         val actualPolledBoard = customBoard.getOrElse(polledBoard)
 
@@ -38,7 +38,7 @@ object GameManager {
                 || instantWinCombinations.exists(_.evaluate(playerList(1)) > 0)) {
                 val firstS = calculateInstantWinScore(playerList.head)
                 val secS = calculateInstantWinScore(playerList(1))
-                handleKoiKoi(playerList, firstS, secS)
+                handleKoiKoi(playerList, firstS, secS, deck = updatedDeck, board = Deck(actualBoard))
             } else {
                 model.GameStatePlanned(
                     players = playerList,
@@ -81,10 +81,10 @@ object GameManager {
     def koiKoiHandler(game: GameState): GameState = {
         if (game.players.head.calledKoiKoi) {   // fulfilled call
             val (firstS, secS) = evaluateScore(game.players, 2, 1)
-            handleKoiKoi(game.players, firstS, secS)
+            handleKoiKoi(game.players, firstS, secS, game.board, game.deck)
         } else if (game.players(1).calledKoiKoi) {  // failed call
             val (firstS, secS) = evaluateScore(game.players, 2, 0)
-            handleKoiKoi(game.players, firstS, secS)
+            handleKoiKoi(game.players, firstS, secS, game.board, game.deck)
         } else {
             val yakuList = yakuCombinations.filter(c => c.evaluate(game.players.head) > 0).map(_.unicode)
             GameStatePendingKoiKoi(
@@ -92,7 +92,7 @@ object GameManager {
                 deck = game.deck,
                 board = game.board,
                 displayType = DisplayType.GAME,
-                stdout = Some(s"You scored a yaku: \n${yakuList.map(_ + "\n").mkString("\n")} You can now either finish or call koi-koi."),
+                stdout = Some(s"You scored a yaku: \n${yakuList.map(c => s"\t- $c\n").mkString("\n")}You can now either finish or call koi-koi."),
                 stderr = None
             )
         }
@@ -101,14 +101,15 @@ object GameManager {
     /*
     * Handles the koi-koi call and returns the new game state.
     * */
-    def handleKoiKoi(players: List[Player], firstS: Int, secS: Int): GameStatePlanned = {
-        val newGame = GameManager.newGame(
-            firstPlayer = players.head.name,
-            secondPlayer = players(1).name,
-            firstScore = firstS,
-            secondScore = secS
+    def handleKoiKoi(players: List[Player], firstS: Int, secS: Int, board: Deck, deck: Deck, outOfCardsEnding: Boolean = false): GameStateSummary = {
+        GameStateSummary(
+            players = List(players.head.copy(score = firstS), players(1).copy(score = secS)),
+            stdout = None, stderr = None,
+            deck = deck,
+            board = board,
+            displayType = DisplayType.SUMMARY,
+            outOfCardsEnding = outOfCardsEnding
         )
-        newGame.copy(displayType = SUMMARY)
     }
 
     /*

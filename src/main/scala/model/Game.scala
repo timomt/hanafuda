@@ -1,5 +1,7 @@
 package model
 
+import model.DisplayType.SUMMARY
+
 /*
 * case class Player(...)
 * name:= Name of the player
@@ -20,8 +22,7 @@ enum DisplayType {
 * board:= The cards currently layed out in the middle
 * matched:= A deck of currently matched cards
 * queued:= The Card on top of stack waiting to be matched
-* *///TODO: check for empy decks
-//TODO: specify exactly what cards in stdout
+* */
 trait GameState {
     def players: List[Player]
     def deck: Deck
@@ -156,7 +157,10 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                 side = Deck(this.players.head.side.cards.appendedAll(this.matched.cards))
             ))
             val updatedBoard = Deck(this.board.cards.appended(this.queued))
-            if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
+            if (this.deck.cards.isEmpty
+                || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {    // empty check
+                GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, board = updatedBoard, deck = this.deck, true)
+            } else if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
                 GameManager.koiKoiHandler(this.copy(
                     players = updatedPlayers.reverse,
                     board = updatedBoard
@@ -193,7 +197,10 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                             .appendedAll(this.board.cards.filter(c => c.month == this.queued.month)))
                     ))
                     val updatedBoard = Deck(this.board.cards.filterNot(c => c.month == this.queued.month))
-                    if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
+                    if (this.deck.cards.isEmpty
+                        || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {    // empty check
+                        GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, deck = this.deck, board = updatedBoard, true)
+                    } else if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
                         GameManager.koiKoiHandler(this.copy(
                             players = updatedPlayers.reverse,
                             board = updatedBoard
@@ -215,7 +222,10 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                             .appendedAll(this.matched.cards))
                     ))
                     val updatedBoard = Deck(this.board.cards.patch(y - 1, Nil, 1))
-                    if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
+                    if (this.deck.cards.isEmpty
+                        || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {    // empty check
+                        GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, deck = this.deck, board = updatedBoard, true)
+                    } else if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
                         GameManager.koiKoiHandler(this.copy(
                             players = updatedPlayers.reverse,
                             board = updatedBoard
@@ -254,4 +264,13 @@ case class GameStatePendingKoiKoi(players: List[Player], deck: Deck, board: Deck
     override def handleMatch(xS: String, yS: String): GameState = {
         this.updateGameStateWithError("You have to either call \"koi-koi\" or \"finish\".")
     }
+}
+
+case class GameStateSummary(players: List[Player], deck: Deck, board: Deck, displayType: DisplayType, stdout: Option[String], stderr: Option[String], outOfCardsEnding: Boolean = false) extends GameState {
+    override def matchedDeck: Option[Deck] = None
+    override def queuedCard: Option[Card] = None
+    override def handleMatch(xS: String, yS: String): GameState = updateGameStateWithError("You first have to create a new game, see \"help\".")
+    override def handleDiscard(xS: String): GameState = updateGameStateWithError("You first have to create a new game, see \"help\".")
+    override def updateGameStateWithError(errorMessage: String): GameState = this.copy(stdout = None, stderr = Some(errorMessage))
+    override def updateGameStateWithDisplayType(display: DisplayType): GameState = updateGameStateWithError("You first have to create a new game, see \"help\".")
 }
