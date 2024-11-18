@@ -6,6 +6,27 @@ import org.scalatest.matchers.should.Matchers
 class GameSpec extends AnyFlatSpec with Matchers {
     /* ------------------------- */
     /* ------ updateGameStateWithError ------ */
+    "updateGameStateWithDisplayType[GameStatePlanned]" should "set displayType attribute correctly" in {
+        val game = GameStatePlanned(
+            players = List(
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false)
+            ),
+            deck = Deck.defaultDeck(),
+            board = Deck(List(
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+            )),
+            stdout = None,
+            stderr = None
+        )
+        assert(game.updateGameStateWithDisplayType(DisplayType.GAME) === game)
+        assert(game.updateGameStateWithDisplayType(DisplayType.SUMMARY).displayType === DisplayType.SUMMARY)
+        assert(game.updateGameStateWithDisplayType(DisplayType.HELP).displayType === DisplayType.HELP)
+        assert(game.updateGameStateWithDisplayType(DisplayType.SPOILER).displayType === DisplayType.SPOILER)
+        assert(game.updateGameStateWithDisplayType(DisplayType.COMBINATIONS).displayType === DisplayType.COMBINATIONS)
+    }
 
     "updateGameStateWithError" should "return a copy with the provided stderr included" in {
         val game = GameStatePlanned(

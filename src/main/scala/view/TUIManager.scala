@@ -26,7 +26,7 @@ object TUIManager extends Observer {
     /*
     * def printBoard(...)
     * returns a String representation of the provided GameState.
-    * */ //TODO: fix unlimited board size
+    * */
     def printBoard(game: GameState): String = {
         val card = s"""╔══════╗
                       |║      ║
@@ -38,20 +38,27 @@ object TUIManager extends Observer {
 
         val topRow = List.fill(game.players(1).hand.cards.size)(card).transpose.map(_.mkString(" ")).mkString("\n")
 
-        val upperMiddleRow = game.board.cards.slice(0, 4).map(_.unicode)
+        val bound = if game.board.cards.size > 8
+            then if game.board.cards.size % 2 == 0 then game.board.cards.size/2 else  game.board.cards.size/2+1
+            else 4
+        val upperMiddleRow = game.board.cards.slice(0, bound).map(_.unicode)
             .prependedAll(game.queuedCard match {
                 case Some(c) => List.fill(1)(cardSpacer).prepended(c.unicode)
                 case None => List.fill(2)(cardSpacer)
             })
-            .appendedAll(List.fill(5 - game.board.cards.slice(0, 4).size)(cardSpacer))
+            .appendedAll(List.fill(1)(cardSpacer))
             .appendedAll(game.matchedDeck match {
                 case Some(d) => d.cards.slice(0, d.cards.size/2).map(_.unicode)
                 case None => List.fill(2)(cardSpacer)
             })
             .transpose.map(_.mkString(" ")).mkString("\n")
 
-        val lowerMiddleRow = game.board.cards.slice(4, 8).map(_.unicode).prependedAll(List.fill(2)(cardSpacer))
-            .appendedAll(List.fill(5 - game.board.cards.slice(4, 8).size)(cardSpacer))
+        val lowerMiddleRow = game.board.cards.slice(bound, game.board.cards.size).map(_.unicode).prependedAll(List.fill(2)(cardSpacer))
+            .appendedAll(List.fill(
+                if game.board.cards.size < 8
+                    then if game.board.cards.size < 5 then game.board.cards.size+1 else 5 - (game.board.cards.size-bound)
+                else if game.board.cards.size % 2 == 0 then 1 else 2
+            )(cardSpacer))
             .appendedAll(game.matchedDeck match {
                 case Some(d) => d.cards.slice(d.cards.size/2, d.cards.size).map(_.unicode)
                 case None => List.fill(2)(cardSpacer)
