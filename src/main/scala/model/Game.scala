@@ -1,5 +1,7 @@
 package model
 
+import model.DisplayType.SUMMARY
+
 /*
 * case class Player(...)
 * name:= Name of the player
@@ -7,10 +9,10 @@ package model
 * side:= The players side Deck representing their gathered cards
 * score:= The current highest possible score of combinations
 * */
-case class Player(name: String, hand: Deck, side: Deck, score: Int)
+case class Player(name: String, hand: Deck, side: Deck, score: Int, calledKoiKoi: Boolean)
 
 enum DisplayType {
-    case GAME, COMBINATIONS, HELP, SPOILER
+    case GAME, COMBINATIONS, HELP, SPOILER, SUMMARY
 }
 
 /*
@@ -20,8 +22,7 @@ enum DisplayType {
 * board:= The cards currently layed out in the middle
 * matched:= A deck of currently matched cards
 * queued:= The Card on top of stack waiting to be matched
-* *///TODO: check for empy decks
-//TODO: check for koi-koi
+* */
 trait GameState {
     def players: List[Player]
     def deck: Deck
@@ -35,15 +36,6 @@ trait GameState {
     def handleDiscard(xS: String): GameState
     def updateGameStateWithError(errorMessage: String): GameState
     def updateGameStateWithDisplayType(display: DisplayType): GameState
-
-    /*TODO
-    * def evaluateScore()
-    * returns a tuple representation of the current maximum score of this GameState.
-    * the first element belongs to players.head, the second to players(1).
-    * */
-    def evaluateScore(): (Int, Int) = {
-        ???
-    }
 }
 
 case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, displayType: DisplayType = DisplayType.GAME, stdout: Option[String], stderr: Option[String]) extends GameState {
@@ -57,7 +49,6 @@ case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, disp
     def updateGameStateWithDisplayType(display: DisplayType): GameState = {
         this.copy(displayType = display)
     }
-
 
     /*
     * handleDiscard(..)
@@ -154,7 +145,7 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
     def updateGameStateWithError(errorMessage: String): GameState = {
         this.copy(stdout = None, stderr = Some(errorMessage), displayType = DisplayType.GAME)
     }
-
+    
     /*
     * def handleDiscard(..)
     * */
@@ -165,14 +156,25 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
             val updatedPlayers = List(this.players(1), this.players.head.copy(
                 side = Deck(this.players.head.side.cards.appendedAll(this.matched.cards))
             ))
-            GameStatePlanned(
-                deck = this.deck,
-                players = updatedPlayers,
-                board = Deck(this.board.cards.appended(this.queued)),
-                stdout = Some("Discarded drawn card."),
-                stderr = None,
-                displayType = DisplayType.SPOILER
-            )
+            val updatedBoard = Deck(this.board.cards.appended(this.queued))
+            if (this.deck.cards.isEmpty
+                || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {    // empty check
+                GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, board = updatedBoard, deck = this.deck, true)
+            } else if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
+                GameManager.koiKoiHandler(this.copy(
+                    players = updatedPlayers.reverse,
+                    board = updatedBoard
+                ))
+            } else {
+                GameStatePlanned(
+                    deck = this.deck,
+                    players = updatedPlayers,
+                    board = updatedBoard,
+                    stdout = Some("Discarded drawn card."),
+                    stderr = None,
+                    displayType = DisplayType.SPOILER
+                )
+            }
         }
     }
 
@@ -194,32 +196,81 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                             .appendedAll(this.matched.cards)
                             .appendedAll(this.board.cards.filter(c => c.month == this.queued.month)))
                     ))
-                    GameStatePlanned(
-                        deck = this.deck,
-                        players = updatedPlayers,
-                        board = Deck(this.board.cards.filterNot(c => c.month == this.queued.month)),
-                        stdout = Some(s"Matched a whole month (${this.queued.month})."),
-                        stderr = None,
-                        displayType = DisplayType.SPOILER
-                    )
+                    val updatedBoard = Deck(this.board.cards.filterNot(c => c.month == this.queued.month))
+                    if (this.deck.cards.isEmpty
+                        || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {    // empty check
+                        GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, deck = this.deck, board = updatedBoard, true)
+                    } else if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
+                        GameManager.koiKoiHandler(this.copy(
+                            players = updatedPlayers.reverse,
+                            board = updatedBoard
+                        ))
+                    } else {
+                        GameStatePlanned(
+                            deck = this.deck,
+                            players = updatedPlayers,
+                            board = updatedBoard,
+                            stdout = Some(s"Matched a whole month (${this.queued.month})."),
+                            stderr = None,
+                            displayType = DisplayType.SPOILER
+                        )
+                    }
                 } else { // Default match
                     val updatedPlayers = List(this.players(1), this.players.head.copy(
                         side = Deck(this.players.head.side.cards
                             .appendedAll(List(this.queued, this.board.cards(y - 1)))
                             .appendedAll(this.matched.cards))
                     ))
-                    GameStatePlanned(
-                        deck = this.deck,
-                        players = updatedPlayers,
-                        board = Deck(this.board.cards.patch(y - 1, Nil, 1)),
-                        stdout = Some(s"Matched drawn card with $y."),
-                        stderr = None,
-                        displayType = DisplayType.SPOILER
-                    )
+                    val updatedBoard = Deck(this.board.cards.patch(y - 1, Nil, 1))
+                    if (this.deck.cards.isEmpty
+                        || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {    // empty check
+                        GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, deck = this.deck, board = updatedBoard, true)
+                    } else if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
+                        GameManager.koiKoiHandler(this.copy(
+                            players = updatedPlayers.reverse,
+                            board = updatedBoard
+                        ))
+                    } else {
+                        GameStatePlanned(
+                            deck = this.deck,
+                            players = updatedPlayers,
+                            board = updatedBoard,
+                            stdout = Some(s"Matched drawn card with $y."),
+                            stderr = None,
+                            displayType = DisplayType.SPOILER
+                        )
+                    }
                 }
             } else { // Match is not valid (different months)
                 updateGameStateWithError(s"You can not match cards of different months (${this.queued.month} and ${this.board.cards(y - 1).month}).")
             }
         }
     }
+}
+
+case class GameStatePendingKoiKoi(players: List[Player], deck: Deck, board: Deck, displayType: DisplayType = DisplayType.GAME, stdout: Option[String], stderr: Option[String]) extends GameState {
+    def updateGameStateWithDisplayType(display: DisplayType): GameState = {
+        this.copy(displayType = display)
+    }
+    
+    def updateGameStateWithError(errorMessage: String): GameState = {
+        this.copy(stdout = None, stderr = Some(errorMessage), displayType = DisplayType.GAME)
+    }
+
+    override def handleDiscard(xS: String): GameState = {
+        this.updateGameStateWithError("You have to either call \"koi-koi\" or \"finish\".")
+    }
+
+    override def handleMatch(xS: String, yS: String): GameState = {
+        this.updateGameStateWithError("You have to either call \"koi-koi\" or \"finish\".")
+    }
+}
+
+case class GameStateSummary(players: List[Player], deck: Deck, board: Deck, displayType: DisplayType, stdout: Option[String], stderr: Option[String], outOfCardsEnding: Boolean = false) extends GameState {
+    override def matchedDeck: Option[Deck] = None
+    override def queuedCard: Option[Card] = None
+    override def handleMatch(xS: String, yS: String): GameState = updateGameStateWithError("You first have to create a new game, see \"help\".")
+    override def handleDiscard(xS: String): GameState = updateGameStateWithError("You first have to create a new game, see \"help\".")
+    override def updateGameStateWithError(errorMessage: String): GameState = this.copy(stdout = None, stderr = Some(errorMessage))
+    override def updateGameStateWithDisplayType(display: DisplayType): GameState = updateGameStateWithError("You first have to create a new game, see \"help\".")
 }

@@ -3,6 +3,7 @@
 ![GitHub contributors](https://img.shields.io/github/contributors/timomt/hanafuda?style=for-the-badge&logo=GitHub&color=%20%23C8A2C8)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/w/timomt/hanafuda?style=for-the-badge&color=%20%23852679)
 ![GitHub Created At](https://img.shields.io/github/created-at/timomt/hanafuda?style=for-the-badge&logo=GitHub%20Sponsors&logoColor=%23EA4AAA&color=%20%23668C6F)
+![Coveralls](https://img.shields.io/coverallsCoverage/github/timomt/hanafuda?style=for-the-badge&logo=coveralls&color=%233F5767)
 
 # Hanafuda (Koi-Koi)
 

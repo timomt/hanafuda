@@ -1,6 +1,6 @@
 package view
 import controller.Observer
-import model.{Card, CardName, CardType, Deck, GameState, DisplayType}
+import model.{Card, CardName, CardType, Deck, DisplayType, GameState, GameStateSummary, instantWinCombinations, yakuCombinations}
 
 /*
 * MVC: View
@@ -10,7 +10,6 @@ import model.{Card, CardName, CardType, Deck, GameState, DisplayType}
 object TUIManager extends Observer {
     val clearScreen: String = "\u001b[2J\u001b[3J\u001b[1;1H"
     
-    //TODO: spoiler protection
     /*
     * def update(...)
     * updates the TUI according to the current GameState.
@@ -21,12 +20,13 @@ object TUIManager extends Observer {
             case DisplayType.COMBINATIONS => println(printOverview(gameState))
             case DisplayType.HELP => println(printHelp())
             case DisplayType.SPOILER => println(printSpoiler())
+            case DisplayType.SUMMARY => println(printSummary(gameState))
     }
     
     /*
     * def printBoard(...)
     * returns a String representation of the provided GameState.
-    * */ //TODO: fix unlimited board size
+    * */
     def printBoard(game: GameState): String = {
         val card = s"""╔══════╗
                       |║      ║
@@ -38,20 +38,27 @@ object TUIManager extends Observer {
 
         val topRow = List.fill(game.players(1).hand.cards.size)(card).transpose.map(_.mkString(" ")).mkString("\n")
 
-        val upperMiddleRow = game.board.cards.slice(0, 4).map(_.unicode)
+        val bound = if game.board.cards.size > 8
+            then if game.board.cards.size % 2 == 0 then game.board.cards.size/2 else  game.board.cards.size/2+1
+            else 4
+        val upperMiddleRow = game.board.cards.slice(0, bound).map(_.unicode)
             .prependedAll(game.queuedCard match {
                 case Some(c) => List.fill(1)(cardSpacer).prepended(c.unicode)
                 case None => List.fill(2)(cardSpacer)
             })
-            .appendedAll(List.fill(5 - game.board.cards.slice(0, 4).size)(cardSpacer))
+            .appendedAll(List.fill(1)(cardSpacer))
             .appendedAll(game.matchedDeck match {
                 case Some(d) => d.cards.slice(0, d.cards.size/2).map(_.unicode)
                 case None => List.fill(2)(cardSpacer)
             })
             .transpose.map(_.mkString(" ")).mkString("\n")
 
-        val lowerMiddleRow = game.board.cards.slice(4, 8).map(_.unicode).prependedAll(List.fill(2)(cardSpacer))
-            .appendedAll(List.fill(5 - game.board.cards.slice(4, 8).size)(cardSpacer))
+        val lowerMiddleRow = game.board.cards.slice(bound, game.board.cards.size).map(_.unicode).prependedAll(List.fill(2)(cardSpacer))
+            .appendedAll(List.fill(
+                if game.board.cards.size < 8
+                    then if game.board.cards.size < 5 then game.board.cards.size+1 else 5 - (game.board.cards.size-bound)
+                else if game.board.cards.size % 2 == 0 then 1 else 2
+            )(cardSpacer))
             .appendedAll(game.matchedDeck match {
                 case Some(d) => d.cards.slice(d.cards.size/2, d.cards.size).map(_.unicode)
                 case None => List.fill(2)(cardSpacer)
@@ -70,7 +77,7 @@ object TUIManager extends Observer {
             case None => ""
         }
 
-        clearScreen + s"Current player: ${game.players.head.name}\n"
+        clearScreen + s"Current player: ${game.players.head.name}\tPoints: ${game.players.head.score}\n"
             + topRow + "\n\n" + upperMiddleRow + "\n" + lowerMiddleRow + "\n\n" + bottomRow + stdoutRow + stderrRow
     }
 
@@ -147,12 +154,42 @@ object TUIManager extends Observer {
         helpText
     }
 
+    def printSummary(game: GameState): String = {
+        def formatPlayerName(name: String): String = {
+            if (name.length > 20) name.take(17) + "..." else name.padTo(20, ' ')
+        }
+        val summaryHeader = clearScreen +
+            s"""
+               |╔═══════════════════════════════════════════════════════════════════════╗
+               |║                                Summary                                ║
+               |╠═══════════════════════════════════════════════════════════════════════╣
+               |║                         Score of each player                          ║
+               |╠═════════════════════════╦══════════════════════╦══════════════════════╣
+               |║          Yaku           ║ ${formatPlayerName(game.players.head.name)} ║ ${formatPlayerName(game.players(1).name)} ║
+               |╠═════════════════════════╬══════════════════════╬══════════════════════╣
+               |""".stripMargin
+
+        val combinationRows = yakuCombinations.appendedAll(instantWinCombinations).map { combo =>
+            val player1Score = if (game.asInstanceOf[GameStateSummary].outOfCardsEnding) 0 else combo.evaluate(game.players.head)
+            val player2Score = if (game.asInstanceOf[GameStateSummary].outOfCardsEnding) 0 else combo.evaluate(game.players(1))
+            f"║ ${combo.unicodeShort}%-23s ║ $player1Score%-20d ║ $player2Score%-20d ║"
+        }.mkString("\n")
+
+        val summaryFooter =
+            """
+              |╚═════════════════════════╩══════════════════════╩══════════════════════╝
+              |""".stripMargin
+
+        summaryHeader + combinationRows + summaryFooter
+    }
+
     /*
     * def printOverview(...)
     * returns a String representation of the overview of all (un)collected cards and their value.
-    * TODO: display fitting card combination
+    * TODO: display ALL fitting card combinations
     * */
     def printOverview(game: GameState): String = {
+        //TODO ameShiko, Sanko, Tane, Tanzaku, Kasu
         val goko = "Gokō (五光) \"Five Hikari\"\t10pts.\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
         val shiko = "Shikō (四光) \"Four Hikari\"\t8pts.\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
         val ameShiko = "Ame-Shikō (雨四光) \"Rainy Four Hikari\"\t7pts.\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.PHOENIX).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
@@ -176,8 +213,8 @@ object TUIManager extends Observer {
     * returns the colorized unicode representation of given card depending on who owns it.
     * */
     def colorizeOverviewCard(game: GameState, card: Card): List[String] = card match {
-        case c if game.players.head.side.cards.contains(card) => c.unicode.map(line => s"\u001b[32m$line\u001b[0m")
-        case c if game.players(1).side.cards.contains(card) => c.unicode.map(line => s"\u001b[31m$line\u001b[0m")
+        case c if game.players.head.side.cards.contains(Card(card.month, card.cardType, card.cardName)) => c.unicode.map(line => s"\u001b[32m$line\u001b[0m")
+        case c if game.players(1).side.cards.contains(Card(card.month, card.cardType, card.cardName)) => c.unicode.map(line => s"\u001b[31m$line\u001b[0m")
         case _ => card.unicode.map(line => s"\u001b[0m$line\u001b[0m")
     }
 }
