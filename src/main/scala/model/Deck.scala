@@ -1,8 +1,22 @@
+package model
+
 import scala.util.Random
 
+/*
+* case class Deck(...)
+* a deck of hanafuda playing cards.
+* */
 case class Deck(cards: List[Card])
 
+/*
+* object Deck
+* providing static methods for case class Deck
+* */
 object Deck {
+    /*
+    * def defaultDeck()
+    * returns a new Deck filled with the default hanafuda cards.
+    * */
     def defaultDeck(): Deck = Deck(List(
         Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE),
         Card(CardMonth.JANUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU),
@@ -64,7 +78,12 @@ object Deck {
         Card(CardMonth.DECEMBER, CardType.KASU, CardName.PLAIN),
         Card(CardMonth.DECEMBER, CardType.KASU, CardName.PLAIN)
     ))
-
+    
+    /*
+    * def poll(...)
+    * returns a random card drawn from the provided deck 
+    * and a new deck without this specific card.
+    * */
     def poll(deck: Deck): (Option[Card], Deck) = {
         if (deck.cards.isEmpty) {
             (None, deck)
@@ -75,6 +94,10 @@ object Deck {
         }
     }
 
+    /*
+    * def pollMultiple(..)
+    * extension of poll() for convenient use.
+    * */
     def pollMultiple(deck: Deck, n: Int): (List[Card], Deck) = {
         (1 to n).foldLeft((List.empty, deck)) { case ((cards, currentDeck), _) =>
             val (polledCard, polledDeck) = poll(currentDeck)
