@@ -272,5 +272,5 @@ case class GameStateSummary(players: List[Player], deck: Deck, board: Deck, disp
     override def handleMatch(xS: String, yS: String): GameState = updateGameStateWithError("You first have to create a new game, see \"help\".")
     override def handleDiscard(xS: String): GameState = updateGameStateWithError("You first have to create a new game, see \"help\".")
     override def updateGameStateWithError(errorMessage: String): GameState = this.copy(stdout = None, stderr = Some(errorMessage))
-    override def updateGameStateWithDisplayType(display: DisplayType): GameState = updateGameStateWithError("You first have to create a new game, see \"help\".")
+    override def updateGameStateWithDisplayType(display: DisplayType): GameState = this.copy(displayType = display)
 }

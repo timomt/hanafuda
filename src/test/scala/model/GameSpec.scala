@@ -329,8 +329,8 @@ class GameSpec extends AnyFlatSpec with Matchers {
     it should "match default rules properly" in {
         val game = GameStateRandom(
             players = List(
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false),
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false)
+                Player("", Deck.defaultDeck(), Deck(List.empty), 0, calledKoiKoi = false),
+                Player("", Deck.defaultDeck(), Deck(List.empty), 0, calledKoiKoi = false)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
@@ -357,8 +357,8 @@ class GameSpec extends AnyFlatSpec with Matchers {
     it should "match 3/4 rule properly" in {
         val game = GameStateRandom(
             players = List(
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false),
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false)
+                Player("", Deck.defaultDeck(), Deck(List.empty), 0, calledKoiKoi = false),
+                Player("", Deck.defaultDeck(), Deck(List.empty), 0, calledKoiKoi = false)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(

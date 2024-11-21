@@ -116,7 +116,7 @@ case object InoshiKachoCombination extends Combination {
 }
 
 case object TaneCombination extends Combination {
-    override val unicode: String = "Tane (タネ) \"plain\"\t1pt."
+    override val unicode: String = "Tane (タネ) \t1pt."
     override val unicodeShort: String = "Tane"
     override val points: Int = 1
     override def evaluate(player: Player): Int = {
