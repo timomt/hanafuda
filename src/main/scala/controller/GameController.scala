@@ -16,16 +16,6 @@ object GameController extends Observable {
     var gameState: Option[GameState] = None
 
     /*
-    * def newGame()
-    * initializes/overwrites this objects gameState with a default game
-    * and notifies observers of the new GameState.
-    * */
-    def newGame(firstPlayer: String, secondPlayer: String): Unit = {
-        gameState = Some(GameManager.newGame(firstPlayer, secondPlayer))
-        notifyObservers(gameState.get)
-    }
-
-    /*
     * def processInput(...)
     * processes a String to change the current GameState
     * and notifies observers of the new GameState.
@@ -40,7 +30,9 @@ object GameController extends Observable {
 
         case i if gameState.isEmpty =>
             i match {
-                case s"start $firstPlayer $secondPlayer" => newGame(firstPlayer, secondPlayer)
+                case s"start $firstPlayer $secondPlayer" =>
+                    gameState = Some(GameManager.newGame(firstPlayer, secondPlayer))
+                    notifyObservers(gameState.get)
                 case _ => println("[Error]: You submitted a command that requires a started game without starting it correctly.")
             }
 
@@ -56,7 +48,7 @@ object GameController extends Observable {
                     notifyObservers(gameState.get)
                 case "finish" =>
                     val (firstS, secS) = GameManager.evaluateScore(gameState.get.players, 1, 1)
-                    gameState = Some(GameManager.handleKoiKoi(gameState.get.players, firstS, secS))
+                    gameState = Some(GameManager.handleKoiKoi(gameState.get.players, firstS, secS, board = gameState.get.board, deck = gameState.get.deck))
                     notifyObservers(gameState.get)
                 case _ => 
                     gameState = Some(gameState.get.updateGameStateWithError("You have to either call \"koi-koi\" or \"finish\"."))
