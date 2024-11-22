@@ -5,7 +5,7 @@ import model.*
 class CombinationSpec extends AnyFlatSpec with Matchers {
     "All Combinations" should "return 0 for no yaku" in {
         val player = Player("TestPlayer", side = Deck(List.empty), hand = Deck(List.empty),
-            score = 0, calledKoiKoi = false)
+            score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         yakuCombinations.exists(_.evaluate(player) > 0) should be (false)
         instantWinCombinations.exists(_.evaluate(player) > 0) should be (false)
     }
@@ -17,7 +17,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON),
             Card(CardMonth.NOVEMBER, CardType.HIKARI, CardName.RAIN),
             Card(CardMonth.DECEMBER, CardType.HIKARI, CardName.PHOENIX)
-        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false)
+        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         GokoCombination.evaluate(player) should be (10)
     }
 
@@ -27,7 +27,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
             Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON),
             Card(CardMonth.DECEMBER, CardType.HIKARI, CardName.PHOENIX)
-        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false)
+        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         ShikoCombination.evaluate(player) should be (8)
     }
 
@@ -37,7 +37,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
             Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON),
             Card(CardMonth.NOVEMBER, CardType.HIKARI, CardName.RAIN)
-        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false)
+        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         AmeShikoCombination.evaluate(player) should be (7)
     }
 
@@ -46,7 +46,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE),
             Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
             Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON)
-        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false)
+        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         SankoCombination.evaluate(player) should be (6)
     }
 
@@ -54,7 +54,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
         val player = Player("TestPlayer", side = Deck(List(
             Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON),
             Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
-        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false)
+        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         TsukimiZakeCombination.evaluate(player) should be (5)
     }
 
@@ -62,7 +62,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
         val player = Player("TestPlayer", side = Deck(List(
             Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
             Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
-        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false)
+        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         HanamiZakeCombination.evaluate(player) should be (5)
     }
 
@@ -71,7 +71,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.JULY, CardType.TANE, CardName.BOAR),
             Card(CardMonth.OCTOBER, CardType.TANE, CardName.DEER),
             Card(CardMonth.JUNE, CardType.TANE, CardName.BUTTERFLIES)
-        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false)
+        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         InoshiKachoCombination.evaluate(player) should be (5)
     }
 
@@ -82,7 +82,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.MARCH, CardType.TANE, CardName.CURTAIN),
             Card(CardMonth.APRIL, CardType.TANE, CardName.CUCKOO),
             Card(CardMonth.MAY, CardType.TANE, CardName.BRIDGE)
-        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false)
+        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         TaneCombination.evaluate(player) should be (1)
     }
 
@@ -94,7 +94,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.JUNE, CardType.TANZAKU, CardName.BLUE_TANZAKU),
             Card(CardMonth.SEPTEMBER, CardType.TANZAKU, CardName.BLUE_TANZAKU),
             Card(CardMonth.OCTOBER, CardType.TANZAKU, CardName.BLUE_TANZAKU)
-        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false)
+        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         AkatanAotanCombination.evaluate(player) should be (10)
     }
 
@@ -103,7 +103,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.JANUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU),
             Card(CardMonth.FEBRUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU),
             Card(CardMonth.MARCH, CardType.TANZAKU, CardName.POETRY_TANZAKU)
-        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false)
+        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         AkatanCombination.evaluate(player) should be (5)
     }
 
@@ -112,7 +112,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.JUNE, CardType.TANZAKU, CardName.BLUE_TANZAKU),
             Card(CardMonth.SEPTEMBER, CardType.TANZAKU, CardName.BLUE_TANZAKU),
             Card(CardMonth.OCTOBER, CardType.TANZAKU, CardName.BLUE_TANZAKU)
-        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false)
+        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         AotanCombination.evaluate(player) should be (5)
     }
 
@@ -123,7 +123,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.MARCH, CardType.TANZAKU, CardName.POETRY_TANZAKU),
             Card(CardMonth.JUNE, CardType.TANZAKU, CardName.BLUE_TANZAKU),
             Card(CardMonth.SEPTEMBER, CardType.TANZAKU, CardName.BLUE_TANZAKU)
-        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false)
+        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         TanzakuCombination.evaluate(player) should be (1)
     }
 
@@ -139,7 +139,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.AUGUST, CardType.KASU, CardName.PLAIN),
             Card(CardMonth.SEPTEMBER, CardType.KASU, CardName.PLAIN),
             Card(CardMonth.OCTOBER, CardType.KASU, CardName.PLAIN)
-        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false)
+        )), hand = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         KasuCombination.evaluate(player) should be (1)
     }
 
@@ -149,7 +149,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.JANUARY, CardType.TANE, CardName.CRANE),
             Card(CardMonth.JANUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU),
             Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
-        )), score = 0, calledKoiKoi = false)
+        )), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         TeshiCombination.evaluate(player) should be (6)
     }
 
@@ -163,7 +163,7 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.MARCH, CardType.TANZAKU, CardName.POETRY_TANZAKU),
             Card(CardMonth.APRIL, CardType.HIKARI, CardName.CUCKOO),
             Card(CardMonth.APRIL, CardType.HIKARI, CardName.CUCKOO)
-        )), score = 0, calledKoiKoi = false)
+        )), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         KuttsukiCombination.evaluate(player) should be (6)
     }
 }

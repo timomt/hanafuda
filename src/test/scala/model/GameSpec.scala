@@ -9,8 +9,8 @@ class GameSpec extends AnyFlatSpec with Matchers {
     "updateGameStateWithDisplayType[GameStatePlanned]" should "set displayType attribute correctly" in {
         val game = GameStatePlanned(
             players = List(
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false),
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false)
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
@@ -31,8 +31,8 @@ class GameSpec extends AnyFlatSpec with Matchers {
     "updateGameStateWithError" should "return a copy with the provided stderr included" in {
         val game = GameStatePlanned(
             players = List(
-                Player("Test1", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false),
-                Player("Test2", Deck(List.empty), Deck(List.empty), 2, calledKoiKoi = false)),
+                Player("Test1", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("Test2", Deck(List.empty), Deck(List.empty), 2, calledKoiKoi = false, yakusToIgnore = List.empty)),
             deck = Deck.defaultDeck(),
             board = Deck(List.empty),
             stdout = None,
@@ -65,14 +65,14 @@ class GameSpec extends AnyFlatSpec with Matchers {
         val game = GameStatePlanned(
             players =
                 List(
-                    Player(
+                    Player(yakusToIgnore = List.empty,
                         name = "",
                         hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
                         side = Deck(List.empty),
                         score = 0,
                         calledKoiKoi = false
                     ),
-                    Player(
+                    Player(yakusToIgnore = List.empty,
                         name = "",
                         hand = Deck(List.empty),
                         side = Deck(List.empty),
@@ -95,14 +95,14 @@ class GameSpec extends AnyFlatSpec with Matchers {
     "handleDiscard[GameStateRandom]" should "return error on invalid input" in {
         val game = GameStateRandom(
             players = List(
-                Player(
+                Player(yakusToIgnore = List.empty,
                     name = "",
                     hand = Deck(List.empty),
                     side = Deck(List.empty),
                     score = 0, 
                     calledKoiKoi = false
                 ),
-                Player(
+                Player(yakusToIgnore = List.empty,
                     name = "",
                     hand = Deck(List.empty),
                     side = Deck(List.empty),
@@ -124,14 +124,14 @@ class GameSpec extends AnyFlatSpec with Matchers {
     it should "only discard as last resort" in {
         val game = GameStateRandom(
             players = List(
-                Player(
+                Player(yakusToIgnore = List.empty,
                     name = "",
                     hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
                     side = Deck(List.empty),
                     score = 0, 
                     calledKoiKoi = false
                 ),
-                Player(
+                Player(yakusToIgnore = List.empty,
                     name = "",
                     hand = Deck(List.empty),
                     side = Deck(List.empty),
@@ -151,14 +151,14 @@ class GameSpec extends AnyFlatSpec with Matchers {
     it should "discard properly" in {
         val game = GameStateRandom(
             players = List(
-                Player(
+                Player(yakusToIgnore = List.empty,
                     name = "",
                     hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
                     side = Deck(List.empty),
                     score = 0, 
                     calledKoiKoi = false
                 ),
-                Player(
+                Player(yakusToIgnore = List.empty,
                     name = "",
                     hand = Deck(List.empty),
                     side = Deck(List.empty),
@@ -184,7 +184,7 @@ class GameSpec extends AnyFlatSpec with Matchers {
     it should "check for koi-koi" in {
         val game = GameStateRandom(
             players = List(
-                Player(
+                Player(yakusToIgnore = List.empty,
                     name = "",
                     hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
                     side = Deck(List(
@@ -193,7 +193,7 @@ class GameSpec extends AnyFlatSpec with Matchers {
                     score = 0,
                     calledKoiKoi = false
                 ),
-                Player(
+                Player(yakusToIgnore = List.empty,
                     name = "",
                     hand = Deck(List.empty),
                     side = Deck(List.empty),
@@ -223,8 +223,8 @@ class GameSpec extends AnyFlatSpec with Matchers {
                             Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN),
                             Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN)
                         )
-                    ), Deck(List.empty), 0, calledKoiKoi = false),
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false)
+                    ), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN))),
@@ -246,8 +246,8 @@ class GameSpec extends AnyFlatSpec with Matchers {
                             Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN),
                             Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN)
                         )
-                    ), Deck(List.empty), 0, calledKoiKoi = false),
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false)
+                    ), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN))),
@@ -275,8 +275,8 @@ class GameSpec extends AnyFlatSpec with Matchers {
                             Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN),
                             Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN)
                         )
-                    ), Deck(List.empty), 0, calledKoiKoi = false),
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false)
+                    ), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(
@@ -308,8 +308,8 @@ class GameSpec extends AnyFlatSpec with Matchers {
     "handleMatch[GameStateRandom]" should "return error for invalid input" in {
         val game = GameStateRandom(
             players = List(
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false),
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false)
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
@@ -329,8 +329,8 @@ class GameSpec extends AnyFlatSpec with Matchers {
     it should "match default rules properly" in {
         val game = GameStateRandom(
             players = List(
-                Player("", Deck.defaultDeck(), Deck(List.empty), 0, calledKoiKoi = false),
-                Player("", Deck.defaultDeck(), Deck(List.empty), 0, calledKoiKoi = false)
+                Player("", Deck.defaultDeck(), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck.defaultDeck(), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
@@ -357,8 +357,8 @@ class GameSpec extends AnyFlatSpec with Matchers {
     it should "match 3/4 rule properly" in {
         val game = GameStateRandom(
             players = List(
-                Player("", Deck.defaultDeck(), Deck(List.empty), 0, calledKoiKoi = false),
-                Player("", Deck.defaultDeck(), Deck(List.empty), 0, calledKoiKoi = false)
+                Player("", Deck.defaultDeck(), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck.defaultDeck(), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
@@ -388,14 +388,14 @@ class GameSpec extends AnyFlatSpec with Matchers {
     it should "check for koi-koi in default match" in {
         val game = GameStateRandom(
             players = List(
-                Player(
+                Player(yakusToIgnore = List.empty,
                     name = "",
                     hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
                     side = Deck(List.empty),
                     score = 0,
                     calledKoiKoi = false
                 ),
-                Player(
+                Player(yakusToIgnore = List.empty,
                     name = "",
                     hand = Deck(List.empty),
                     side = Deck(List.empty),
@@ -415,14 +415,14 @@ class GameSpec extends AnyFlatSpec with Matchers {
     it should "check for koi-koi in 3/4 rule" in {
         val game = GameStateRandom(
             players = List(
-                Player(
+                Player(yakusToIgnore = List.empty,
                     name = "",
                     hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
                     side = Deck(List.empty),
                     score = 0,
                     calledKoiKoi = false
                 ),
-                Player(
+                Player(yakusToIgnore = List.empty,
                     name = "",
                     hand = Deck(List.empty),
                     side = Deck(List.empty),
@@ -447,8 +447,8 @@ class GameSpec extends AnyFlatSpec with Matchers {
     "updateGameStateWithDisplayType[GameStateRandom]" should "set displayType attribute correctly" in {
         val game = GameStateRandom(
             players = List(
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false),
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false)
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
@@ -472,8 +472,8 @@ class GameSpec extends AnyFlatSpec with Matchers {
     "updateGameStateWithDisplayType[GameStatePendingKoiKoi]" should "set displayType attribute correctly" in {
         val game = GameStatePendingKoiKoi(
             players = List(
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false),
-                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false)
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(

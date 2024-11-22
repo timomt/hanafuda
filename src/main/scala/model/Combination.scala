@@ -182,7 +182,7 @@ case object TanzakuCombination extends Combination {
 
 case object KasuCombination extends Combination {
     override val points: Int = 1
-    override val unicode: String = "Kasu (カス) \" \"\t1pt."
+    override val unicode: String = "Kasu (カス) \t1pt."
     override val unicodeShort: String = "Kasu"
     override def evaluate(player: Player): Int = {
         val firstCardCount = player.side.cards.count(_.cardType == CardType.KASU)

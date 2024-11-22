@@ -7,7 +7,7 @@ package model
 * side:= The players side Deck representing their gathered cards
 * score:= The current highest possible score of combinations
 * */
-case class Player(name: String, hand: Deck, side: Deck, score: Int, calledKoiKoi: Boolean)
+case class Player(name: String, hand: Deck, side: Deck, score: Int, calledKoiKoi: Boolean, yakusToIgnore: List[Combination])
 
 enum DisplayType {
     case GAME, COMBINATIONS, HELP, SPOILER, SUMMARY
@@ -158,7 +158,7 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
             if (this.deck.cards.isEmpty
                 || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {    // empty check
                 GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, board = updatedBoard, deck = this.deck, true)
-            } else if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
+            } else if (GameManager.playerHasScoredNewYaku(updatedPlayers(1))) {     // koi-koi check
                 GameManager.koiKoiHandler(this.copy(
                     players = updatedPlayers.reverse,
                     board = updatedBoard
@@ -198,7 +198,7 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                     if (this.deck.cards.isEmpty
                         || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {    // empty check
                         GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, deck = this.deck, board = updatedBoard, true)
-                    } else if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
+                    } else if (GameManager.playerHasScoredNewYaku(updatedPlayers(1))) {     // koi-koi check
                         GameManager.koiKoiHandler(this.copy(
                             players = updatedPlayers.reverse,
                             board = updatedBoard
@@ -223,7 +223,7 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                     if (this.deck.cards.isEmpty
                         || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {    // empty check
                         GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, deck = this.deck, board = updatedBoard, true)
-                    } else if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
+                    } else if (GameManager.playerHasScoredNewYaku(updatedPlayers(1))) {     // koi-koi check
                         GameManager.koiKoiHandler(this.copy(
                             players = updatedPlayers.reverse,
                             board = updatedBoard
@@ -295,5 +295,3 @@ case class GameStateUninitialized(displayType: DisplayType, stderr: Option[Strin
         this.copy(displayType = display)
     }
 }
-
-//TODO: [bug] sometimes finishes game randomly a few rounds after koi-koi has been called

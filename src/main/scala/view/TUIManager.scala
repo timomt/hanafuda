@@ -9,7 +9,7 @@ import model.{Card, CardName, CardType, Deck, DisplayType, GameState, GameStateS
 * */
 object TUIManager extends Observer {
     val clearScreen: String = "\u001b[2J\u001b[3J\u001b[1;1H"
-    
+    //TODO fix varying empty line spacing
     /*
     * def update(...)
     * updates the TUI according to the current GameState.
