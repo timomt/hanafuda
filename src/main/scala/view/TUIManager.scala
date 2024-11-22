@@ -187,7 +187,7 @@ object TUIManager extends Observer {
     * def printOverview(...)
     * returns a String representation of the overview of all (un)collected cards and their value.
     * */
-    def printOverview(game: GameState): String = {
+    def printOverview(game: GameState): String = {  //TODO: [bug] kasu combination 0m showing in format in specific combinations
         val goko = "Gokō (五光) \"Five Hikari\"\t10pts.\t(exact yaku)\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
         val shiko = "Shikō (四光) \"Four Hikari\"\t8pts.\t(exact yaku)\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
         val ameShiko = "Ame-Shikō (雨四光) \"Rainy Four Hikari\"\t7pts.\t(Rain + any other 3)\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"

@@ -1,7 +1,5 @@
 package model
 
-import model.DisplayType.SUMMARY
-
 /*
 * case class Player(...)
 * name:= Name of the player
@@ -274,3 +272,28 @@ case class GameStateSummary(players: List[Player], deck: Deck, board: Deck, disp
     override def updateGameStateWithError(errorMessage: String): GameState = this.copy(stdout = None, stderr = Some(errorMessage))
     override def updateGameStateWithDisplayType(display: DisplayType): GameState = this.copy(displayType = display)
 }
+
+case class GameStateUninitialized(displayType: DisplayType, stderr: Option[String]) extends GameState {
+    override def players: List[Player] = List.empty
+    override def deck: Deck = Deck(List.empty)
+    override def board: Deck = Deck(List.empty)
+    override def stdout: Option[String] = None
+
+    override def handleMatch(xS: String, yS: String): GameState = {
+        this.copy(stderr = Some("Game is not initialized."))
+    }
+
+    override def handleDiscard(xS: String): GameState = {
+        this.copy(stderr = Some("Game is not initialized."))
+    }
+
+    override def updateGameStateWithError(errorMessage: String): GameState = {
+        this.copy(stderr = Some(errorMessage))
+    }
+
+    override def updateGameStateWithDisplayType(display: DisplayType): GameState = {
+        this.copy(displayType = display)
+    }
+}
+
+//TODO: [bug] sometimes finishes game randomly a few rounds after koi-koi has been called
