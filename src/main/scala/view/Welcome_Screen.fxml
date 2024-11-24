@@ -20,7 +20,7 @@
             <Font name="Arial Bold" size="39.0" />
          </font>
       </Label>
-      <Button fx:id="play_Button" layoutX="276.0" layoutY="299.0" mnemonicParsing="false" onAction="#startGame" text="PLAY" />
+      <Button fx:id="play_Button" layoutX="276.0" layoutY="299.0" mnemonicParsing="false" text="PLAY" />
       <TextField fx:id="name_Player1" layoutX="36.0" layoutY="188.0" promptText="Name Player 1" />
       <TextField fx:id="name_Player2" layoutX="404.0" layoutY="189.0" promptText="Name Player 2" />
    </children>

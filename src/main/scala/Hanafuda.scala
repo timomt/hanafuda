@@ -1,8 +1,7 @@
 import controller.GameController
 import view.TUIManager
 import controller.GameController
-import view.{TUIManager, GUIManager}
-import javafx.application.Application
+import view.TUIManager
 
 /*
 * object Hanafuda
@@ -13,11 +12,11 @@ object Hanafuda {
     @main
     def main(): Unit = {
         GameController.add(TUIManager)
+        GameController.add(GUIManager)
         println(TUIManager.printHelp())
 
-        // Start the GUI in a separate thread
         new Thread(() => {
-            Application.launch(classOf[GUIManager])
+            GUIManager.main(Array.empty)
         }).start()
 
         // Run the TUI in the main thread
