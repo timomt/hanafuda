@@ -1,7 +1,7 @@
 package controller
 
 import controller.GameController.notifyObservers
-import model.{DisplayType, GameManager, GameState, GameStatePendingKoiKoi, GameStateUninitialized}
+import model.{DisplayType, GameState, GameStatePendingKoiKoi, GameStateUninitialized}
 
 /*
 * MVC: Controller
@@ -30,7 +30,6 @@ object GameController extends Observable {
 
             case "help" =>
                 commandManager.executeCommand(new HelpCommand, gameState)
-
 
             case "undo" =>
                 commandManager.undo(gameState)
