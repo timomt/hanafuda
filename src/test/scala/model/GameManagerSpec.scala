@@ -73,8 +73,8 @@ class GameManagerSpec extends AnyFlatSpec {
                 Player(name = "Player1", score = 0, hand = Deck(List.empty), side = Deck(List(
                     Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
                     Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
-                )), calledKoiKoi = false),
-                Player(name = "Player2", score = 0, hand = Deck(List.empty), side = Deck(List.empty), calledKoiKoi = false),
+                )), calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player(name = "Player2", score = 0, hand = Deck(List.empty), side = Deck(List.empty), calledKoiKoi = false, yakusToIgnore = List.empty),
             ),
             deck = Deck(List.empty),
             board = Deck(List.empty),
@@ -86,7 +86,7 @@ class GameManagerSpec extends AnyFlatSpec {
         )
         val newGame = GameManager.koiKoiHandler(game)
         assert(newGame.isInstanceOf[GameStatePendingKoiKoi])
-        assert(newGame.stdout === Some(s"You scored a yaku: \nHanami-zake (花見酒) \"Cherry Blossom Viewing\"\t5pts.\n You can now either finish or call koi-koi."))
+        assert(newGame.stdout === Some(s"You scored a yaku: \n\t- Hanami-zake (花見酒) \"Cherry Blossom Viewing\"\t5pts.\nYou can now either finish or call koi-koi."))
         assert(newGame.stderr.isEmpty)
     }
     it should "double the points of the caller in case of a successful call" in {
@@ -95,8 +95,8 @@ class GameManagerSpec extends AnyFlatSpec {
                 Player(name = "Player1", score = 10, hand = Deck(List.empty), side = Deck(List(
                     Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
                     Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
-                )), calledKoiKoi = true),
-                Player(name = "Player2", score = 5, hand = Deck(List.empty), side = Deck(List.empty), calledKoiKoi = false),
+                )), calledKoiKoi = true, yakusToIgnore = List.empty),
+                Player(name = "Player2", score = 5, hand = Deck(List.empty), side = Deck(List.empty), calledKoiKoi = false, yakusToIgnore = List.empty),
             ),
             deck = Deck(List.empty),
             board = Deck(List.empty),
@@ -116,11 +116,11 @@ class GameManagerSpec extends AnyFlatSpec {
                 Player(name = "Player1", score = 10, hand = Deck(List.empty), side = Deck(List(
                     Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
                     Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
-                )), calledKoiKoi = false),
+                )), calledKoiKoi = false, yakusToIgnore = List.empty),
                 Player(name = "Player2", score = 5, hand = Deck(List.empty), side = Deck(List(
                     Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
                     Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
-                )), calledKoiKoi = true),
+                )), calledKoiKoi = true, yakusToIgnore = List.empty),
             ),
             deck = Deck(List.empty),
             board = Deck(List.empty),
@@ -140,11 +140,11 @@ class GameManagerSpec extends AnyFlatSpec {
             players = List(
                 Player(
                     name = "FirstPlayer", hand = Deck(List.empty), side = Deck(List.empty),
-                    score = 0, calledKoiKoi = false
+                    score = 0, calledKoiKoi = false, yakusToIgnore = List.empty
                 ),
                 Player(
                     name = "SecondPlayer", hand = Deck(List.empty), side = Deck(List.empty),
-                    score = 0, calledKoiKoi = false
+                    score = 0, calledKoiKoi = false, yakusToIgnore = List.empty
                 )
             ),
             deck = Deck(List.empty),
@@ -157,11 +157,11 @@ class GameManagerSpec extends AnyFlatSpec {
         assert(newGame.isInstanceOf[GameStatePlanned])
         assert(newGame.players.head === Player(
             name = "SecondPlayer", hand = Deck(List.empty), side = Deck(List.empty),
-            score = 0, calledKoiKoi = false
+            score = 0, calledKoiKoi = false, yakusToIgnore = List.empty
         ))
         assert(newGame.players(1) === Player(
             name = "FirstPlayer", hand = Deck(List.empty), side = Deck(List.empty),
-            score = 0, calledKoiKoi = true
+            score = 0, calledKoiKoi = true, yakusToIgnore = List.empty
         ))
     }
 }

@@ -1,7 +1,7 @@
 package controller
 
 import controller.GameController.notifyObservers
-import model.{DisplayType, GameManager, GameState, GameStatePendingKoiKoi, GameStateRandom}
+import model.{DisplayType, GameState, GameStatePendingKoiKoi, GameStateUninitialized}
 
 /*
 * MVC: Controller
@@ -13,74 +13,72 @@ object GameController extends Observable {
     * gameState
     * the current state of the game operated by this object.
     * */
-    var gameState: Option[GameState] = None
+    var gameState: GameState = GameStateUninitialized(displayType = DisplayType.HELP, stderr = None)
+    private val commandManager = new CommandManager()
 
     /*
     * def processInput(...)
     * processes a String to change the current GameState
     * and notifies observers of the new GameState.
     * */
-    def processInput(input: String): Unit = input match {
-        case "help" =>
-            gameState = Some(gameState.get.updateGameStateWithDisplayType(DisplayType.HELP))
-            notifyObservers(gameState.get)
+    def processInput(input: String): Unit = {
+        gameState = input match {
+            // $COVERAGE-OFF$
+            case "exit" =>
+                sys.exit(0)
+            // $COVERAGE-ON$
 
-        case "exit" =>
-            sys.exit(0)
+            case "help" =>
+                commandManager.executeCommand(new HelpCommand, gameState)
 
-        case i if gameState.isEmpty =>
-            i match {
-                case s"start $firstPlayer $secondPlayer" =>
-                    gameState = Some(GameManager.newGame(firstPlayer, secondPlayer))
-                    notifyObservers(gameState.get)
-                case _ => println("[Error]: You submitted a command that requires a started game without starting it correctly.")
-            }
+            case "undo" =>
+                commandManager.undo(gameState)
 
-        // All following cases assert gameState is Some
-        case "combinations" | "com" =>
-            gameState = Some(gameState.get.updateGameStateWithDisplayType(DisplayType.COMBINATIONS))
-            notifyObservers(gameState.get)
+            case "redo" =>
+                commandManager.redo(gameState)
 
-        case i if gameState.get.isInstanceOf[GameStatePendingKoiKoi] => 
-            i match {
-                case "koi-koi" =>
-                    gameState = Some(GameManager.koiKoiCallHandler(gameState.get))
-                    notifyObservers(gameState.get)
-                case "finish" =>
-                    val (firstS, secS) = GameManager.evaluateScore(gameState.get.players, 1, 1)
-                    gameState = Some(GameManager.handleKoiKoi(gameState.get.players, firstS, secS, board = gameState.get.board, deck = gameState.get.deck))
-                    notifyObservers(gameState.get)
-                case _ => 
-                    gameState = Some(gameState.get.updateGameStateWithError("You have to either call \"koi-koi\" or \"finish\"."))
-                    notifyObservers(gameState.get)
-            }
-            
-        case "continue" | "con" =>
-            gameState = Some(gameState.get.updateGameStateWithDisplayType(DisplayType.GAME))
-            notifyObservers(gameState.get)
+            case i if gameState.isInstanceOf[GameStateUninitialized] =>
+                i match {
+                    case s"start $firstPlayer $secondPlayer" =>
+                        val command = new StartGameCommand(firstPlayer, secondPlayer)
+                        commandManager.executeCommand(command, gameState)
+                    case _ => gameState.updateGameStateWithError("You have to start a game first.")
+                }
 
-        case s"match $x $y" =>
-            gameState = Some(gameState.get.handleMatch(x, y))
-            notifyObservers(gameState.get)
+            case "combinations" | "com" =>
+                commandManager.executeCommand(new CombinationsCommand, gameState)
 
-        case s"match $y" =>
-            gameState = Some(gameState.get.handleMatch(y, "0"))
-            notifyObservers(gameState.get)
+            case i if gameState.isInstanceOf[GameStatePendingKoiKoi] =>
+                i match {
+                    case "koi-koi" =>
+                        commandManager.executeCommand(new KoiKoiCommand, gameState)
+                    case "finish" =>
+                        commandManager.executeCommand(new FinishCommand, gameState)
+                    case _ =>
+                        gameState.updateGameStateWithError("You have to either call \"koi-koi\" or \"finish\".")
+                }
 
-        case s"discard $x" =>
-            gameState = Some(gameState.get.handleDiscard(x))
-            notifyObservers(gameState.get)
+            case "continue" | "con" =>
+                commandManager.executeCommand(new ContinueCommand, gameState)
 
-        case s"discard" =>
-            gameState = Some(gameState.get.handleDiscard("0"))
-            notifyObservers(gameState.get)
+            case s"match $x $y" =>
+                commandManager.executeCommand(new MatchCommand(x, y), gameState)
 
-        case "new" =>
-            gameState = Some(GameManager.newGame(gameState.get.players.head.name, gameState.get.players(1).name, gameState.get.players.head.score, gameState.get.players(1).score))
-            notifyObservers(gameState.get)
-            
-        case _ =>
-            gameState = Some(gameState.get.updateGameStateWithError("Wrong usage, see \"help\"."))
-            notifyObservers(gameState.get)
+            case s"match $y" =>
+                commandManager.executeCommand(new MatchCommand(y, "0"), gameState)
+
+            case s"discard $x" =>
+                commandManager.executeCommand(new DiscardCommand(x), gameState)
+
+            case s"discard" =>
+                commandManager.executeCommand(new DiscardCommand("0"), gameState)
+
+            case "new" =>
+                commandManager.executeCommand(new NewCommand, gameState)
+
+            case _ =>
+                gameState.updateGameStateWithError("Wrong usage, see \"help\".")
+        }
+        notifyObservers(gameState)
     }
 }

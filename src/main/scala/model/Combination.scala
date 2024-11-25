@@ -116,7 +116,7 @@ case object InoshiKachoCombination extends Combination {
 }
 
 case object TaneCombination extends Combination {
-    override val unicode: String = "Tane (タネ) \"plain\"\t1pt."
+    override val unicode: String = "Tane (タネ) \t1pt."
     override val unicodeShort: String = "Tane"
     override val points: Int = 1
     override def evaluate(player: Player): Int = {
@@ -182,7 +182,7 @@ case object TanzakuCombination extends Combination {
 
 case object KasuCombination extends Combination {
     override val points: Int = 1
-    override val unicode: String = "Kasu (カス) \" \"\t1pt."
+    override val unicode: String = "Kasu (カス) \t1pt."
     override val unicodeShort: String = "Kasu"
     override def evaluate(player: Player): Int = {
         val firstCardCount = player.side.cards.count(_.cardType == CardType.KASU)
