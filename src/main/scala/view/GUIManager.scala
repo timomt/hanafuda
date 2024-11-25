@@ -1,7 +1,8 @@
 import controller.{GameController, Observer}
+import model.Deck.defaultDeck
 import model.DisplayType.HELP
-import model.{Card, CardMonth, CardName, CardType, DisplayType, GameState}
-import scalafx.application.JFXApp3
+import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameState}
+import scalafx.application.{JFXApp3, Platform}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
 import scalafx.scene.control.{Button, Label, Separator, TextField, ToolBar}
@@ -11,11 +12,14 @@ import scalafx.scene.text.Text
 import view.TUIManager
 import view.TUIManager.{printHelp, printOverview, printSpoiler, printSummary}
 import scalafx.Includes.*
+import scalafx.animation.{ScaleTransition, TranslateTransition}
+import scalafx.event
 import scalafx.event.ActionEvent
 import scalafx.geometry.Pos.TopCenter
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.MouseEvent
+import scalafx.util.Duration
 
 object GUIManager extends JFXApp3 with Observer {
 
@@ -105,7 +109,7 @@ object GUIManager extends JFXApp3 with Observer {
     }
 
 
-    def gameScene(): Scene = {
+    def gameScene(gameState: GameState): Scene = {
         new Scene {
             val rootPane = new StackPane {
                 background = new Background(Array(
@@ -166,10 +170,86 @@ object GUIManager extends JFXApp3 with Observer {
                 var highlightedTopOrBottomCard: Option[StackPane] = None
                 var highlightedMiddleCard: Option[StackPane] = None
 
-                def createCard(imagePath: String, isMiddleRow: Boolean): StackPane = {
-                    val card = new StackPane {
+                def onMouseEntered(card: StackPane, highlightedScale: Double, highlightedEffect: DropShadow, event: MouseEvent): Unit = {
+                    val scaleTransition = new ScaleTransition(Duration(200), card) {
+                        toX = highlightedScale
+                        toY = highlightedScale
+                    }
+
+                    val translateTransition = new TranslateTransition(Duration(200), card) {
+                        toX = (event.sceneX - card.layoutX.value) * 0.05
+                        toY = (event.sceneY - card.layoutY.value) * 0.05
+                    }
+
+                    card.effect = highlightedEffect
+                    scaleTransition.play()
+                    translateTransition.play()
+                }
+
+                def onMouseMoved(card: StackPane, event: MouseEvent): Unit = {
+                    val translateTransition = new TranslateTransition(Duration(100), card) {
+                        toX = (event.sceneX - card.layoutX.value) * 0.05
+                        toY = (event.sceneY - card.layoutY.value) * 0.05
+                    }
+                    translateTransition.play()
+                }
+
+                def onMouseExited(card: StackPane, defaultScale: Double, defaultEffect: DropShadow): Unit = {
+                    val scaleTransition = new ScaleTransition(Duration(200), card) {
+                        toX = defaultScale
+                        toY = defaultScale
+                    }
+
+                    val translateTransition = new TranslateTransition(Duration(200), card) {
+                        toX = 0
+                        toY = 0
+                    }
+
+                    card.effect = defaultEffect
+                    scaleTransition.play()
+                    translateTransition.play()
+                }
+
+                def onMouseClicked(card: StackPane, isMiddleRow: Boolean, defaultScale: Double, highlightedScale: Double, defaultEffect: DropShadow, highlightedEffect: DropShadow): Unit = {
+                    if (card.scaleX.value == defaultScale) {
+                        card.scaleX = highlightedScale
+                        card.scaleY = highlightedScale
+                        card.effect = highlightedEffect
+
+                        if (isMiddleRow) {
+                            highlightedMiddleCard.foreach { c =>
+                                c.scaleX = defaultScale
+                                c.scaleY = defaultScale
+                                c.effect = defaultEffect
+                            }
+                            highlightedMiddleCard = Some(card)
+                        } else {
+                            highlightedTopOrBottomCard.foreach { c =>
+                                c.scaleX = defaultScale
+                                c.scaleY = defaultScale
+                                c.effect = defaultEffect
+                            }
+                            highlightedTopOrBottomCard = Some(card)
+                        }
+                    } else {
+                        // Reset to default
+                        card.scaleX = defaultScale
+                        card.scaleY = defaultScale
+                        card.effect = defaultEffect
+
+                        if (isMiddleRow) {
+                            highlightedMiddleCard = None
+                        } else {
+                            highlightedTopOrBottomCard = None
+                        }
+                    }
+                }
+
+                def createCard(isMiddleRow: Boolean, card: Card): StackPane = {
+                    val cardImage = new Image(getClass.getResourceAsStream(s"/img/card/${card.index}.png"))
+                    val cardStackPane = new StackPane {
                         children = new ImageView {
-                            image = new Image(imagePath)
+                            image = cardImage
                             fitWidth = 50
                             fitHeight = 100
                             preserveRatio = true
@@ -197,51 +277,21 @@ object GUIManager extends JFXApp3 with Observer {
                         spread = 0.4
                     }
 
-                    card.onMouseClicked = (event: MouseEvent) => {
-                        if (card.scaleX.value == defaultScale) {
+                    //cardStackPane.onMouseEntered = (event: MouseEvent) => onMouseEntered(cardStackPane, highlightedScale, highlightedEffect, event)
+                    //cardStackPane.onMouseMoved = (event: MouseEvent) => onMouseMoved(cardStackPane, event)
+                    //cardStackPane.onMouseExited = (_: MouseEvent) => onMouseExited(cardStackPane, defaultScale, defaultEffect)
+                    cardStackPane.onMouseClicked = (event: MouseEvent) => onMouseClicked(cardStackPane, isMiddleRow, defaultScale, highlightedScale, defaultEffect, highlightedEffect)
 
-                            card.scaleX = highlightedScale
-                            card.scaleY = highlightedScale
-                            card.effect = highlightedEffect
-
-                            if (isMiddleRow) {
-                                highlightedMiddleCard.foreach { c =>
-                                    c.scaleX = defaultScale
-                                    c.scaleY = defaultScale
-                                    c.effect = defaultEffect
-                                }
-                                highlightedMiddleCard = Some(card)
-                            } else {
-                                highlightedTopOrBottomCard.foreach { c =>
-                                    c.scaleX = defaultScale
-                                    c.scaleY = defaultScale
-                                    c.effect = defaultEffect
-                                }
-                                highlightedTopOrBottomCard = Some(card)
-                            }
-                        } else {
-                            // Reset to default
-                            card.scaleX = defaultScale
-                            card.scaleY = defaultScale
-                            card.effect = defaultEffect
-
-                            if (isMiddleRow) {
-                                highlightedMiddleCard = None
-                            } else {
-                                highlightedTopOrBottomCard = None
-                            }
-                        }
-                    }
-
-                    card
+                    cardStackPane
                 }
 
 
                 val topRow = new HBox {
                     alignment = Pos.Center
                     spacing = 10
-                    children = List.fill(8)(createCard("view/Card.png", false)) // 8 cards in the top row
-                    //style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
+                    children = gameState.players(1).hand.cards.map(card => createCard(false, card)) // Display player's full hand
+
+                    style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                 }
 
                 val middleRow = new VBox {
@@ -255,15 +305,15 @@ object GUIManager extends JFXApp3 with Observer {
                                 new Region {
                                     hgrow = Priority.Always
                                 }, // Left Spacer
-                                createCard("view/Card.png", true),
-                                createCard("view/Card.png", true),
-                                createCard("view/Card.png", true),
-                                createCard("view/Card.png", true),
+                                if (gameState.deck.cards.length > 0) createCard(true, gameState.deck.cards(0)) else new Region(),
+                                if (gameState.deck.cards.length > 1) createCard(true, gameState.deck.cards(1)) else new Region(),
+                                if (gameState.deck.cards.length > 2) createCard(true, gameState.deck.cards(2)) else new Region(),
+                                if (gameState.deck.cards.length > 3) createCard(true, gameState.deck.cards(3)) else new Region(),
                                 new Region {
                                     hgrow = Priority.Always
                                 } // Right Spacer
                             )
-                            //style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
+                            style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                         },
                         new HBox {
                             alignment = Pos.Center
@@ -272,38 +322,38 @@ object GUIManager extends JFXApp3 with Observer {
                                 new Region {
                                     hgrow = Priority.Always
                                 }, // Left Spacer
-                                createCard("view/Card.png", true),
-                                createCard("view/Card.png", true),
-                                createCard("view/Card.png", true),
-                                createCard("view/Card.png", true),
+                                if (gameState.deck.cards.length > 4) createCard(true, gameState.deck.cards(4)) else new Region(),
+                                if (gameState.deck.cards.length > 5) createCard(true, gameState.deck.cards(5)) else new Region(),
+                                if (gameState.deck.cards.length > 6) createCard(true, gameState.deck.cards(6)) else new Region(),
+                                if (gameState.deck.cards.length > 7) createCard(true, gameState.deck.cards(7)) else new Region(),
                                 new Region {
                                     hgrow = Priority.Always
                                 } // Right Spacer
                             )
-                            //style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
+                            style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                         }
                     )
-                    //style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
+                    style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                 }
 
                 val bottomRow = new HBox {
                     alignment = Pos.Center
                     spacing = 10
-                    children = List.fill(8)(createCard("view/Card.png", false)) // 8 cards in the bottom row
-                    //style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
+                    children = gameState.players.head.hand.cards.map(card => createCard(false, card)) // Display player's hand
+                    style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                 }
 
                 val cardLayout = new VBox {
                     alignment = Pos.Center
                     spacing = 20
                     children = List(topRow, middleRow, bottomRow)
-                    //style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
+                    style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                     maxWidth = 600
                     maxHeight = 400
                 }
 
                 val combinedLayout = new HBox {
-                    val singleCard = createCard("view/Card.png", false)
+                    val singleCard = gameState.queuedCard.map(createCard(false, _)).getOrElse(new Region())
                     alignment = Pos.Center
                     spacing = 10
                     children = List(
@@ -369,21 +419,23 @@ object GUIManager extends JFXApp3 with Observer {
     }
 
     override def update(gameState: GameState): Unit = {
-        gameState.displayType match {
-            case DisplayType.GAME =>
-                stage.scene = gameScene()
+        Platform.runLater {
+            gameState.displayType match {
+                case DisplayType.GAME =>
+                    stage.scene = gameScene(gameState)
 
-            case DisplayType.COMBINATIONS =>
-                stage.scene = combinationsScene()
+                case DisplayType.COMBINATIONS =>
+                    stage.scene = combinationsScene()
 
-            case DisplayType.SPOILER =>
-                stage.scene = spoilerScene()
+                case DisplayType.SPOILER =>
+                    stage.scene = spoilerScene()
 
-            case DisplayType.SUMMARY =>
-                stage.scene = summaryScene()
+                case DisplayType.SUMMARY =>
+                    stage.scene = summaryScene()
 
-            case DisplayType.HELP =>
-                stage.scene = helpScene()
+                case DisplayType.HELP =>
+                    stage.scene = helpScene()
+            }
         }
     }
 }
