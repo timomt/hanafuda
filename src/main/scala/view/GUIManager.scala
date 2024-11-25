@@ -12,6 +12,7 @@ import view.TUIManager
 import view.TUIManager.{printHelp, printOverview, printSpoiler, printSummary}
 import scalafx.Includes.*
 import scalafx.event.ActionEvent
+import scalafx.geometry.Pos.TopCenter
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.MouseEvent
@@ -53,6 +54,19 @@ object GUIManager extends JFXApp3 with Observer {
                         promptText = "Name Player 2"
                     }
 
+                    val logo = new ImageView {
+                        image = new Image("view/KoiKoi_Logo.png")
+                        fitWidth = 200
+                        preserveRatio = true
+                        alignmentInParent = TopCenter
+                        // drop shadow effect
+                        effect = new DropShadow {
+                            color = Color.Black
+                            radius = 10
+                            spread = 0.2
+                        }
+                    }
+
                     // Pane components
                     val vbox = new VBox {
                         alignment = Pos.Center
@@ -83,7 +97,7 @@ object GUIManager extends JFXApp3 with Observer {
                         )
                     }
 
-                    children = List(vbox)
+                    children = List(logo, vbox)
                 }
                 root = rootPane
             }
@@ -124,21 +138,21 @@ object GUIManager extends JFXApp3 with Observer {
 
                 // Toolbar Configuration
                 val leftSpacer = new Region {
-                    hgrow = Priority.Always // Expand to take up available space
+                    hgrow = Priority.Always
                 }
                 val rightSpacer = new Region {
-                    hgrow = Priority.Always // Expand to take up available space
+                    hgrow = Priority.Always
                 }
 
                 val toolbar = new ToolBar {
                     alignmentInParent = Pos.BottomCenter
-                    prefWidth = 1280 // Ensure full width
-                    background = Background.EMPTY // Transparent background
+                    prefWidth = 1280
+                    background = Background.EMPTY
                     items = List(
-                        leftSpacer, // Push content to the center
+                        leftSpacer,
                         new HBox {
                             alignment = Pos.Center
-                            spacing = 50 // Space between buttons
+                            spacing = 50
                             children = List(
                                 combinationsButton,
                                 summaryButton,
@@ -149,7 +163,6 @@ object GUIManager extends JFXApp3 with Observer {
                     )
                 }
 
-                // Variables to track the highlighted cards
                 var highlightedTopOrBottomCard: Option[StackPane] = None
                 var highlightedMiddleCard: Option[StackPane] = None
 
@@ -159,7 +172,7 @@ object GUIManager extends JFXApp3 with Observer {
                             image = new Image(imagePath)
                             fitWidth = 50
                             fitHeight = 100
-                            preserveRatio = true // Maintain aspect ratio of the image
+                            preserveRatio = true
                         }
                         minWidth = 50
                         minHeight = 100
@@ -170,29 +183,27 @@ object GUIManager extends JFXApp3 with Observer {
                         }
                     }
 
-                    // Define default and highlighted styles
                     val defaultScale = 1.0
                     val highlightedScale = 1.2
+
                     val defaultEffect = new DropShadow {
                         color = Color.Black
                         radius = 10
                         spread = 0.2
                     }
                     val highlightedEffect = new DropShadow {
-                        color = Color.Green // Use a different color to highlight
+                        color = Color.Black
                         radius = 20
                         spread = 0.4
                     }
 
-                    // Apply highlighting effect when clicked
                     card.onMouseClicked = (event: MouseEvent) => {
                         if (card.scaleX.value == defaultScale) {
-                            // Highlight the card
+
                             card.scaleX = highlightedScale
                             card.scaleY = highlightedScale
                             card.effect = highlightedEffect
 
-                            // Reset the previously highlighted card in the same row category
                             if (isMiddleRow) {
                                 highlightedMiddleCard.foreach { c =>
                                     c.scaleX = defaultScale
@@ -230,7 +241,7 @@ object GUIManager extends JFXApp3 with Observer {
                     alignment = Pos.Center
                     spacing = 10
                     children = List.fill(8)(createCard("view/Card.png", false)) // 8 cards in the top row
-                    style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
+                    //style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                 }
 
                 val middleRow = new VBox {
@@ -252,7 +263,7 @@ object GUIManager extends JFXApp3 with Observer {
                                     hgrow = Priority.Always
                                 } // Right Spacer
                             )
-                            style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
+                            //style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                         },
                         new HBox {
                             alignment = Pos.Center
@@ -269,24 +280,24 @@ object GUIManager extends JFXApp3 with Observer {
                                     hgrow = Priority.Always
                                 } // Right Spacer
                             )
-                            style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
+                            //style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                         }
                     )
-                    style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
+                    //style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                 }
 
                 val bottomRow = new HBox {
                     alignment = Pos.Center
                     spacing = 10
                     children = List.fill(8)(createCard("view/Card.png", false)) // 8 cards in the bottom row
-                    style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
+                    //style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                 }
 
                 val cardLayout = new VBox {
                     alignment = Pos.Center
                     spacing = 20
                     children = List(topRow, middleRow, bottomRow)
-                    style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
+                    //style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                     maxWidth = 600
                     maxHeight = 400
                 }
