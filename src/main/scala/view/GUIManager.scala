@@ -125,19 +125,24 @@ object GUIManager extends JFXApp3 with Observer {
                 ))
 
                 // Toolbar Buttons
+                val undoButton = new Button("Undo")
+                undoButton.onAction = (e: ActionEvent) => {
+                    GameController.processInput("undo")
+                }
+
                 val combinationsButton = new Button("Combinations")
                 combinationsButton.onAction = (e: ActionEvent) => {
                     GameController.processInput("combinations")
                 }
 
-                val summaryButton = new Button("Summary")
-                summaryButton.onAction = (e: ActionEvent) => {
-                    GameController.processInput("summary")
-                }
-
                 val helpButton = new Button("Help")
                 helpButton.onAction = (e: ActionEvent) => {
                     GameController.processInput("help")
+                }
+
+                val redoButton = new Button("Redo")
+                redoButton.onAction = (e: ActionEvent) => {
+                    GameController.processInput("redo")
                 }
 
                 // Toolbar Configuration
@@ -158,9 +163,10 @@ object GUIManager extends JFXApp3 with Observer {
                             alignment = Pos.Center
                             spacing = 50
                             children = List(
+                                undoButton,
                                 combinationsButton,
-                                summaryButton,
-                                helpButton
+                                helpButton,
+                                redoButton
                             )
                         },
                         rightSpacer // Push content to the center
