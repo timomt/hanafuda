@@ -21,14 +21,22 @@ import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.MouseEvent
 import scalafx.util.Duration
 
+//TODO: sys.exit on window closing
 object GUIManager extends JFXApp3 with Observer {
+
+    // Cache card images to avoid reloading them every time
     private val cardCache: Map[Int, Image] = (for (i <- 0 until 48) yield {
         val card = defaultDeck().cards(i)
         card.index -> new Image(getClass.getResourceAsStream(s"/img/card/${card.index}.png"))
     }).toMap
-    
-    
 
+    // Cache background images to avoid reloading them every time
+    private val pictureCache: Map[String, Image] = Map(
+        "welcomeBackground" -> new Image(getClass.getResourceAsStream("/view/hintergrund_Board.jpg")),
+        "gameBackground" -> new Image(getClass.getResourceAsStream("/view/Hintergrund_test.png")),
+    )
+
+    // function to create a button with an image and text
     def setButtonWithImageAndText(button: Button, imagePath: String, buttonText: String): Unit = {
         val buttonImage = new ImageView(new Image(imagePath)) {
             fitWidth = 100 // Set desired width
@@ -60,7 +68,6 @@ object GUIManager extends JFXApp3 with Observer {
             scene = new Scene() {
                 // Pane to add content
                 val rootPane = new StackPane {
-                    /*
                     background = new Background(Array(
                         new BackgroundImage(
                             new Image("view/Hintergrund_test.png"), // Replace with your image path
@@ -72,8 +79,6 @@ object GUIManager extends JFXApp3 with Observer {
                             )
                         )
                     ))
-
-                     */
 
                     val textField_p1 = new TextField {
                         prefWidth = 200
@@ -88,9 +93,8 @@ object GUIManager extends JFXApp3 with Observer {
                     }
 
                     val logo = new ImageView {
-                        /*
                         image = new Image("view/KoiKoi_Logo.png")
-                         */
+
                         fitWidth = 200
                         preserveRatio = true
                         alignmentInParent = TopCenter
@@ -144,7 +148,6 @@ object GUIManager extends JFXApp3 with Observer {
         GameController.add(this)
         new Scene {
             val rootPane = new StackPane {
-                /*
                 background = new Background(Array(
                     new BackgroundImage(
                         new Image("view/hintergrund_Board.jpg"), // Replace with your image path
@@ -156,7 +159,6 @@ object GUIManager extends JFXApp3 with Observer {
                         )
                     )
                 ))
-                 */
 
                 // Toolbar Buttons
                 val undoButton = new Button("Undo")
@@ -186,6 +188,7 @@ object GUIManager extends JFXApp3 with Observer {
                         val topCardIndex = gameState.players.head.hand.cards.indexOf(highlightedTopOrBottomCard.get) + 1
                         GameController.processInput(s"discard $topCardIndex")
                     } else {
+                        //TODO: match witch card on the poll if no card is selected
                         GameController.processInput("discard")
                     }
                 }
