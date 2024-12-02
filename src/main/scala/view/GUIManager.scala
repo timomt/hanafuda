@@ -26,8 +26,8 @@ object GUIManager extends JFXApp3 with Observer {
         val card = defaultDeck().cards(i)
         card.index -> new Image(getClass.getResourceAsStream(s"/img/card/${card.index}.png"))
     }).toMap
-    
-    
+
+
 
     def setButtonWithImageAndText(button: Button, imagePath: String, buttonText: String): Unit = {
         val buttonImage = new ImageView(new Image(imagePath)) {
