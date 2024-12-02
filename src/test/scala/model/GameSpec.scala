@@ -1,5 +1,5 @@
 import model.DisplayType.{SPOILER, SUMMARY}
-import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameManager, GameStatePendingKoiKoi, GameStatePlanned, GameStateRandom, Player}
+import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameManager, GameStatePendingKoiKoi, GameStatePlanned, GameStateRandom, GameStateSummary, GameStateUninitialized, Player}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
@@ -27,7 +27,6 @@ class GameSpec extends AnyFlatSpec with Matchers {
         assert(game.updateGameStateWithDisplayType(DisplayType.SPOILER).displayType === DisplayType.SPOILER)
         assert(game.updateGameStateWithDisplayType(DisplayType.COMBINATIONS).displayType === DisplayType.COMBINATIONS)
     }
-
     "updateGameStateWithError" should "return a copy with the provided stderr included" in {
         val game = GameStatePlanned(
             players = List(
@@ -44,7 +43,6 @@ class GameSpec extends AnyFlatSpec with Matchers {
 
     /* ------------------------- */
     /* ------ handleDiscard ------ */
-
     "handleDiscard[GameStatePlanned]" should "return error on invalid input" in {
         val game = GameManager.newGame("", "")
         assert(game.handleDiscard("-1").stderr.isDefined)
@@ -91,7 +89,6 @@ class GameSpec extends AnyFlatSpec with Matchers {
         assert(updatedGame.players.head.hand.cards.isEmpty)
         assert(updatedGame.board.cards.contains(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN)))
     }
-
     "handleDiscard[GameStateRandom]" should "return error on invalid input" in {
         val game = GameStateRandom(
             players = List(
@@ -180,7 +177,6 @@ class GameSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN),
             Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN)))
     }
-
     it should "check for koi-koi" in {
         val game = GameStateRandom(
             players = List(
@@ -210,10 +206,9 @@ class GameSpec extends AnyFlatSpec with Matchers {
         )
         assert(game.handleDiscard("").isInstanceOf[GameStatePendingKoiKoi])
     }
+
     /* ------------------------- */
-
     /* ------ handleMatch ------ */
-
     "handleMatch[GameStatePlanned]" should "return error for invalid input" in {
         val game = GameStatePlanned(
             players = List(
@@ -304,7 +299,6 @@ class GameSpec extends AnyFlatSpec with Matchers {
         assert(updatedGame.queuedCard.isDefined)
         assert(updatedGame.matchedDeck.isDefined)
     }
-
     "handleMatch[GameStateRandom]" should "return error for invalid input" in {
         val game = GameStateRandom(
             players = List(
@@ -443,7 +437,25 @@ class GameSpec extends AnyFlatSpec with Matchers {
         )
         assert(game.handleMatch("1", "").isInstanceOf[GameStatePendingKoiKoi])
     }
-
+    it should "proceed to summary if deck is empty or both players hands are empty" in {
+        val game = GameStateRandom(
+            players = List(
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
+            ),
+            deck = Deck(List.empty),
+            board = Deck(List(
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+            )),
+            stdout = None,
+            stderr = None,
+            matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN))),
+            queued = Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING)
+        )
+        assert(game.handleMatch("1", "").isInstanceOf[GameStateSummary])
+    }
     "updateGameStateWithDisplayType[GameStateRandom]" should "set displayType attribute correctly" in {
         val game = GameStateRandom(
             players = List(
@@ -467,6 +479,7 @@ class GameSpec extends AnyFlatSpec with Matchers {
         assert(game.updateGameStateWithDisplayType(DisplayType.SPOILER).displayType === DisplayType.SPOILER)
         assert(game.updateGameStateWithDisplayType(DisplayType.COMBINATIONS).displayType === DisplayType.COMBINATIONS)
     }
+
     /* ------------------------- */
     /* ------ GameStatePendingKoiKoi ------ */
     "updateGameStateWithDisplayType[GameStatePendingKoiKoi]" should "set displayType attribute correctly" in {
@@ -499,6 +512,124 @@ class GameSpec extends AnyFlatSpec with Matchers {
         assert(game.updateGameStateWithError("").stderr.isDefined)
         assert(game.handleDiscard("").stderr.isDefined)
         assert(game.handleMatch("", "").stderr.isDefined)
+    }
+
+    /* ------------------------- */
+    /* --------- GameStateSummary -------- */
+    "GameStateSummary" should "initialize regular values to None or empty" in {
+        val game = GameStateSummary(
+            players = List(
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
+            ),
+            deck = Deck.defaultDeck(),
+            board = Deck(List(
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+            )),
+            stdout = None,
+            stderr = None,
+            displayType = DisplayType.SUMMARY
+        )
+        assert(game.matchedDeck === None)
+        assert(game.queuedCard === None)
+    }
+    "updateGameStateWithDisplayType[GameStateSummary]" should "set displayType attribute correctly" in {
+        val game = GameStateSummary(
+            players = List(
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
+            ),
+            deck = Deck.defaultDeck(),
+            board = Deck(List(
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+            )),
+            stdout = None,
+            stderr = None,
+            displayType = DisplayType.SUMMARY
+        )
+        assert(game.updateGameStateWithDisplayType(DisplayType.SUMMARY) === game)
+        assert(game.updateGameStateWithDisplayType(DisplayType.GAME).displayType === DisplayType.GAME)
+        assert(game.updateGameStateWithDisplayType(DisplayType.HELP).displayType === DisplayType.HELP)
+        assert(game.updateGameStateWithDisplayType(DisplayType.SPOILER).displayType === DisplayType.SPOILER)
+        assert(game.updateGameStateWithDisplayType(DisplayType.COMBINATIONS).displayType === DisplayType.COMBINATIONS)
+    }
+    "handleMatch[GameStateSummary]" should "return error in stderr" in {
+        val game = GameStateSummary(
+            players = List(
+                Player("", Deck(List(Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true))), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
+            ),
+            deck = Deck.defaultDeck(),
+            board = Deck(List(
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+            )),
+            stdout = None,
+            stderr = None,
+            displayType = DisplayType.SUMMARY
+        )
+        assert(game.handleMatch("1", "1").stderr.isDefined)
+    }
+    "handleDiscard[GameStateSummary]" should "return error in stderr" in {
+        val game = GameStateSummary(
+            players = List(
+                Player("", Deck(List(Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true))), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
+            ),
+            deck = Deck.defaultDeck(),
+            board = Deck(List(
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+            )),
+            stdout = None,
+            stderr = None,
+            displayType = DisplayType.SUMMARY
+        )
+        assert(game.handleDiscard("1").stderr.isDefined)
+    }
+
+    /* ------------------------- */
+    /* --------- GameStateUninitialized -------- */
+    "GameStateUninitialized" should "initialize regular values to None or empty" in {
+        val game = GameStateUninitialized(
+            displayType = DisplayType.HELP,
+            stderr = None
+        )
+        assert(game.players === List.empty)
+        assert(game.deck === Deck(List.empty))
+        assert(game.board === Deck(List.empty))
+        assert(game.stdout === None)
+    }
+    "updateGameStateWithDisplayType[GameStateUninitialized]" should "set displayType attribute correctly" in {
+        val game = GameStateUninitialized(
+            displayType = DisplayType.HELP,
+            stderr = None
+        )
+        assert(game.updateGameStateWithDisplayType(DisplayType.HELP) === game)
+        assert(game.updateGameStateWithDisplayType(DisplayType.GAME).displayType === DisplayType.GAME)
+        assert(game.updateGameStateWithDisplayType(DisplayType.SUMMARY).displayType === DisplayType.SUMMARY)
+        assert(game.updateGameStateWithDisplayType(DisplayType.SPOILER).displayType === DisplayType.SPOILER)
+        assert(game.updateGameStateWithDisplayType(DisplayType.COMBINATIONS).displayType === DisplayType.COMBINATIONS)
+    }
+    "handleMatch[GameStateUninitialized]" should "return error in stderr" in {
+        val game = GameStateUninitialized(
+            displayType = DisplayType.HELP,
+            stderr = None
+        )
+        assert(game.handleMatch("1", "1").stderr.isDefined)
+    }
+    "handleDiscard[GameStateUninitialized]" should "return error in stderr" in {
+        val game = GameStateUninitialized(
+            displayType = DisplayType.HELP,
+            stderr = None
+        )
+        assert(game.handleDiscard("1").stderr.isDefined)
     }
     /* ------------------------- */
 }

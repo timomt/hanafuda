@@ -5,6 +5,7 @@ ThisBuild / scalaVersion := "3.5.1"
 lazy val root = (project in file("."))
   .settings(
       name := "Hanafuda",
+      mainClass in Compile := Some("scala.Hanafuda"),
       coverageEnabled := true,
       coverageMinimumStmtTotal := 0,
       coverageMinimumBranchTotal := 0,
