@@ -1,12 +1,12 @@
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import controller.GameController
-import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameManager, GameStatePendingKoiKoi, GameStatePlanned, GameStateRandom, Player}
+import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameManager, GameStatePendingKoiKoi, GameStatePlanned, GameStateRandom, GameStateUninitialized, Player}
 
 class GameControllerSpec extends AnyFlatSpec with Matchers {
     "GameController" should "do nothing on invalid input before start" in {
         GameController.processInput("continue")
-        //TODO
+        GameController.gameState.stderr.isDefined should be (true)
     }
 
     it should "process input 'start Player1 Player2'" in {
@@ -79,7 +79,7 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
     it should "initialize a new game" in {
         GameController.gameState = GameManager.newGame("Player1", "Player2")
         GameController.notifyObservers(GameController.gameState)
-        //TODO
+        GameController.gameState.isInstanceOf[GameStateUninitialized] should be (false)
     }
 
     it should "process input 'help'" in {
@@ -185,5 +185,29 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
         GameController.notifyObservers(GameController.gameState)
         GameController.processInput("combinations")
         GameController.gameState.displayType should be (DisplayType.COMBINATIONS)
+    }
+
+    it should "undo moves correctly" in {
+        GameController.gameState = GameManager.newGame("Player1", "Player2")
+        GameController.notifyObservers(GameController.gameState)
+        GameController.processInput("combinations")
+        GameController.processInput("help")
+        GameController.gameState.displayType should be (DisplayType.HELP)
+        GameController.processInput("undo")
+        GameController.gameState.displayType should be (DisplayType.COMBINATIONS)
+        GameController.processInput("undo")
+        GameController.gameState.displayType should be (DisplayType.GAME)
+    }
+
+    it should "redo moves correctly" in {
+        GameController.gameState = GameManager.newGame("Player1", "Player2")
+        GameController.notifyObservers(GameController.gameState)
+        GameController.processInput("combinations")
+        GameController.processInput("help")
+        GameController.gameState.displayType should be(DisplayType.HELP)
+        GameController.processInput("undo")
+        GameController.gameState.displayType should be(DisplayType.COMBINATIONS)
+        GameController.processInput("redo")
+        GameController.gameState.displayType should be(DisplayType.HELP)
     }
 }

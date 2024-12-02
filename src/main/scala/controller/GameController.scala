@@ -23,10 +23,8 @@ object GameController extends Observable {
     * */
     def processInput(input: String): Unit = {
         gameState = input match {
-            // $COVERAGE-OFF$
             case "exit" =>
                 sys.exit(0)
-            // $COVERAGE-ON$
 
             case "help" =>
                 commandManager.executeCommand(new HelpCommand, gameState)
