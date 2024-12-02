@@ -22,6 +22,12 @@ import scalafx.scene.input.MouseEvent
 import scalafx.util.Duration
 
 object GUIManager extends JFXApp3 with Observer {
+    private val cardCache: Map[Int, Image] = (for (i <- 0 until 48) yield {
+        val card = defaultDeck().cards(i)
+        card.index -> new Image(getClass.getResourceAsStream(s"/img/card/${card.index}.png"))
+    }).toMap
+    
+    
 
     def setButtonWithImageAndText(button: Button, imagePath: String, buttonText: String): Unit = {
         val buttonImage = new ImageView(new Image(imagePath)) {
@@ -44,6 +50,7 @@ object GUIManager extends JFXApp3 with Observer {
 
     override def start(): Unit = {
         GameController.add(this)
+
         stage = new JFXApp3.PrimaryStage {
             title = "Hanafuda"
             width = 1280
@@ -53,6 +60,7 @@ object GUIManager extends JFXApp3 with Observer {
             scene = new Scene() {
                 // Pane to add content
                 val rootPane = new StackPane {
+                    /*
                     background = new Background(Array(
                         new BackgroundImage(
                             new Image("view/Hintergrund_test.png"), // Replace with your image path
@@ -64,6 +72,8 @@ object GUIManager extends JFXApp3 with Observer {
                             )
                         )
                     ))
+
+                     */
 
                     val textField_p1 = new TextField {
                         prefWidth = 200
@@ -78,7 +88,9 @@ object GUIManager extends JFXApp3 with Observer {
                     }
 
                     val logo = new ImageView {
+                        /*
                         image = new Image("view/KoiKoi_Logo.png")
+                         */
                         fitWidth = 200
                         preserveRatio = true
                         alignmentInParent = TopCenter
@@ -132,6 +144,7 @@ object GUIManager extends JFXApp3 with Observer {
         GameController.add(this)
         new Scene {
             val rootPane = new StackPane {
+                /*
                 background = new Background(Array(
                     new BackgroundImage(
                         new Image("view/hintergrund_Board.jpg"), // Replace with your image path
@@ -143,6 +156,7 @@ object GUIManager extends JFXApp3 with Observer {
                         )
                     )
                 ))
+                 */
 
                 // Toolbar Buttons
                 val undoButton = new Button("Undo")
@@ -257,7 +271,7 @@ object GUIManager extends JFXApp3 with Observer {
                 matchButton.onAction = (e: ActionEvent) => {
                     if (highlightedTopOrBottomCard.isDefined && highlightedMiddleCard.isDefined) {
                         val bottomRowIndex = gameState.players.head.hand.cards.indexOf(highlightedTopOrBottomCard.get) + 1
-                        val middleCardIndex = gameState.deck.cards.indexOf(highlightedMiddleCard.get) + 1
+                        val middleCardIndex = gameState.board.cards.indexOf(highlightedMiddleCard.get) + 1
                         GameController.processInput(s"match $bottomRowIndex $middleCardIndex")
                     } else {
                         GameController.processInput("match")
@@ -265,7 +279,7 @@ object GUIManager extends JFXApp3 with Observer {
                 }
 
                 def createCard(isMiddleRow: Boolean, card: Card): StackPane = {
-                    val cardImage = new Image(getClass.getResourceAsStream(s"/img/card/${card.index}.png"))
+                    val cardImage = cardCache(card.index)
                     val cardStackPane = new StackPane {
                         children = new ImageView {
                             image = cardImage
@@ -296,7 +310,7 @@ object GUIManager extends JFXApp3 with Observer {
                         spread = 0.4
                     }
                     val cardInfo = s"Card: ${card.cardName}, Type: ${card.cardType}, Month: ${card.month}, " +
-                      s"Index: ${if (isMiddleRow) gameState.deck.cards.indexOf(card) + 1 else gameState.players.head.hand.cards.indexOf(card) + 1}"
+                      s"Index: ${if (isMiddleRow) gameState.board.cards.indexOf(card) + 1 else gameState.players.head.hand.cards.indexOf(card) + 1}"
                     cardStackPane.onMouseClicked = (event: MouseEvent) => onMouseClicked(card, cardStackPane, isMiddleRow, defaultScale, highlightedScale, defaultEffect, highlightedEffect, cardInfo)
 
                     cardStackPane
@@ -314,39 +328,24 @@ object GUIManager extends JFXApp3 with Observer {
                 val middleRow = new VBox {
                     alignment = Pos.Center
                     spacing = 0
+
+                    val halfSize = (gameState.board.cards.length + 1) / 2
+
                     children = List(
                         new HBox {
                             alignment = Pos.Center
                             spacing = 10
-                            children = List(
-                                new Region {
-                                    hgrow = Priority.Always
-                                }, // Left Spacer
-                                if (gameState.deck.cards.length > 0) createCard(true, gameState.deck.cards(0)) else new Region(),
-                                if (gameState.deck.cards.length > 1) createCard(true, gameState.deck.cards(1)) else new Region(),
-                                if (gameState.deck.cards.length > 2) createCard(true, gameState.deck.cards(2)) else new Region(),
-                                if (gameState.deck.cards.length > 3) createCard(true, gameState.deck.cards(3)) else new Region(),
-                                new Region {
-                                    hgrow = Priority.Always
-                                } // Right Spacer
-                            )
+                            children = (0 until halfSize).map { i =>
+                                if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
+                            }
                             style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                         },
                         new HBox {
                             alignment = Pos.Center
                             spacing = 10
-                            children = List(
-                                new Region {
-                                    hgrow = Priority.Always
-                                }, // Left Spacer
-                                if (gameState.deck.cards.length > 4) createCard(true, gameState.deck.cards(4)) else new Region(),
-                                if (gameState.deck.cards.length > 5) createCard(true, gameState.deck.cards(5)) else new Region(),
-                                if (gameState.deck.cards.length > 6) createCard(true, gameState.deck.cards(6)) else new Region(),
-                                if (gameState.deck.cards.length > 7) createCard(true, gameState.deck.cards(7)) else new Region(),
-                                new Region {
-                                    hgrow = Priority.Always
-                                } // Right Spacer
-                            )
+                            children = (halfSize until gameState.deck.cards.length).map { i =>
+                                if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
+                            }
                             style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
                         }
                     )
@@ -390,16 +389,13 @@ object GUIManager extends JFXApp3 with Observer {
                         matchedRow
                     )
                 }
-
-                // Adding elements to the scene
                 children = List(combinedLayout, toolbar)
-                //StackPane.setAlignment(layout, Pos.Center)
             }
             root = rootPane
         }
     }
 
-    def combinationsScene(): Scene = {
+    def combinationsScene(gameState: GameState): Scene = {
         new Scene {
             val button = new Button("Back")
             button.layoutX = 200
@@ -411,7 +407,7 @@ object GUIManager extends JFXApp3 with Observer {
         }
     }
 
-    def spoilerScene(): Scene = {
+    def spoilerScene(gameState: GameState): Scene = {
         new Scene {
             val button = new Button("Continue the game")
             button.layoutX = 200
@@ -423,7 +419,7 @@ object GUIManager extends JFXApp3 with Observer {
         }
     }
 
-    def summaryScene(): Scene = {
+    def summaryScene(gameState: GameState): Scene = {
         new Scene {
             val button = new Button("Back")
             button.layoutX = 200
@@ -435,7 +431,7 @@ object GUIManager extends JFXApp3 with Observer {
         }
     }
 
-    def helpScene(): Scene = {
+    def helpScene(gameState: GameState): Scene = {
         new Scene(600, 600) {
             val button = new Button("Back")
             button.layoutX = 200
@@ -454,16 +450,16 @@ object GUIManager extends JFXApp3 with Observer {
                     stage.scene = gameScene(gameState)
 
                 case DisplayType.COMBINATIONS =>
-                    stage.scene = combinationsScene()
+                    stage.scene = combinationsScene(gameState)
 
                 case DisplayType.SPOILER =>
-                    stage.scene = spoilerScene()
+                    stage.scene = spoilerScene(gameState)
 
                 case DisplayType.SUMMARY =>
-                    stage.scene = summaryScene()
+                    stage.scene = summaryScene(gameState)
 
                 case DisplayType.HELP =>
-                    stage.scene = helpScene()
+                    stage.scene = helpScene(gameState)
             }
         }
     }
