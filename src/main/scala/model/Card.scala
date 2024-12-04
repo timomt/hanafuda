@@ -51,6 +51,7 @@ enum CardMonth {
         case OCTOBER => " Oct. "
         case NOVEMBER => " Nov. "
         case DECEMBER => " Dec. "
+        case _ => ""
     }
 }
 
@@ -71,6 +72,7 @@ enum CardType {
         case TANE => " Tane "
         case TANZAKU => "Tanz. "
         case KASU => " Kasu "
+        case _ => ""
     }
 }
 
@@ -107,6 +109,7 @@ enum CardName {
         case SWALLOW => "Swall."
         case LIGHTNING => "Light."
         case PHOENIX => "Phoen."
+        case _ => ""
     }
 }
 
