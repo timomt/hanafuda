@@ -1,3 +1,5 @@
+package view
+
 import controller.{GameController, Observer}
 import model.{Card, CardMonth, CardName, CardType, DisplayType, GameState, GameStatePlanned, GameStateRandom, GameStateUninitialized}
 import scalafx.application.{JFXApp3, Platform}
@@ -204,24 +206,40 @@ object GUIManager extends JFXApp3 with Observer {
 
                 val middleRow = new VBox {
                     alignment = Pos.Center
-                    spacing = vh*0.03*0.5
+                    spacing = vh * 0.03 * 0.5
 
                     val halfSize = (gameState.board.cards.length + 1) / 2
 
                     children = List(
                         new HBox {
                             alignment = Pos.Center
-                            spacing = vw*0.005
-                            children = (0 until halfSize).map { i =>
+                            spacing = vw * 0.005
+                            children = List(
+                                new Region {
+                                    hgrow = Priority.Always
+                                }
+                            ) ++ (0 until halfSize).map { i =>
                                 if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
-                            }
+                            } ++ List(
+                                new Region {
+                                    hgrow = Priority.Always
+                                }
+                            )
                         },
                         new HBox {
                             alignment = Pos.Center
-                            spacing = vw*0.005
-                            children = (halfSize until gameState.deck.cards.length).map { i =>
+                            spacing = vw * 0.005
+                            children = List(
+                                new Region {
+                                    hgrow = Priority.Always
+                                }
+                            ) ++ (halfSize until gameState.board.cards.length).map { i =>
                                 if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
-                            }
+                            } ++ List(
+                                new Region {
+                                    hgrow = Priority.Always
+                                }
+                            )
                         }
                     )
                 }
