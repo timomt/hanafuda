@@ -32,7 +32,7 @@ enum CardPlant {
 * a specialized version of a regular Month enum for koi-koi.
 * */
 enum CardMonth {
-    case JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER
+    case JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER, BACK
 
     /*
     * def unicode
@@ -59,7 +59,7 @@ enum CardMonth {
 * used to differentiate the 4 card types in hanafuda
 * */
 enum CardType {
-    case HIKARI, TANE, TANZAKU, KASU
+    case HIKARI, TANE, TANZAKU, KASU, BACK
     
     /*
     * def unicode
@@ -81,7 +81,7 @@ enum CardType {
 enum CardName {
     case CRANE, PLAIN, NIGHTINGALE, POETRY_TANZAKU, CURTAIN,
          CUCKOO, BRIDGE, BUTTERFLIES, BLUE_TANZAKU,
-         BOAR, MOON, GEESE, SAKE_CUP, DEER, RAIN, SWALLOW, LIGHTNING, PHOENIX
+         BOAR, MOON, GEESE, SAKE_CUP, DEER, RAIN, SWALLOW, LIGHTNING, PHOENIX, BACK
 
     /*
     * def unicode

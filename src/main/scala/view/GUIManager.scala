@@ -1,471 +1,448 @@
-package view
-
 import controller.{GameController, Observer}
-import model.Deck.defaultDeck
-import model.DisplayType.HELP
-import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameState}
+import model.{Card, CardMonth, CardName, CardType, DisplayType, GameState, GameStatePlanned, GameStateRandom, GameStateUninitialized}
 import scalafx.application.{JFXApp3, Platform}
 import scalafx.geometry.{Insets, Pos}
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, Label, Separator, TextField, ToolBar}
+import scalafx.scene.control.{Button, TextField, ToolBar}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
-import scalafx.scene.text.Text
-import view.TUIManager
-import view.TUIManager.{printHelp, printOverview, printSpoiler, printSummary}
 import scalafx.Includes.*
-import scalafx.animation.{ScaleTransition, TranslateTransition}
 import scalafx.event
 import scalafx.event.ActionEvent
 import scalafx.geometry.Pos.TopCenter
 import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.MouseEvent
-import scalafx.util.Duration
+import scalafx.stage.Screen
 
-//TODO: sys.exit on window closing
 object GUIManager extends JFXApp3 with Observer {
+    /* Viewport sizes */
+    private var vh: Double = 0
+    private var vw: Double = 0
+    /* Cache for card images to reduce IO significantly */
+    private var cardCache: Map[Int, Image] = Map()
+    private var selectedHandCard: Option[Card] = None
+    private var selectedBoardCard: Option[Card] = None
+    private var selectedHandCardPane: Option[StackPane] = None
+    private var selectedBoardCardPane: Option[StackPane] = None
+    //TODO: scale selected cards correctly without blurr
+    //TODO: sys.exit on ScalaFX Frame closing
+    /*
+    * def start()
+    * initialization of GUIManager.
+    * */
+    override def start(): Unit = {
+        /* Subscribing to GameController Observable */
+        GameController.add(this)
 
-  // Cache card images to avoid reloading them every time
-  private val cardCache: Map[Int, Image] = (for (i <- 0 until 48) yield {
-    val card = defaultDeck().cards(i)
-    card.index -> new Image(getClass.getResourceAsStream(s"/img/card/${card.index}.png"))
-  }).toMap
+        /* Initialize vars */
+        /* Is necessary here because ScalaFX properties cannot be called outside of ScalaFX Thread */
+        vh = Screen.primary.visualBounds.height
+        vw = Screen.primary.visualBounds.width
+        cardCache = (for (i <- 0 until 49) yield {
+            i -> new Image(getClass.getResourceAsStream(s"/img/card/$i.png"),
+                requestedWidth = vw*0.055, requestedHeight = vw*0.055*1.5, preserveRatio = true, smooth = true)   // Hanafuda card size ratio is 2/3
+        }).toMap
+        /* ---------------- */
 
-  // Cache background images to avoid reloading them every time
-  private val pictureCache: Map[String, Image] = Map(
-    "welcomeBackground" -> new Image(getClass.getResourceAsStream("/view/hintergrund_Board.jpg")),
-    "gameBackground" -> new Image(getClass.getResourceAsStream("/view/Hintergrund_test.png")),
-  )
-
-  // function to create a button with an image and text
-  def setButtonWithImageAndText(button: Button, imagePath: String, buttonText: String): Unit = {
-    val buttonImage = new ImageView(new Image(imagePath)) {
-      fitWidth = 100 // Set desired width
-      fitHeight = 100 // Set desired height
-      preserveRatio = true
+        stage = new JFXApp3.PrimaryStage {
+            title = "Hanafuda"
+            width = vw
+            height = vh
+            resizable = false
+            icons += new Image(getClass.getResourceAsStream("/img/logo/koikoi.png"))
+        }
+        stage.scene = sceneUninitialized()
     }
 
-    val buttonLabel = new Text(buttonText) {
-      style = "-fx-font-size: 14px; -fx-fill: white;" // Customize text style
-    }
-
-    val buttonGraphic = new StackPane {
-      children = Seq(buttonImage, buttonLabel)
-    }
-
-    button.graphic = buttonGraphic
-    button.style = "-fx-background-color: transparent;"
-  }
-
-  override def start(): Unit = {
-    GameController.add(this)
-
-    stage = new JFXApp3.PrimaryStage {
-      title = "Hanafuda"
-      width = 1280
-      height = 720
-      resizable = false
-
-      scene = new Scene() {
-        // Pane to add content
-        val rootPane = new StackPane {
-          background = new Background(Array(
-            new BackgroundImage(
-              new Image("view/Hintergrund_test.png"), // Replace with your image path
-              BackgroundRepeat.NoRepeat, // X-axis repeat
-              BackgroundRepeat.NoRepeat, // Y-axis repeat
-              BackgroundPosition.Center, // Center the image
-              new BackgroundSize(
-                100, 100, true, true, false, true // Scale image to fit
-              )
-            )
-          ))
-
-          val textField_p1 = new TextField {
-            prefWidth = 200
-            maxWidth = 400
-            promptText = "Name Player 1"
-          }
-
-          val textField_p2 = new TextField {
-            prefWidth = 200
-            maxWidth = 400
-            promptText = "Name Player 2"
-          }
-
-          val logo = new ImageView {
-            image = new Image("view/KoiKoi_Logo.png")
-
-            fitWidth = 200
-            preserveRatio = true
-            alignmentInParent = TopCenter
-            // drop shadow effect
-            effect = new DropShadow {
-              color = Color.Black
-              radius = 10
-              spread = 0.2
-            }
-          }
-
-          // Pane components
-          val vbox = new VBox {
-            alignment = Pos.Center
-            spacing = 100
-            children = List(
-              new HBox {
-                alignment = Pos.Center
-                spacing = 100
-                children = List(textField_p1, textField_p2)
-              },
-              new Button("Start Game") {
-                onAction = (e: ActionEvent) => {
-                  val player1Name = textField_p1.text.value
-                  val player2Name = textField_p2.text.value
-                  if (player1Name.isEmpty || player2Name.isEmpty) {
-                    if (player1Name.isEmpty) {
-                      textField_p1.promptText = "Enter Player 1 name"
-                    }
-                    if (player2Name.isEmpty) {
-                      textField_p2.promptText = "Enter Player 2 name"
-                    }
-                  } else {
-                    GameController.processInput(s"start $player1Name $player2Name")
-                    DisplayType.GAME
-                  }
+    /* ------------------------------------------------------- */
+    /* --------------- Scenes for update() -------------------- */
+    def sceneUninitialized(): Scene = new Scene {
+        val rootPane: StackPane = new StackPane {
+            background = new Background(Array(
+                new BackgroundImage(
+                    new Image("/img/background/main_menu.png",
+                        requestedWidth = vw, requestedHeight = vh,
+                        preserveRatio = true, smooth = true, backgroundLoading = false),
+                    BackgroundRepeat.NoRepeat,
+                    BackgroundRepeat.NoRepeat,
+                    BackgroundPosition.Center,
+                    new BackgroundSize(
+                        vw, vh, true, true, false, true
+                    )
+                )
+            ))
+            val textField_p1: TextField = createStyledTextField("Name Player 1")
+            textField_p1.prefWidth = vw * 0.1
+            textField_p1.prefHeight = vh * 0.03
+            val textField_p2: TextField = createStyledTextField("Name Player 2")
+            textField_p2.prefWidth = vw * 0.1
+            textField_p2.prefHeight = vh * 0.03
+            val logo: ImageView = new ImageView {
+                padding = Insets(vh * 0.2, 0, 0, 0)
+                image = new Image("/img/logo/koikoi.png")
+                fitWidth = vw * 0.15
+                preserveRatio = true
+                alignmentInParent = TopCenter
+                effect = new DropShadow {
+                    color = Color.Black
+                    radius = 10
+                    spread = 0.2
                 }
-              }
-            )
-          }
+            }
 
-          children = List(logo, vbox)
+            // Pane components
+            val vbox = new VBox {
+                alignment = Pos.Center
+                spacing = vh * 0.075
+                val startButton: Button = createGameTaskbarButton("Start", (e: ActionEvent) => {
+                    val player1Name = textField_p1.text.value
+                    val player2Name = textField_p2.text.value
+                    if (player1Name.isEmpty || player2Name.isEmpty) {
+                        if (player1Name.isEmpty) {
+                            textField_p1.promptText = "Enter Player 1 name"
+                        }
+                        if (player2Name.isEmpty) {
+                            textField_p2.promptText = "Enter Player 2 name"
+                        }
+                    } else {
+                        GameController.processInput(s"start $player1Name $player2Name")
+                        DisplayType.GAME
+                    }
+                })
+                startButton.prefWidth = vw * 0.1
+                children = List(
+                    new HBox {
+                        alignment = Pos.Center
+                        spacing = vw * 0.01
+                        children = List(textField_p1, textField_p2)
+                    }, startButton
+                )
+            }
+            children = List(logo, vbox)
         }
         root = rootPane
-      }
     }
-  }
 
+    def gameScene(gameState: GameState): Scene = {
+        new Scene {
+            val rootPane = new StackPane {
+                background = new Background(Array(
+                    new BackgroundImage(
+                        new Image("/img/background/board.jpg"),
+                        BackgroundRepeat.NoRepeat,
+                        BackgroundRepeat.NoRepeat,
+                        BackgroundPosition.Center,
+                        new BackgroundSize(
+                            vw, vh, true, true, false, true
+                        )
+                    )
+                ))
 
-  def gameScene(gameState: GameState): Scene = {
-    GameController.add(this)
-    new Scene {
-      val rootPane = new StackPane {
-        background = new Background(Array(
-          new BackgroundImage(
-            new Image("view/hintergrund_Board.jpg"), // Replace with your image path
-            BackgroundRepeat.NoRepeat, // X-axis repeat
-            BackgroundRepeat.NoRepeat, // Y-axis repeat
-            BackgroundPosition.Center, // Center the image
-            new BackgroundSize(
-              100, 100, true, true, false, true // Scale image to fit
-            )
-          )
-        ))
+                def onMouseClicked(card: Card, cardStackPane: StackPane, isBoardCard: Boolean, defaultScale: Double, highlightedScale: Double, defaultEffect: DropShadow, highlightedEffect: DropShadow): Unit = {
+                    if (isBoardCard || gameState.isInstanceOf[GameStatePlanned] && gameState.players.head.hand.cards.contains(card)) {
+                        val (selectedCard, selectedCardPane) = if (isBoardCard) (selectedBoardCard, selectedBoardCardPane) else (selectedHandCard, selectedHandCardPane)
+                        val (setSelectedCard, setSelectedCardPane) =
+                            if (isBoardCard) ((c: Option[Card]) => selectedBoardCard = c, (p: Option[StackPane]) => selectedBoardCardPane = p)
+                            else ((c: Option[Card]) => selectedHandCard = c, (p: Option[StackPane]) => selectedHandCardPane = p)
 
-        // Toolbar Buttons
-        val undoButton = new Button("Undo")
-        undoButton.onAction = (e: ActionEvent) => {
-          GameController.processInput("undo")
+                        if (selectedCard.contains(card)) {
+                            cardStackPane.scaleX = defaultScale
+                            cardStackPane.scaleY = defaultScale
+                            cardStackPane.effect = defaultEffect
+                            setSelectedCard(None)
+                            setSelectedCardPane(None)
+                        } else {
+                            selectedCardPane.foreach { pane =>
+                                pane.scaleX = defaultScale
+                                pane.scaleY = defaultScale
+                                pane.effect = defaultEffect
+                            }
+                            setSelectedCard(Some(card))
+                            setSelectedCardPane(Some(cardStackPane))
+                            cardStackPane.scaleX = highlightedScale
+                            cardStackPane.scaleY = highlightedScale
+                            cardStackPane.effect = highlightedEffect
+                        }
+                    }
+                }
+
+                def createCard(isBoardCard: Boolean, card: Card): StackPane = {
+                    val cardImage = cardCache(card.index)
+                    val cardStackPane = new StackPane {
+                        children = new ImageView {
+                            image = cardImage
+                            preserveRatio = true
+                        }
+                        effect = new DropShadow {
+                            color = Color.Black
+                            radius = 10
+                            spread = 0.2
+                        }
+                    }
+                    val defaultScale = 1.0
+                    val highlightedScale = 1.05
+                    val defaultEffect = new DropShadow {
+                        color = Color.Black
+                        radius = 10
+                        spread = 0.2
+                    }
+                    val highlightedEffect = new DropShadow {
+                        color = Color.Black
+                        radius = 20
+                        spread = 0.4
+                    }
+                    cardStackPane.onMouseClicked = (event: MouseEvent) => onMouseClicked(card, cardStackPane, isBoardCard, defaultScale, highlightedScale, defaultEffect, highlightedEffect)
+                    cardStackPane
+                }
+
+                val topRow = new HBox {
+                    alignment = Pos.Center
+                    spacing = vw*0.005
+                    children = gameState.players(1).hand.cards.map(card => createCard(false, Card(CardMonth.BACK, CardType.BACK, CardName.BACK, false, 0))) // Display player's full hand
+                }
+
+                val middleRow = new VBox {
+                    alignment = Pos.Center
+                    spacing = vh*0.03*0.5
+
+                    val halfSize = (gameState.board.cards.length + 1) / 2
+
+                    children = List(
+                        new HBox {
+                            alignment = Pos.Center
+                            spacing = vw*0.005
+                            children = (0 until halfSize).map { i =>
+                                if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
+                            }
+                        },
+                        new HBox {
+                            alignment = Pos.Center
+                            spacing = vw*0.005
+                            children = (halfSize until gameState.deck.cards.length).map { i =>
+                                if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
+                            }
+                        }
+                    )
+                }
+
+                val bottomRow = new HBox {
+                    alignment = Pos.Center
+                    spacing = vw*0.005
+                    children = gameState.players.head.hand.cards.map(card => createCard(false, card)) // Display player's hand
+                }
+
+                val matchedRow = new HBox {
+                    alignment = Pos.Center
+                    spacing = vw*0.005
+                    if (gameState.matchedDeck.isDefined) {
+                        children = gameState.matchedDeck.get.cards.map(card => createCard(false, card)) // Display matched cards
+                    }
+                }
+
+                val cardLayout = new VBox {
+                    alignment = Pos.Center
+                    spacing = vh*0.03
+                    children = List(topRow, middleRow, bottomRow)
+                    maxWidth = 600
+                    maxHeight = 400
+                }
+
+                val combinedLayout = new HBox {
+                    val singleCardRow = gameState.queuedCard.map(createCard(false, _)).getOrElse(new Region())
+                    alignment = Pos.Center
+                    spacing = vw*0.005
+                    children = List(
+                        singleCardRow,
+                        cardLayout,
+                        matchedRow
+                    )
+                }
+                children = List(combinedLayout, createGameTaskbar(gameState))
+            }
+            root = rootPane
         }
+    }
 
-        val combinationsButton = new Button("Combinations")
-        combinationsButton.onAction = (e: ActionEvent) => {
-          GameController.processInput("combinations")
+    def combinationsScene(gameState: GameState): Scene = {
+        new Scene {
+            val button = new Button("Back")
+            button.layoutX = 200
+            button.layoutY = 150
+            button.onAction = (e:ActionEvent) => {
+                GameController.processInput("continue")
+            }
+            content = List(button)
         }
+    }
 
-        val matchButton = new Button("Match")
-        matchButton.onAction = (e: ActionEvent) => {
-          if (highlightedTopOrBottomCard.isDefined && highlightedMiddleCard.isDefined) {
-            val bottomRowIndex = gameState.players.head.hand.cards.indexOf(highlightedTopOrBottomCard.get) + 1
-            val middleCardIndex = gameState.deck.cards.indexOf(highlightedTopOrBottomCard.get) + 1
-            GameController.processInput(s"match $bottomRowIndex $middleCardIndex")
-          } else {
-            GameController.processInput("match")
-          }
+    def spoilerScene(gameState: GameState): Scene = {
+        new Scene {
+            val button = new Button("Continue the game")
+            button.layoutX = 200
+            button.layoutY = 150
+            button.onAction = (e:ActionEvent) => {
+                GameController.processInput("continue")
+            }
+            content = List(button)
         }
+    }
 
-        val discardButton = new Button("Discard")
-        discardButton.onAction = (e: ActionEvent) => {
-          if (highlightedTopOrBottomCard.isDefined) {
-            val topCardIndex = gameState.players.head.hand.cards.indexOf(highlightedTopOrBottomCard.get) + 1
-            GameController.processInput(s"discard $topCardIndex")
-          } else {
-            //TODO: match witch card on the poll if no card is selected
-            GameController.processInput("discard")
-          }
+    def summaryScene(gameState: GameState): Scene = {
+        new Scene {
+            val button = new Button("Back")
+            button.layoutX = 200
+            button.layoutY = 150
+            button.onAction = (e:ActionEvent) => {
+                GameController.processInput("continue")
+            }
+            content = List(button)
         }
+    }
 
-        val cardInfoTextField = new TextField {
-          prefWidth = 400
-          maxWidth = 600
-          promptText = "Card Info"
-          editable = false
+    def helpScene(gameState: GameState): Scene = {
+        new Scene(600, 600) {
+            val button = new Button("Back")
+            button.layoutX = 200
+            button.layoutY = 150
+            button.onAction = (e:ActionEvent) => {
+                GameController.processInput("continue")
+            }
+            content = List(button)
         }
+    }
+    /* ------------------------------------------------------- */
 
-        val helpButton = new Button("Help")
-        helpButton.onAction = (e: ActionEvent) => {
-          GameController.processInput("help")
-        }
+    /*
+    * def createGameTaskbar(..)
+    * returns a ToolBar für DisplayType.GAME
+    * */
+    def createGameTaskbar(gameState: GameState): ToolBar = {
+        val button1 = createGameTaskbarButton("Help", (e: ActionEvent) => {
+            GameController.processInput("help")
+        })
+        val button2 = createGameTaskbarButton("Match", (e: ActionEvent) => {
+            gameState match
+                case _: GameStatePlanned if selectedHandCard.isDefined && selectedBoardCard.isDefined =>
+                    val handCardIndex = gameState.players.head.hand.cards.indexOf(selectedHandCard.get) + 1
+                    val boardCardIndex = gameState.board.cards.indexOf(selectedBoardCard.get) + 1
+                    GameController.processInput(s"match $handCardIndex $boardCardIndex")
+                case _: GameStateRandom if selectedBoardCard.isDefined =>
+                    GameController.processInput(s"match ${gameState.board.cards.indexOf(selectedBoardCard.get) + 1}")
+                case _ =>
+                //TODO error reporting
+        })
+        val button3 = createGameTaskbarButton("Discard", (e: ActionEvent) => {
+            gameState match
+                case _: GameStatePlanned if selectedHandCard.isDefined =>
+                    GameController.processInput(s"discard ${gameState.players.head.hand.cards.indexOf(selectedHandCard.get) + 1}")
+                case _: GameStateRandom =>
+                    GameController.processInput("discard")
+                case _ =>
+                //TODO error reporting
+        })
+        val button4 = createGameTaskbarButton("Combinations", (e: ActionEvent) => {
+            GameController.processInput("com")
+        })
+        val button5 = createGameTaskbarButton("Undo", (e: ActionEvent) => {
+            GameController.processInput("undo")
+        })
+        val button6 = createGameTaskbarButton("Redo", (e: ActionEvent) => {
+            GameController.processInput("redo")
+        })
+        val button7 = createGameTaskbarButton("Exit", (e: ActionEvent) => {
+            GameController.processInput("exit")
+        })
 
-        val redoButton = new Button("Redo")
-        redoButton.onAction = (e: ActionEvent) => {
-          GameController.processInput("redo")
-        }
-
-        // Toolbar Configuration
         val leftSpacer = new Region {
-          hgrow = Priority.Always
+            hgrow = Priority.Always
         }
         val rightSpacer = new Region {
-          hgrow = Priority.Always
+            hgrow = Priority.Always
         }
-
-        val toolbar = new ToolBar {
-          alignmentInParent = Pos.BottomCenter
-          prefWidth = 1280
-          background = Background.EMPTY
-          items = List(
-            leftSpacer,
-            new HBox {
-              alignment = Pos.Center
-              spacing = 50
-              children = List(
-                undoButton,
-                combinationsButton,
-                matchButton,
-                discardButton,
-                helpButton,
-                redoButton,
-                cardInfoTextField
-              )
-            },
-            rightSpacer // Push content to the center
-          )
+        new ToolBar {
+            alignmentInParent = Pos.TopCenter
+            padding = Insets(10)
+            items = List(
+                leftSpacer,
+                new HBox {
+                    alignment = Pos.Center
+                    spacing = 20
+                    children = List(button1, button2, button3, button4, button5, button6, button7)
+                },
+                rightSpacer
+            )
+            style = "-fx-background-color: #231F20;"
         }
+    }
 
+    /*
+    * def createGameTaskbarButton(..)
+    * returns a styled Button with given text and action to trigger on click.
+    * */
+    def createGameTaskbarButton(text: String, action: ActionEvent => Unit): Button = {
+        val button: Button = new Button(text) {
+            style = "-fx-background-color: #B82025;" +
+                "-fx-text-fill: white;" +
+                "-fx-font-size: 14px;" +
+                "-fx-padding: 10 20 10 20;" +
+                "-fx-background-radius: 5;"
+            onMouseEntered = _ => style = "-fx-background-color: #595FAB;" +
+                "-fx-text-fill: white;" +
+                "-fx-font-size: 14px;" +
+                "-fx-padding: 10 20 10 20;" +
+                "-fx-background-radius: 5;"
+            onMouseExited = _ => style = "-fx-background-color: #B82025;" +
+                "-fx-text-fill: white;" +
+                "-fx-font-size: 14px;" +
+                "-fx-padding: 10 20 10 20;" +
+                "-fx-background-radius: 5;"
+        }
+        button.onAction = action
+        button
+    }
 
-        var highlightedTopOrBottomCard: Option[Card] = None
-        var highlightedMiddleCard: Option[Card] = None
+    /*
+    * def createStyledTextField(..)
+    * returns a prestyled TextField. */
+    def createStyledTextField(textString: String): TextField = {
+        new TextField {
+            this.promptText = textString
+            style = "-fx-background-color: #231F20;" +
+                "-fx-text-fill: white;" +
+                "-fx-font-size: 14px;" +
+                "-fx-font-family: Ubuntu;" +
+                "-fx-padding: 10 20 10 20;" +
+                "-fx-background-radius: 5;"
+        }
+    }
 
-        def onMouseClicked(card: Card, cardStackPane: StackPane, isMiddleRow: Boolean, defaultScale: Double, highlightedScale: Double, defaultEffect: DropShadow, highlightedEffect: DropShadow, cardInfo: String): Unit = {
-          if (cardStackPane.scaleX.value == defaultScale) {
-            cardStackPane.scaleX = highlightedScale
-            cardStackPane.scaleY = highlightedScale
-            cardStackPane.effect = highlightedEffect
-
-            cardInfoTextField.text = cardInfo
-
-            if (isMiddleRow) {
-              highlightedMiddleCard = Some(card)
+    /*
+    * def update(..)
+    * update the GUI on observer notification.
+    * */
+    override def update(gameState: GameState): Unit = {
+        Platform.runLater {
+            if (gameState.isInstanceOf[GameStateUninitialized]) {
+                stage.scene = sceneUninitialized()
             } else {
-              highlightedTopOrBottomCard = Some(card)
+                gameState.displayType match {
+                    case DisplayType.GAME =>
+                        stage.scene = gameScene(gameState)
+
+                    case DisplayType.COMBINATIONS =>
+                        stage.scene = combinationsScene(gameState)
+
+                    case DisplayType.SPOILER =>
+                        stage.scene = spoilerScene(gameState)
+
+                    case DisplayType.SUMMARY =>
+                        stage.scene = summaryScene(gameState)
+
+                    case DisplayType.HELP =>
+                        stage.scene = helpScene(gameState)
+                }
             }
-          } else {
-            cardStackPane.scaleX = defaultScale
-            cardStackPane.scaleY = defaultScale
-            cardStackPane.effect = defaultEffect
-
-            if (isMiddleRow) {
-              highlightedMiddleCard = None
-            } else {
-              highlightedTopOrBottomCard = None
-            }
-          }
         }
-
-        matchButton.onAction = (e: ActionEvent) => {
-          if (highlightedTopOrBottomCard.isDefined && highlightedMiddleCard.isDefined) {
-            val bottomRowIndex = gameState.players.head.hand.cards.indexOf(highlightedTopOrBottomCard.get) + 1
-            val middleCardIndex = gameState.board.cards.indexOf(highlightedMiddleCard.get) + 1
-            GameController.processInput(s"match $bottomRowIndex $middleCardIndex")
-          } else {
-            GameController.processInput("match")
-          }
-        }
-
-        def createCard(isMiddleRow: Boolean, card: Card): StackPane = {
-          val cardImage = cardCache(card.index)
-          val cardStackPane = new StackPane {
-            children = new ImageView {
-              image = cardImage
-              fitWidth = 50
-              fitHeight = 100
-              preserveRatio = true
-            }
-            minWidth = 50
-            minHeight = 100
-            effect = new DropShadow {
-              color = Color.Black
-              radius = 10
-              spread = 0.2
-            }
-          }
-
-          val defaultScale = 1.0
-          val highlightedScale = 1.2
-
-          val defaultEffect = new DropShadow {
-            color = Color.Black
-            radius = 10
-            spread = 0.2
-          }
-          val highlightedEffect = new DropShadow {
-            color = Color.Black
-            radius = 20
-            spread = 0.4
-          }
-          val cardInfo = s"Card: ${card.cardName}, Type: ${card.cardType}, Month: ${card.month}, " +
-            s"Index: ${if (isMiddleRow) gameState.board.cards.indexOf(card) + 1 else gameState.players.head.hand.cards.indexOf(card) + 1}"
-          cardStackPane.onMouseClicked = (event: MouseEvent) => onMouseClicked(card, cardStackPane, isMiddleRow, defaultScale, highlightedScale, defaultEffect, highlightedEffect, cardInfo)
-
-          cardStackPane
-        }
-
-
-        val topRow = new HBox {
-          alignment = Pos.Center
-          spacing = 10
-          children = gameState.players(1).hand.cards.map(card => createCard(false, card)) // Display player's full hand
-
-          style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
-        }
-
-        val middleRow = new VBox {
-          alignment = Pos.Center
-          spacing = 0
-
-          val halfSize = (gameState.board.cards.length + 1) / 2
-
-          children = List(
-            new HBox {
-              alignment = Pos.Center
-              spacing = 10
-              children = (0 until halfSize).map { i =>
-                if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
-              }
-              style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
-            },
-            new HBox {
-              alignment = Pos.Center
-              spacing = 10
-              children = (halfSize until gameState.deck.cards.length).map { i =>
-                if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
-              }
-              style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
-            }
-          )
-          style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
-        }
-
-        val bottomRow = new HBox {
-          alignment = Pos.Center
-          spacing = 10
-          children = gameState.players.head.hand.cards.map(card => createCard(false, card)) // Display player's hand
-          style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
-        }
-
-
-        val matchedRow = new HBox {
-          alignment = Pos.Center
-          spacing = 10
-          if (gameState.matchedDeck.isDefined) {
-            children = gameState.matchedDeck.get.cards.map(card => createCard(false, card)) // Display matched cards
-          }
-          style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
-        }
-
-
-        val cardLayout = new VBox {
-          alignment = Pos.Center
-          spacing = 20
-          children = List(topRow, middleRow, bottomRow)
-          style = "-fx-border-color: red; -fx-border-width: 5;" // Add border
-          maxWidth = 600
-          maxHeight = 400
-        }
-
-        val combinedLayout = new HBox {
-          val singleCardRow = gameState.queuedCard.map(createCard(false, _)).getOrElse(new Region())
-          alignment = Pos.Center
-          spacing = 10
-          children = List(
-            singleCardRow,
-            cardLayout,
-            matchedRow
-          )
-        }
-        children = List(combinedLayout, toolbar)
-      }
-      root = rootPane
     }
-  }
-
-  def combinationsScene(gameState: GameState): Scene = {
-    new Scene {
-      val button = new Button("Back")
-      button.layoutX = 200
-      button.layoutY = 150
-      button.onAction = (e:ActionEvent) => {
-        GameController.processInput("continue")
-      }
-      content = List(button)
-    }
-  }
-
-  def spoilerScene(gameState: GameState): Scene = {
-    new Scene {
-      val button = new Button("Continue the game")
-      button.layoutX = 200
-      button.layoutY = 150
-      button.onAction = (e:ActionEvent) => {
-        GameController.processInput("continue")
-      }
-      content = List(button)
-    }
-  }
-
-  def summaryScene(gameState: GameState): Scene = {
-    new Scene {
-      val button = new Button("Back")
-      button.layoutX = 200
-      button.layoutY = 150
-      button.onAction = (e:ActionEvent) => {
-        GameController.processInput("continue")
-      }
-      content = List(button)
-    }
-  }
-
-  def helpScene(gameState: GameState): Scene = {
-    new Scene(600, 600) {
-      val button = new Button("Back")
-      button.layoutX = 200
-      button.layoutY = 150
-      button.onAction = (e:ActionEvent) => {
-        GameController.processInput("continue")
-      }
-      content = List(button)
-    }
-  }
-
-  override def update(gameState: GameState): Unit = {
-    Platform.runLater {
-      gameState.displayType match {
-        case DisplayType.GAME =>
-          stage.scene = gameScene(gameState)
-
-        case DisplayType.COMBINATIONS =>
-          stage.scene = combinationsScene(gameState)
-
-        case DisplayType.SPOILER =>
-          stage.scene = spoilerScene(gameState)
-
-        case DisplayType.SUMMARY =>
-          stage.scene = summaryScene(gameState)
-
-        case DisplayType.HELP =>
-          stage.scene = helpScene(gameState)
-      }
-    }
-  }
 }
