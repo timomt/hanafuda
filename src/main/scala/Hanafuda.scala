@@ -1,7 +1,7 @@
 import controller.GameController
 import view.TUIManager
 import controller.GameController
-import view.TUIManager
+import view.GUIManager
 
 /*
 * object Hanafuda
