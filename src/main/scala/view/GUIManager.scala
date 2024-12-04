@@ -3,7 +3,7 @@ package view
 import controller.{GameController, Observer}
 import model.{Card, CardMonth, CardName, CardType, DisplayType, GameState, GameStatePlanned, GameStateRandom, GameStateUninitialized}
 import scalafx.application.{JFXApp3, Platform}
-import scalafx.geometry.{Insets, Pos}
+import scalafx.geometry.{HPos, Insets, Pos, VPos}
 import scalafx.scene.Scene
 import scalafx.scene.control.{Button, TextField, ToolBar}
 import scalafx.scene.layout.*
@@ -204,44 +204,26 @@ object GUIManager extends JFXApp3 with Observer {
                     children = gameState.players(1).hand.cards.map(card => createCard(false, Card(CardMonth.BACK, CardType.BACK, CardName.BACK, false, 0))) // Display player's full hand
                 }
 
-                val middleRow = new VBox {
+                val middleRow = new GridPane {
                     alignment = Pos.Center
-                    spacing = vh * 0.03 * 0.5
+                    hgap = vw * 0.005
+                    vgap = vh * 0.03 * 0.5
 
                     val halfSize = (gameState.board.cards.length + 1) / 2
 
-                    children = List(
-                        new HBox {
-                            alignment = Pos.Center
-                            spacing = vw * 0.005
-                            children = List(
-                                new Region {
-                                    hgrow = Priority.Always
-                                }
-                            ) ++ (0 until halfSize).map { i =>
-                                if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
-                            } ++ List(
-                                new Region {
-                                    hgrow = Priority.Always
-                                }
-                            )
-                        },
-                        new HBox {
-                            alignment = Pos.Center
-                            spacing = vw * 0.005
-                            children = List(
-                                new Region {
-                                    hgrow = Priority.Always
-                                }
-                            ) ++ (halfSize until gameState.board.cards.length).map { i =>
-                                if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
-                            } ++ List(
-                                new Region {
-                                    hgrow = Priority.Always
-                                }
-                            )
-                        }
-                    )
+                    for (i <- 0 until halfSize) {
+                        val card = if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
+                        add(card, i, 0)
+                        GridPane.setHalignment(card, HPos.CENTER)
+                        GridPane.setValignment(card, VPos.CENTER)
+                    }
+
+                    for (i <- halfSize until gameState.board.cards.length) {
+                        val card = if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
+                        add(card, i - halfSize, 1)
+                        GridPane.setHalignment(card, HPos.CENTER)
+                        GridPane.setValignment(card, VPos.CENTER)
+                    }
                 }
 
                 val bottomRow = new HBox {
