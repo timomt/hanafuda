@@ -1,11 +1,11 @@
 package view
 
 import controller.{GameController, Observer}
-import model.{Card, CardMonth, CardName, CardType, DisplayType, GameState, GameStatePlanned, GameStateRandom, GameStateUninitialized}
+import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameState, GameStatePlanned, GameStateRandom, GameStateUninitialized}
 import scalafx.application.{JFXApp3, Platform}
 import scalafx.geometry.{HPos, Insets, Pos, VPos}
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, TextField, ToolBar}
+import scalafx.scene.control.{Button, Label, ScrollPane, TextField, ToolBar}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.Includes.*
@@ -16,6 +16,7 @@ import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.MouseEvent
 import scalafx.stage.Screen
+import view.ComponentDecoraters.{BasicTextField, StyleDecorator}
 
 object GUIManager extends JFXApp3 with Observer {
     /* Viewport sizes */
@@ -268,13 +269,78 @@ object GUIManager extends JFXApp3 with Observer {
 
     def combinationsScene(gameState: GameState): Scene = {
         new Scene {
-            val button = new Button("Back")
-            button.layoutX = 200
-            button.layoutY = 150
-            button.onAction = (e:ActionEvent) => {
-                GameController.processInput("continue")
+            val rootPane = new StackPane {
+
+
+                def createCard(card: Card): StackPane = {
+                    val cardImage = cardCache(card.index)
+                    new StackPane {
+                        children = new ImageView {
+                            image = cardImage
+                            preserveRatio = true
+                        }
+                        effect = new DropShadow {
+                            color = Color.Black
+                            radius = 10
+                            spread = 0.2
+                        }
+                    }
+                }
+
+                def createCombinationRow(title: String, cards: Seq[Card]): VBox = {
+                    new VBox {
+                        alignment = Pos.Center
+                        spacing = 10
+                        children = List(
+                            new Label(title) {
+                                style = "-fx-font-size: 16px; -fx-text-fill: white;"
+                            },
+                            new VBox {
+                                alignment = Pos.Center
+                                spacing = 10
+                                children = cards.grouped(8).map { group =>
+                                    new HBox {
+                                        alignment = Pos.Center
+                                        spacing = 10
+                                        children = group.map(createCard)
+                                    }
+                                }.toList
+                            }
+                        )
+                    }
+                }
+
+                val goko = createCombinationRow("Gokō (五光) \"Five Hikari\" 10pts.", Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI))
+                val shiko = createCombinationRow("Shikō (四光) \"Four Hikari\" 8pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN))
+                val ameShiko = createCombinationRow("Ame-Shikō (雨四光) \"Rainy Four Hikari\" 7pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI))
+                val sanko = createCombinationRow("Sankō (三光) \"Three Hikari\" 6pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN))
+                val tsukimiZake = createCombinationRow("Tsukimi-zake (月見酒) \"Moon Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.MOON || c.cardName == CardName.SAKE_CUP))
+                val hanamiZake = createCombinationRow("Hanami-zake (花見酒) \"Cherry Blossom Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.CURTAIN || c.cardName == CardName.SAKE_CUP))
+                val inoshikacho = createCombinationRow("Inoshikachō (猪鹿蝶) \"Boar, Deer, Butterfly\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.BOAR || c.cardName == CardName.DEER || c.cardName == CardName.BUTTERFLIES))
+                val tane = createCombinationRow("Tane (タネ) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANE))
+                val akatanAotan = createCombinationRow("Akatan Aotan no Chōfuku (赤短青短の重複) \"Red Poem, Blue Poem\" 10pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.POETRY_TANZAKU || c.cardName == CardName.BLUE_TANZAKU))
+                val akatan = createCombinationRow("Akatan (赤短) \"Red Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.POETRY_TANZAKU))
+                val aotan = createCombinationRow("Aotan (青短) \"Blue Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.BLUE_TANZAKU))
+                val tanzaku = createCombinationRow("Tanzaku (短冊) \"Ribbons\" 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANZAKU))
+                val kasu = createCombinationRow("Kasu (カス) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.KASU))
+
+                val combinationsLayout = new ScrollPane {
+                    content = new VBox {
+                        alignment = Pos.Center
+                        spacing = 20
+                        children = List(goko, shiko, ameShiko, sanko, tsukimiZake, hanamiZake, inoshikacho, tane, akatanAotan, akatan, aotan, tanzaku, kasu)
+                    }
+                    fitToWidth = true
+                    fitToHeight = true
+                    hbarPolicy = ScrollPane.ScrollBarPolicy.Never
+                    vbarPolicy = ScrollPane.ScrollBarPolicy.AsNeeded
+                }
+
+                children = List(new VBox {
+                    children = List(createGameTaskbar(gameState), combinationsLayout)
+                })
             }
-            content = List(button)
+            root = rootPane
         }
     }
 
@@ -332,7 +398,7 @@ object GUIManager extends JFXApp3 with Observer {
                 case _: GameStateRandom if selectedBoardCard.isDefined =>
                     GameController.processInput(s"match ${gameState.board.cards.indexOf(selectedBoardCard.get) + 1}")
                 case _ =>
-                //TODO error reporting
+            //TODO error reporting
         })
         val button3 = createGameTaskbarButton("Discard", (e: ActionEvent) => {
             gameState match
@@ -341,7 +407,7 @@ object GUIManager extends JFXApp3 with Observer {
                 case _: GameStateRandom =>
                     GameController.processInput("discard")
                 case _ =>
-                //TODO error reporting
+            //TODO error reporting
         })
         val button4 = createGameTaskbarButton("Combinations", (e: ActionEvent) => {
             GameController.processInput("com")
@@ -385,20 +451,20 @@ object GUIManager extends JFXApp3 with Observer {
     def createGameTaskbarButton(text: String, action: ActionEvent => Unit): Button = {
         val button: Button = new Button(text) {
             style = "-fx-background-color: #B82025;" +
-                "-fx-text-fill: white;" +
-                "-fx-font-size: 14px;" +
-                "-fx-padding: 10 20 10 20;" +
-                "-fx-background-radius: 5;"
+              "-fx-text-fill: white;" +
+              "-fx-font-size: 14px;" +
+              "-fx-padding: 10 20 10 20;" +
+              "-fx-background-radius: 5;"
             onMouseEntered = _ => style = "-fx-background-color: #595FAB;" +
-                "-fx-text-fill: white;" +
-                "-fx-font-size: 14px;" +
-                "-fx-padding: 10 20 10 20;" +
-                "-fx-background-radius: 5;"
+              "-fx-text-fill: white;" +
+              "-fx-font-size: 14px;" +
+              "-fx-padding: 10 20 10 20;" +
+              "-fx-background-radius: 5;"
             onMouseExited = _ => style = "-fx-background-color: #B82025;" +
-                "-fx-text-fill: white;" +
-                "-fx-font-size: 14px;" +
-                "-fx-padding: 10 20 10 20;" +
-                "-fx-background-radius: 5;"
+              "-fx-text-fill: white;" +
+              "-fx-font-size: 14px;" +
+              "-fx-padding: 10 20 10 20;" +
+              "-fx-background-radius: 5;"
         }
         button.onAction = action
         button
@@ -408,15 +474,17 @@ object GUIManager extends JFXApp3 with Observer {
     * def createStyledTextField(..)
     * returns a prestyled TextField. */
     def createStyledTextField(textString: String): TextField = {
-        new TextField {
-            this.promptText = textString
-            style = "-fx-background-color: #231F20;" +
-                "-fx-text-fill: white;" +
-                "-fx-font-size: 14px;" +
-                "-fx-font-family: Ubuntu;" +
-                "-fx-padding: 10 20 10 20;" +
-                "-fx-background-radius: 5;"
-        }
+        val basicTextField = new BasicTextField(textString)
+        val styles = Map(
+            "background-color" -> "#231F20",
+            "text-fill" -> "white",
+            "font-size" -> "14px",
+            "font-family" -> "Ubuntu",
+            "padding" -> "10 20 10 20",
+            "background-radius" -> "5"
+        )
+        val styledTextField = new StyleDecorator(basicTextField, styles)
+        styledTextField.render().asInstanceOf[TextField]
     }
 
     /*
