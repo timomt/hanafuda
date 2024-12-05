@@ -29,7 +29,7 @@ object GUIManager extends JFXApp3 with Observer {
     private var selectedHandCardPane: Option[StackPane] = None
     private var selectedBoardCardPane: Option[StackPane] = None
     //TODO: scale selected cards correctly without blurr
-    //TODO: sys.exit on ScalaFX Frame closing
+
     /*
     * def start()
     * initialization of GUIManager.
@@ -54,6 +54,9 @@ object GUIManager extends JFXApp3 with Observer {
             height = vh
             resizable = false
             icons += new Image(getClass.getResourceAsStream("/img/logo/koikoi.png"))
+            onCloseRequest = _ => {
+                GameController.processInput("exit")
+            }
         }
         stage.scene = sceneUninitialized()
     }
@@ -75,10 +78,10 @@ object GUIManager extends JFXApp3 with Observer {
                     )
                 )
             ))
-            val textField_p1: TextField = createStyledTextField("Name Player 1")
+            val textField_p1: TextField = createStyledTextField("First player name")
             textField_p1.prefWidth = vw * 0.1
             textField_p1.prefHeight = vh * 0.03
-            val textField_p2: TextField = createStyledTextField("Name Player 2")
+            val textField_p2: TextField = createStyledTextField("Second Player name")
             textField_p2.prefWidth = vw * 0.1
             textField_p2.prefHeight = vh * 0.03
             val logo: ImageView = new ImageView {
@@ -251,6 +254,7 @@ object GUIManager extends JFXApp3 with Observer {
 
                 val combinedLayout = new HBox {
                     val singleCardRow = gameState.queuedCard.map(createCard(false, _)).getOrElse(new Region())
+                    singleCardRow.padding = Insets(0, vw*0.05, 0, 0)
                     alignment = Pos.Center
                     spacing = vw*0.005
                     children = List(
