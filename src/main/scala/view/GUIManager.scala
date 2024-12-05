@@ -16,6 +16,7 @@ import scalafx.scene.effect.DropShadow
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.MouseEvent
 import scalafx.stage.Screen
+import view.ComponentDecoraters.{BasicTextField, StyleDecorator}
 
 object GUIManager extends JFXApp3 with Observer {
     /* Viewport sizes */
@@ -330,7 +331,7 @@ object GUIManager extends JFXApp3 with Observer {
                 case _: GameStateRandom if selectedBoardCard.isDefined =>
                     GameController.processInput(s"match ${gameState.board.cards.indexOf(selectedBoardCard.get) + 1}")
                 case _ =>
-                //TODO error reporting
+            //TODO error reporting
         })
         val button3 = createGameTaskbarButton("Discard", (e: ActionEvent) => {
             gameState match
@@ -339,7 +340,7 @@ object GUIManager extends JFXApp3 with Observer {
                 case _: GameStateRandom =>
                     GameController.processInput("discard")
                 case _ =>
-                //TODO error reporting
+            //TODO error reporting
         })
         val button4 = createGameTaskbarButton("Combinations", (e: ActionEvent) => {
             GameController.processInput("com")
@@ -383,20 +384,20 @@ object GUIManager extends JFXApp3 with Observer {
     def createGameTaskbarButton(text: String, action: ActionEvent => Unit): Button = {
         val button: Button = new Button(text) {
             style = "-fx-background-color: #B82025;" +
-                "-fx-text-fill: white;" +
-                "-fx-font-size: 14px;" +
-                "-fx-padding: 10 20 10 20;" +
-                "-fx-background-radius: 5;"
+              "-fx-text-fill: white;" +
+              "-fx-font-size: 14px;" +
+              "-fx-padding: 10 20 10 20;" +
+              "-fx-background-radius: 5;"
             onMouseEntered = _ => style = "-fx-background-color: #595FAB;" +
-                "-fx-text-fill: white;" +
-                "-fx-font-size: 14px;" +
-                "-fx-padding: 10 20 10 20;" +
-                "-fx-background-radius: 5;"
+              "-fx-text-fill: white;" +
+              "-fx-font-size: 14px;" +
+              "-fx-padding: 10 20 10 20;" +
+              "-fx-background-radius: 5;"
             onMouseExited = _ => style = "-fx-background-color: #B82025;" +
-                "-fx-text-fill: white;" +
-                "-fx-font-size: 14px;" +
-                "-fx-padding: 10 20 10 20;" +
-                "-fx-background-radius: 5;"
+              "-fx-text-fill: white;" +
+              "-fx-font-size: 14px;" +
+              "-fx-padding: 10 20 10 20;" +
+              "-fx-background-radius: 5;"
         }
         button.onAction = action
         button
@@ -406,15 +407,17 @@ object GUIManager extends JFXApp3 with Observer {
     * def createStyledTextField(..)
     * returns a prestyled TextField. */
     def createStyledTextField(textString: String): TextField = {
-        new TextField {
-            this.promptText = textString
-            style = "-fx-background-color: #231F20;" +
-                "-fx-text-fill: white;" +
-                "-fx-font-size: 14px;" +
-                "-fx-font-family: Ubuntu;" +
-                "-fx-padding: 10 20 10 20;" +
-                "-fx-background-radius: 5;"
-        }
+        val basicTextField = new BasicTextField(textString)
+        val styles = Map(
+            "background-color" -> "#231F20",
+            "text-fill" -> "white",
+            "font-size" -> "14px",
+            "font-family" -> "Ubuntu",
+            "padding" -> "10 20 10 20",
+            "background-radius" -> "5"
+        )
+        val styledTextField = new StyleDecorator(basicTextField, styles)
+        styledTextField.render().asInstanceOf[TextField]
     }
 
     /*

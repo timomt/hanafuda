@@ -1,56 +1,56 @@
 package view
 
+import scalafx.scene.Node
+import scalafx.scene.control.{Button, TextField}
 import scalafx.scene.effect.DropShadow
-import scalafx.scene.image.ImageView
-import scalafx.scene.layout.StackPane
 import scalafx.scene.paint.Color
+import scalafx.Includes.{eventClosureWrapperWithParam, handle}
+import scalafx.event.ActionEvent
+import scalafx.event.EventIncludes.eventClosureWrapperWithParam
 
 object ComponentDecoraters {
-  trait CardComponent {
-    def createCard(): StackPane
+  // Base trait for UI components
+  trait UIComponent {
+    def render(): Node
   }
 
-  trait CardDecorator extends CardComponent {
-    protected val decoratedCard: CardComponent
-
-    override def createCard(): StackPane = decoratedCard.createCard()
-  }
-
-  class BasicCardComponent(cardImage: ImageView) extends CardComponent {
-    override def createCard(): StackPane = {
-      new StackPane {
-        children = cardImage
-        minWidth = 50
-        minHeight = 100
+  class BasicButton(val text: String, action: scalafx.event.ActionEvent => Unit) extends UIComponent {
+    override def render(): Button = new Button(text) {
+      onAction = handle {
+        action
       }
     }
   }
 
-  class HighlightDecorator(override protected val decoratedCard: CardComponent) extends CardDecorator {
-    override def createCard(): StackPane = {
-      val card = super.createCard()
-      card.onMouseClicked = _ => {
-        card.scaleX = 1.2
-        card.scaleY = 1.2
-        card.effect = new DropShadow {
-          color = Color.Black
-          radius = 20
-          spread = 0.4
-        }
-      }
-      card
+  class BasicTextField(val prompt: String) extends UIComponent {
+    override def render(): TextField = new TextField {
+      promptText = prompt
     }
   }
 
-  class EffectDecorator(override protected val decoratedCard: CardComponent) extends CardDecorator {
-    override def createCard(): StackPane = {
-      val card = super.createCard()
-      card.effect = new DropShadow {
-        color = Color.Black
-        radius = 10
-        spread = 0.2
+  class StyleDecorator(component: UIComponent, styles: Map[String, String]) extends UIComponent {
+    override def render(): Node = {
+      val node = component.render()
+      node match {
+        case textField: TextField =>
+          textField.style = styles.map { case (key, value) => s"$key: $value;" }.mkString
+          textField
+        case _ => node
       }
-      card
+    }
+  }
+
+  class HoverEffectDecorator(component: UIComponent, hoverStyles: Map[String, String]) extends UIComponent {
+    override def render(): Node = {
+      val node = component.render()
+      node match {
+        case button: Button =>
+          val normalStyle = button.style.value
+          button.onMouseEntered = _ => button.style = hoverStyles.map { case (key, value) => s"$key: $value;" }.mkString
+          button.onMouseExited = _ => button.style = normalStyle
+          button
+        case _ => node
+      }
     }
   }
 }
