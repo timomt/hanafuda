@@ -73,8 +73,8 @@ class GameManagerSpec extends AnyFlatSpec {
                 Player(name = "Player1", score = 0, hand = Deck(List.empty), side = Deck(List(
                     Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
                     Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
-                )), calledKoiKoi = false),
-                Player(name = "Player2", score = 0, hand = Deck(List.empty), side = Deck(List.empty), calledKoiKoi = false),
+                )), calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player(name = "Player2", score = 0, hand = Deck(List.empty), side = Deck(List.empty), calledKoiKoi = false, yakusToIgnore = List.empty),
             ),
             deck = Deck(List.empty),
             board = Deck(List.empty),
@@ -95,8 +95,8 @@ class GameManagerSpec extends AnyFlatSpec {
                 Player(name = "Player1", score = 10, hand = Deck(List.empty), side = Deck(List(
                     Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
                     Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
-                )), calledKoiKoi = true),
-                Player(name = "Player2", score = 5, hand = Deck(List.empty), side = Deck(List.empty), calledKoiKoi = false),
+                )), calledKoiKoi = true, yakusToIgnore = List.empty),
+                Player(name = "Player2", score = 5, hand = Deck(List.empty), side = Deck(List.empty), calledKoiKoi = false, yakusToIgnore = List.empty),
             ),
             deck = Deck(List.empty),
             board = Deck(List.empty),
@@ -116,11 +116,11 @@ class GameManagerSpec extends AnyFlatSpec {
                 Player(name = "Player1", score = 10, hand = Deck(List.empty), side = Deck(List(
                     Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
                     Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
-                )), calledKoiKoi = false),
+                )), calledKoiKoi = false, yakusToIgnore = List.empty),
                 Player(name = "Player2", score = 5, hand = Deck(List.empty), side = Deck(List(
                     Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
                     Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
-                )), calledKoiKoi = true),
+                )), calledKoiKoi = true, yakusToIgnore = List.empty),
             ),
             deck = Deck(List.empty),
             board = Deck(List.empty),
@@ -140,11 +140,11 @@ class GameManagerSpec extends AnyFlatSpec {
             players = List(
                 Player(
                     name = "FirstPlayer", hand = Deck(List.empty), side = Deck(List.empty),
-                    score = 0, calledKoiKoi = false
+                    score = 0, calledKoiKoi = false, yakusToIgnore = List.empty
                 ),
                 Player(
                     name = "SecondPlayer", hand = Deck(List.empty), side = Deck(List.empty),
-                    score = 0, calledKoiKoi = false
+                    score = 0, calledKoiKoi = false, yakusToIgnore = List.empty
                 )
             ),
             deck = Deck(List.empty),
@@ -157,11 +157,11 @@ class GameManagerSpec extends AnyFlatSpec {
         assert(newGame.isInstanceOf[GameStatePlanned])
         assert(newGame.players.head === Player(
             name = "SecondPlayer", hand = Deck(List.empty), side = Deck(List.empty),
-            score = 0, calledKoiKoi = false
+            score = 0, calledKoiKoi = false, yakusToIgnore = List.empty
         ))
         assert(newGame.players(1) === Player(
             name = "FirstPlayer", hand = Deck(List.empty), side = Deck(List.empty),
-            score = 0, calledKoiKoi = true
+            score = 0, calledKoiKoi = true, yakusToIgnore = List.empty
         ))
     }
 }

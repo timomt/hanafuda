@@ -35,3 +35,6 @@ Thumbs.db
 sonar-project.properties
 .scannerwork/
 sonarqube.sh
+
+*.jfr
+*.log

@@ -11,12 +11,15 @@ This project is a digital implementation of the classic Japanese card game Koi-K
 
 This is an educational project for the Software Engineering module (SE) at HTWG Konstanz written in Scala.
 
+![Hanafuda_Mockup2](https://github.com/user-attachments/assets/5502e024-856b-4130-b0dc-8e8601e60c19)
+
 ## Table of Contents
 
 - [Introduction](#introduction)
 - [Goals](#goals)
 - [Installation](#installation)
 - [Usage](#usage)
+- [Preview](#preview)
 
 ## Introduction
 
@@ -54,3 +57,9 @@ To run the game, use the following sbt command:
 
 ```bash
 sbt run
+```
+
+## Preview
+![Preview Planned Game](https://github.com/user-attachments/assets/13bc8dac-64dd-401d-a480-08479241f7c0)
+![Preview Random Game](https://github.com/user-attachments/assets/abb0d52e-3b08-4086-9b58-489f8d86a5b4)
+
