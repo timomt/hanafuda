@@ -1,7 +1,5 @@
 package model
 
-import model.DisplayType.SUMMARY
-
 /*
 * case class Player(...)
 * name:= Name of the player
@@ -9,7 +7,7 @@ import model.DisplayType.SUMMARY
 * side:= The players side Deck representing their gathered cards
 * score:= The current highest possible score of combinations
 * */
-case class Player(name: String, hand: Deck, side: Deck, score: Int, calledKoiKoi: Boolean)
+case class Player(name: String, hand: Deck, side: Deck, score: Int, calledKoiKoi: Boolean, yakusToIgnore: List[Combination])
 
 enum DisplayType {
     case GAME, COMBINATIONS, HELP, SPOILER, SUMMARY
@@ -160,7 +158,7 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
             if (this.deck.cards.isEmpty
                 || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {    // empty check
                 GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, board = updatedBoard, deck = this.deck, true)
-            } else if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
+            } else if (GameManager.playerHasScoredNewYaku(updatedPlayers(1))) {     // koi-koi check
                 GameManager.koiKoiHandler(this.copy(
                     players = updatedPlayers.reverse,
                     board = updatedBoard
@@ -200,7 +198,7 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                     if (this.deck.cards.isEmpty
                         || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {    // empty check
                         GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, deck = this.deck, board = updatedBoard, true)
-                    } else if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
+                    } else if (GameManager.playerHasScoredNewYaku(updatedPlayers(1))) {     // koi-koi check
                         GameManager.koiKoiHandler(this.copy(
                             players = updatedPlayers.reverse,
                             board = updatedBoard
@@ -225,7 +223,7 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                     if (this.deck.cards.isEmpty
                         || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {    // empty check
                         GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, deck = this.deck, board = updatedBoard, true)
-                    } else if (yakuCombinations.exists(_.evaluate(updatedPlayers(1)) > 0)) {     // koi-koi check
+                    } else if (GameManager.playerHasScoredNewYaku(updatedPlayers(1))) {     // koi-koi check
                         GameManager.koiKoiHandler(this.copy(
                             players = updatedPlayers.reverse,
                             board = updatedBoard
@@ -273,4 +271,27 @@ case class GameStateSummary(players: List[Player], deck: Deck, board: Deck, disp
     override def handleDiscard(xS: String): GameState = updateGameStateWithError("You first have to create a new game, see \"help\".")
     override def updateGameStateWithError(errorMessage: String): GameState = this.copy(stdout = None, stderr = Some(errorMessage))
     override def updateGameStateWithDisplayType(display: DisplayType): GameState = this.copy(displayType = display)
+}
+
+case class GameStateUninitialized(displayType: DisplayType, stderr: Option[String]) extends GameState {
+    override def players: List[Player] = List.empty
+    override def deck: Deck = Deck(List.empty)
+    override def board: Deck = Deck(List.empty)
+    override def stdout: Option[String] = None
+
+    override def handleMatch(xS: String, yS: String): GameState = {
+        this.copy(stderr = Some("Game is not initialized."))
+    }
+
+    override def handleDiscard(xS: String): GameState = {
+        this.copy(stderr = Some("Game is not initialized."))
+    }
+
+    override def updateGameStateWithError(errorMessage: String): GameState = {
+        this.copy(stderr = Some(errorMessage))
+    }
+
+    override def updateGameStateWithDisplayType(display: DisplayType): GameState = {
+        this.copy(displayType = display)
+    }
 }

@@ -9,18 +9,18 @@ import model.{Card, CardName, CardType, Deck, DisplayType, GameState, GameStateS
 * */
 object TUIManager extends Observer {
     val clearScreen: String = "\u001b[2J\u001b[3J\u001b[1;1H"
-    
+
     /*
     * def update(...)
     * updates the TUI according to the current GameState.
     * */
     override def update(gameState: GameState): Unit = {
         gameState.displayType match
-            case DisplayType.GAME => println(printBoard(gameState))
-            case DisplayType.COMBINATIONS => println(printOverview(gameState))
-            case DisplayType.HELP => println(printHelp())
-            case DisplayType.SPOILER => println(printSpoiler())
-            case DisplayType.SUMMARY => println(printSummary(gameState))
+            case DisplayType.GAME => print(printBoard(gameState))
+            case DisplayType.COMBINATIONS => print(printOverview(gameState))
+            case DisplayType.HELP => print(printHelp())
+            case DisplayType.SPOILER => print(printSpoiler())
+            case DisplayType.SUMMARY => print(printSummary(gameState))
     }
     
     /*
@@ -68,17 +68,17 @@ object TUIManager extends Observer {
         val bottomRow = game.players.head.hand.cards.map(_.unicode).transpose.map(_.mkString(" ")).mkString("\n")
 
         val stdoutRow = game.stdout match {
-            case Some(stdout) => s"\n[]: $stdout\n"
+            case Some(stdout) => s"\n[]: $stdout"
             case None => ""
         }
 
         val stderrRow = game.stderr match {
-            case Some(stderr) => s"\n[error]: $stderr\n"
+            case Some(stderr) => s"\n[error]: $stderr"
             case None => ""
         }
 
         clearScreen + s"Current player: ${game.players.head.name}\tPoints: ${game.players.head.score}\n"
-            + topRow + "\n\n" + upperMiddleRow + "\n" + lowerMiddleRow + "\n\n" + bottomRow + stdoutRow + stderrRow
+            + topRow + "\n\n" + upperMiddleRow + "\n" + lowerMiddleRow + "\n\n" + bottomRow + stdoutRow + stderrRow + "\n"
     }
 
     /*
@@ -204,11 +204,11 @@ object TUIManager extends Observer {
             val initialState = (game.players.head, game.players(1), List.empty[List[String]])
             val (_, _, colorizedCards) = Deck.defaultDeck().cards.filter(_.cardType == CardType.KASU).foldLeft(initialState) {
                 case ((tempHead, tempTail, acc), card) =>
-                    if (tempHead.side.cards.contains(card)) {
+                    if (tempHead.side.cards.exists(c => c.month == card.month && c.cardType == card.cardType && c.cardName == card.cardName)) {
                         val colorizedCard = card.unicode.map(line => s"\u001b[32m$line\u001b[0m")
                         val updatedHead = tempHead.copy(side = Deck(tempHead.side.cards.patch(tempHead.side.cards.indexOf(card), Nil, 1)))
                         (updatedHead, tempTail, acc :+ colorizedCard)
-                    } else if (tempTail.side.cards.contains(card)) {
+                    } else if (tempTail.side.cards.exists(c => c.month == card.month && c.cardType == card.cardType && c.cardName == card.cardName)) {
                         val colorizedCard = card.unicode.map(line => s"\u001b[31m$line\u001b[0m")
                         val updatedTail = tempTail.copy(side = Deck(tempTail.side.cards.patch(tempTail.side.cards.indexOf(card), Nil, 1)))
                         (tempHead, updatedTail, acc :+ colorizedCard)
@@ -231,8 +231,8 @@ object TUIManager extends Observer {
     * returns the colorized unicode representation of given card depending on who owns it.
     * */
     def colorizeOverviewCard(game: GameState, card: Card): List[String] = card match {
-        case c if game.players.head.side.cards.contains(Card(card.month, card.cardType, card.cardName)) => c.unicode.map(line => s"\u001b[32m$line\u001b[0m")
-        case c if game.players(1).side.cards.contains(Card(card.month, card.cardType, card.cardName)) => c.unicode.map(line => s"\u001b[31m$line\u001b[0m")
+        case c if game.players.head.side.cards.exists(c => c.month == card.month && c.cardType == card.cardType && c.cardName == card.cardName) => c.unicode.map(line => s"\u001b[32m$line\u001b[0m")
+        case c if game.players(1).side.cards.exists(c => c.month == card.month && c.cardType == card.cardType && c.cardName == card.cardName) => c.unicode.map(line => s"\u001b[31m$line\u001b[0m")
         case _ => card.unicode.map(line => s"\u001b[0m$line\u001b[0m")
     }
 }

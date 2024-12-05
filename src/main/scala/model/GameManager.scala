@@ -67,7 +67,9 @@ object GameManager {
                     hand = if hand.isDefined then hand.get else Deck(cards),
                     side = Deck(List.empty),
                     score = score,
-                    calledKoiKoi = false), newDeck
+                    calledKoiKoi = false,
+                    yakusToIgnore = List.empty
+                ), newDeck
                 )
         }
     }
@@ -86,13 +88,17 @@ object GameManager {
             val (firstS, secS) = evaluateScore(game.players, 2, 0)
             handleKoiKoi(game.players, firstS, secS, game.board, game.deck)
         } else {
-            val yakuList = yakuCombinations.filter(c => c.evaluate(game.players.head) > 0).map(_.unicode)
+            val yakuList = yakuCombinations.filter(c => c.evaluate(game.players.head) > 0)
             GameStatePendingKoiKoi(
-                players = game.players,
+                players = List(
+                    game.players.head.copy(
+                        yakusToIgnore = yakuList
+                    ), game.players(1)
+                ),
                 deck = game.deck,
                 board = game.board,
                 displayType = DisplayType.GAME,
-                stdout = Some(s"You scored a yaku: \n${yakuList.map(c => s"\t- $c\n").mkString("\n")}You can now either finish or call koi-koi."),
+                stdout = Some(s"You scored a yaku: \n${yakuList.map(c => s"\t- ${c.unicode}\n").mkString("\n")}You can now either finish or call koi-koi."),
                 stderr = None
             )
         }
@@ -150,5 +156,10 @@ object GameManager {
                 acc + yaku.evaluate(players(1))
         }
         (firstScore, secondScore)
+    }
+    
+    def playerHasScoredNewYaku(player: Player): Boolean = {
+        yakuCombinations.exists(_.evaluate(player) > 0)
+            && yakuCombinations.filter(_.evaluate(player) > 0) != player.yakusToIgnore
     }
 }

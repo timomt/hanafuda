@@ -9,7 +9,7 @@ class DeckSpec extends AnyFlatSpec {
 
     it should "have 4 cards of each month" in {
         val deck = Deck.defaultDeck()
-        CardMonth.values.foreach(month => assert(deck.cards.count(_.month === month) === 4))
+        CardMonth.values.slice(0, CardMonth.values.length-1).foreach(month => assert(deck.cards.count(_.month === month) === 4))
     }
 
     it should "have 5 Hikari cards" in {

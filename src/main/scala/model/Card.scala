@@ -32,7 +32,7 @@ enum CardPlant {
 * a specialized version of a regular Month enum for koi-koi.
 * */
 enum CardMonth {
-    case JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER
+    case JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER, BACK
 
     /*
     * def unicode
@@ -51,6 +51,7 @@ enum CardMonth {
         case OCTOBER => " Oct. "
         case NOVEMBER => " Nov. "
         case DECEMBER => " Dec. "
+        case _ => ""
     }
 }
 
@@ -59,7 +60,7 @@ enum CardMonth {
 * used to differentiate the 4 card types in hanafuda
 * */
 enum CardType {
-    case HIKARI, TANE, TANZAKU, KASU
+    case HIKARI, TANE, TANZAKU, KASU, BACK
     
     /*
     * def unicode
@@ -71,6 +72,7 @@ enum CardType {
         case TANE => " Tane "
         case TANZAKU => "Tanz. "
         case KASU => " Kasu "
+        case _ => ""
     }
 }
 
@@ -81,7 +83,7 @@ enum CardType {
 enum CardName {
     case CRANE, PLAIN, NIGHTINGALE, POETRY_TANZAKU, CURTAIN,
          CUCKOO, BRIDGE, BUTTERFLIES, BLUE_TANZAKU,
-         BOAR, MOON, GEESE, SAKE_CUP, DEER, RAIN, SWALLOW, LIGHTNING, PHOENIX
+         BOAR, MOON, GEESE, SAKE_CUP, DEER, RAIN, SWALLOW, LIGHTNING, PHOENIX, BACK
 
     /*
     * def unicode
@@ -107,6 +109,7 @@ enum CardName {
         case SWALLOW => "Swall."
         case LIGHTNING => "Light."
         case PHOENIX => "Phoen."
+        case _ => ""
     }
 }
 
@@ -115,7 +118,7 @@ enum CardName {
 * a class to represent a hanafuda playing card.
 * grouped := true if 3 cards of the same month have been dealt.
 * */
-case class Card(month:CardMonth, cardType: CardType, cardName:CardName, grouped:Boolean = false) {
+case class Card(month:CardMonth, cardType: CardType, cardName:CardName, grouped:Boolean = false, index: Int = 0) {
     /*
     * def unicode
     * returns a List[String] representation of the card
