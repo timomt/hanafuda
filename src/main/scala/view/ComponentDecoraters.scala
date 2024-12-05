@@ -9,7 +9,6 @@ import scalafx.event.ActionEvent
 import scalafx.event.EventIncludes.eventClosureWrapperWithParam
 
 object ComponentDecoraters {
-  // Base trait for UI components
   trait UIComponent {
     def render(): Node
   }
@@ -33,22 +32,8 @@ object ComponentDecoraters {
       val node = component.render()
       node match {
         case textField: TextField =>
-          textField.style = styles.map { case (key, value) => s"$key: $value;" }.mkString
+          textField.style = styles.map { case (key, value) => s"$key: $value;" }.mkString(" ")
           textField
-        case _ => node
-      }
-    }
-  }
-
-  class HoverEffectDecorator(component: UIComponent, hoverStyles: Map[String, String]) extends UIComponent {
-    override def render(): Node = {
-      val node = component.render()
-      node match {
-        case button: Button =>
-          val normalStyle = button.style.value
-          button.onMouseEntered = _ => button.style = hoverStyles.map { case (key, value) => s"$key: $value;" }.mkString
-          button.onMouseExited = _ => button.style = normalStyle
-          button
         case _ => node
       }
     }

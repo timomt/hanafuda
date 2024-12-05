@@ -365,14 +365,101 @@ object GUIManager extends JFXApp3 with Observer {
 
     def spoilerScene(gameState: GameState): Scene = {
         new Scene {
-            val button = new Button("Continue the game")
-            button.layoutX = 200
-            button.layoutY = 150
-            button.onAction = (e:ActionEvent) => {
-                GameController.processInput("continue")
+            val rootPane: StackPane = new StackPane {
+                background = new Background(Array(
+                    new BackgroundImage(
+                        new Image("/img/background/board.png"),
+                        BackgroundRepeat.NoRepeat,
+                        BackgroundRepeat.NoRepeat,
+                        BackgroundPosition.Center,
+                        new BackgroundSize(
+                            vw, vh, true, true, false, true
+                        )
+                    )
+                ))
+
+                def createCard(isBoardCard: Boolean, card: Card): StackPane = {
+                    val cardImage = cardCache(card.index)
+                    val cardStackPane = new StackPane {
+                        children = new ImageView {
+                            image = cardImage
+                            preserveRatio = true
+                        }
+                        effect = new DropShadow {
+                            color = Color.Black
+                            radius = 10
+                            spread = 0.2
+                        }
+                    }
+                    val defaultScale = 1.0
+                    val highlightedScale = 1.05
+                    val defaultEffect = new DropShadow {
+                        color = Color.Black
+                        radius = 10
+                        spread = 0.2
+                    }
+                    val highlightedEffect = new DropShadow {
+                        color = Color.Black
+                        radius = 20
+                        spread = 0.4
+                    }
+                    cardStackPane
+                }
+
+                val topRow: HBox = new HBox {
+                    alignment = Pos.Center
+                    spacing = vw * 0.005
+                    children = gameState.players(1).hand.cards.map(card => createCard(false, Card(CardMonth.BACK, CardType.BACK, CardName.BACK, false, 0))) // Display player's full hand
+                }
+
+                val middleRow: GridPane = new GridPane {
+                    alignment = Pos.Center
+                    hgap = vw * 0.005
+                    vgap = vh * 0.03 * 0.5
+
+                    val halfSize: Int = (gameState.board.cards.length + 1) / 2
+
+                    for (i <- 0 until halfSize) {
+                        val card = if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
+                        add(card, i, 0)
+                        GridPane.setHalignment(card, HPos.CENTER)
+                        GridPane.setValignment(card, VPos.CENTER)
+                    }
+
+                    for (i <- halfSize until gameState.board.cards.length) {
+                        val card = if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
+                        add(card, i - halfSize, 1)
+                        GridPane.setHalignment(card, HPos.CENTER)
+                        GridPane.setValignment(card, VPos.CENTER)
+                    }
+                }
+                val bottomRow: HBox = new HBox {
+                    alignment = Pos.Center
+                    spacing = vw * 0.005
+                    children = gameState.players(1).hand.cards.map(card => createCard(false, Card(CardMonth.BACK, CardType.BACK, CardName.BACK, false, 0))) // Display player's full hand
+                }
+
+                val cardLayout: VBox = new VBox {
+                    alignment = Pos.Center
+                    spacing = vh * 0.03
+                    children = List(topRow, middleRow, bottomRow)
+                }
+
+                val combinedLayout: HBox = new HBox {
+                    val singleCardRow: Region = gameState.queuedCard.map(createCard(false, _)).getOrElse(new Region())
+                    singleCardRow.padding = Insets(0, vw * 0.05, 0, 0)
+                    alignment = Pos.Center
+                    spacing = vw * 0.005
+                    children = List(
+                        singleCardRow,
+                        cardLayout,
+                    )
+                }
+                children = List(combinedLayout, createGameTaskbar(gameState))
             }
-            content = List(button)
+            root = rootPane
         }
+
     }
 
     def summaryScene(gameState: GameState): Scene = {
@@ -496,7 +583,7 @@ object GUIManager extends JFXApp3 with Observer {
         val basicTextField = new BasicTextField(textString)
         val styles = Map(
             "-fx-background-color" -> "#231F20",
-            "-fx-text-fill" -> "white",
+            "-fx-text-fill" -> "White",
             "-fx-font-size" -> "14px",
             "-fx-font-family" -> "Ubuntu",
             "-fx-padding" -> "10 20 10 20",
