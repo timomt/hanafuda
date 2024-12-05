@@ -12,7 +12,7 @@ import scalafx.Includes.*
 import scalafx.event
 import scalafx.event.ActionEvent
 import scalafx.geometry.Pos.TopCenter
-import scalafx.scene.effect.DropShadow
+import scalafx.scene.effect.{DropShadow, GaussianBlur}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.MouseEvent
 import scalafx.stage.Screen
@@ -132,10 +132,10 @@ object GUIManager extends JFXApp3 with Observer {
 
     def gameScene(gameState: GameState): Scene = {
         new Scene {
-            val rootPane = new StackPane {
+            val rootPane: StackPane = new StackPane {
                 background = new Background(Array(
                     new BackgroundImage(
-                        new Image("/img/background/board.jpg"),
+                        new Image("/img/background/board.png"),
                         BackgroundRepeat.NoRepeat,
                         BackgroundRepeat.NoRepeat,
                         BackgroundPosition.Center,
@@ -270,13 +270,14 @@ object GUIManager extends JFXApp3 with Observer {
     def combinationsScene(gameState: GameState): Scene = {
         new Scene {
             val rootPane = new StackPane {
-
-
                 def createCard(card: Card): StackPane = {
                     val cardImage = cardCache(card.index)
                     new StackPane {
                         children = new ImageView {
                             image = cardImage
+                            fitWidth = vw * 0.055 * 0.5
+                            fitHeight = vw * 0.055 * 1.5 * 0.5
+                            smooth = true
                             preserveRatio = true
                         }
                         effect = new DropShadow {
@@ -284,61 +285,79 @@ object GUIManager extends JFXApp3 with Observer {
                             radius = 10
                             spread = 0.2
                         }
+                        padding = Insets(0)
                     }
                 }
 
                 def createCombinationRow(title: String, cards: Seq[Card]): VBox = {
                     new VBox {
                         alignment = Pos.Center
-                        spacing = 10
+                        spacing = 0.025 * vh
                         children = List(
                             new Label(title) {
-                                style = "-fx-font-size: 16px; -fx-text-fill: white;"
+                                style = "-fx-font-size: 16px; -fx-text-fill: black;"
                             },
-                            new VBox {
+                            new FlowPane {
                                 alignment = Pos.Center
-                                spacing = 10
-                                children = cards.grouped(8).map { group =>
-                                    new HBox {
-                                        alignment = Pos.Center
-                                        spacing = 10
-                                        children = group.map(createCard)
-                                    }
-                                }.toList
+                                hgap = 0.005 * vh
+                                vgap = 0.005 * vh
+                                children = cards.map(createCard)
                             }
                         )
                     }
                 }
 
-                val goko = createCombinationRow("Gokō (五光) \"Five Hikari\" 10pts.", Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI))
-                val shiko = createCombinationRow("Shikō (四光) \"Four Hikari\" 8pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN))
-                val ameShiko = createCombinationRow("Ame-Shikō (雨四光) \"Rainy Four Hikari\" 7pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI))
-                val sanko = createCombinationRow("Sankō (三光) \"Three Hikari\" 6pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN))
-                val tsukimiZake = createCombinationRow("Tsukimi-zake (月見酒) \"Moon Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.MOON || c.cardName == CardName.SAKE_CUP))
-                val hanamiZake = createCombinationRow("Hanami-zake (花見酒) \"Cherry Blossom Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.CURTAIN || c.cardName == CardName.SAKE_CUP))
-                val inoshikacho = createCombinationRow("Inoshikachō (猪鹿蝶) \"Boar, Deer, Butterfly\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.BOAR || c.cardName == CardName.DEER || c.cardName == CardName.BUTTERFLIES))
-                val tane = createCombinationRow("Tane (タネ) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANE))
-                val akatanAotan = createCombinationRow("Akatan Aotan no Chōfuku (赤短青短の重複) \"Red Poem, Blue Poem\" 10pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.POETRY_TANZAKU || c.cardName == CardName.BLUE_TANZAKU))
-                val akatan = createCombinationRow("Akatan (赤短) \"Red Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.POETRY_TANZAKU))
-                val aotan = createCombinationRow("Aotan (青短) \"Blue Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.BLUE_TANZAKU))
-                val tanzaku = createCombinationRow("Tanzaku (短冊) \"Ribbons\" 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANZAKU))
-                val kasu = createCombinationRow("Kasu (カス) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.KASU))
+                val combinations = List(
+                    createCombinationRow("Gokō (五光) \"Five Hikari\" 10pts.", Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI)),
+                    createCombinationRow("Shikō (四光) \"Four Hikari\" 8pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
+                    createCombinationRow("Ame-Shikō (雨四光) \"Rainy Four Hikari\" 7pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI)),
+                    createCombinationRow("Sankō (三光) \"Three Hikari\" 6pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
+                    createCombinationRow("Tsukimi-zake (月見酒) \"Moon Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.MOON || c.cardName == CardName.SAKE_CUP)),
+                    createCombinationRow("Hanami-zake (花見酒) \"Cherry Blossom Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.CURTAIN || c.cardName == CardName.SAKE_CUP)),
+                    createCombinationRow("Inoshikachō (猪鹿蝶) \"Boar, Deer, Butterfly\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.BOAR || c.cardName == CardName.DEER || c.cardName == CardName.BUTTERFLIES)),
+                    createCombinationRow("Tane (タネ) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANE)),
+                    createCombinationRow("Akatan Aotan no Chōfuku (赤短青短の重複) \"Red Poem, Blue Poem\" 10pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.POETRY_TANZAKU || c.cardName == CardName.BLUE_TANZAKU)),
+                    createCombinationRow("Akatan (赤短) \"Red Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.POETRY_TANZAKU)),
+                    createCombinationRow("Aotan (青短) \"Blue Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.BLUE_TANZAKU)),
+                    createCombinationRow("Tanzaku (短冊) \"Ribbons\" 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANZAKU)),
+                    createCombinationRow("Kasu (カス) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.KASU))
+                )
 
                 val combinationsLayout = new ScrollPane {
-                    content = new VBox {
-                        alignment = Pos.Center
-                        spacing = 20
-                        children = List(goko, shiko, ameShiko, sanko, tsukimiZake, hanamiZake, inoshikacho, tane, akatanAotan, akatan, aotan, tanzaku, kasu)
+                    content = new FlowPane {
+                        alignment = Pos.TopCenter
+                        hgap = vw * 0.01
+                        vgap = vh * 0.02
+                        children = combinations
+                        padding = Insets(0.05*vh, 0, 0, 0)
+                        background = new Background(Array(
+                            new BackgroundImage(
+                                new Image("/img/background/board.png",
+                                    requestedWidth = vw, requestedHeight = vh,
+                                    preserveRatio = false, smooth = true, backgroundLoading = false),
+                                BackgroundRepeat.NoRepeat,
+                                BackgroundRepeat.NoRepeat,
+                                BackgroundPosition.Center,
+                                new BackgroundSize(
+                                    vw, vh, false, false, false, false
+                                )
+                            )
+                        ))
                     }
                     fitToWidth = true
                     fitToHeight = true
                     hbarPolicy = ScrollPane.ScrollBarPolicy.Never
                     vbarPolicy = ScrollPane.ScrollBarPolicy.AsNeeded
+                    vgrow = Priority.Always
                 }
-
-                children = List(new VBox {
-                    children = List(createGameTaskbar(gameState), combinationsLayout)
-                })
+                val taskbarChild = createGameTaskbar(gameState)
+                children = List(
+                    new VBox {
+                        alignment = Pos.Center
+                        vgrow = Priority.Always
+                        children = List(taskbarChild, combinationsLayout)
+                    }
+                )
             }
             root = rootPane
         }
@@ -410,7 +429,7 @@ object GUIManager extends JFXApp3 with Observer {
             //TODO error reporting
         })
         val button4 = createGameTaskbarButton("Combinations", (e: ActionEvent) => {
-            GameController.processInput("com")
+            GameController.processInput(if gameState.displayType == DisplayType.COMBINATIONS then "con" else "com")
         })
         val button5 = createGameTaskbarButton("Undo", (e: ActionEvent) => {
             GameController.processInput("undo")
@@ -476,12 +495,12 @@ object GUIManager extends JFXApp3 with Observer {
     def createStyledTextField(textString: String): TextField = {
         val basicTextField = new BasicTextField(textString)
         val styles = Map(
-            "background-color" -> "#231F20",
-            "text-fill" -> "white",
-            "font-size" -> "14px",
-            "font-family" -> "Ubuntu",
-            "padding" -> "10 20 10 20",
-            "background-radius" -> "5"
+            "-fx-background-color" -> "#231F20",
+            "-fx-text-fill" -> "white",
+            "-fx-font-size" -> "14px",
+            "-fx-font-family" -> "Ubuntu",
+            "-fx-padding" -> "10 20 10 20",
+            "-fx-background-radius" -> "5"
         )
         val styledTextField = new StyleDecorator(basicTextField, styles)
         styledTextField.render().asInstanceOf[TextField]
