@@ -1,0 +1,12 @@
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(run, None, None)[0m
+[0m[[0m[0mdebug[0m] [0m[0mEvaluating tasks: Compile / run[0m
+[0m[[0m[0mdebug[0m] [0m[0mRunning task... Cancel: Signal, check cycles: false, forcegc: true[0m
+[0m[[0m[0minfo[0m] [0m[0mcompiling 3 Scala sources to /home/timo/Development/se/Hanafuda/target/scala-3.5.1/classes ...[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m-- [E121] Pattern Match Warning: /home/timo/Development/se/Hanafuda/src/main/scala/Card.scala:67:13 [0m[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m67 |[0m        [33mcase[0m default => [33mthis[0m.toString[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m[33m   |[0m             ^^^^^^^[0m[0m
+[0m[[0m[33mwarn[0m] [0m[0m[33m   |[0mUnreachable case except for [31mnull[0m (if this is intentional, consider writing [33mcase[0m [31mnull[0m => instead).[0m
+[0m[[0m[33mwarn[0m] [0m[0mone warning found[0m
+[0m[[0m[0minfo[0m] [0m[0mdone compiling[0m
+[0m[[0m[32msuccess[0m] [0m[0mTotal time: 11 s, completed Oct 23, 2024, 11:09:05 AM[0m
+[0m[[0m[0mdebug[0m] [0m[0m> Exec(idea-shell, None, None)[0m
