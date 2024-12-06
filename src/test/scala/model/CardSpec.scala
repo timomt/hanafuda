@@ -74,7 +74,7 @@ class CardSpec extends AnyFunSuite with Matchers {
       cardType <- CardType.values
       cardName <- CardName.values
     } {
-      val card = Card(month, cardType, cardName)
+      val card = Card(month, cardType, cardName, false, 0)
       val expected = Array(
         s"""╔══════╗
            |║${month.unicode}║

@@ -14,9 +14,9 @@ class GameSpec extends AnyFlatSpec with Matchers {
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0)
             )),
             stdout = None,
             stderr = None
@@ -65,7 +65,7 @@ class GameSpec extends AnyFlatSpec with Matchers {
                 List(
                     Player(yakusToIgnore = List.empty,
                         name = "",
-                        hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
+                        hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN, false, 0))),
                         side = Deck(List.empty),
                         score = 0,
                         calledKoiKoi = false
@@ -80,14 +80,14 @@ class GameSpec extends AnyFlatSpec with Matchers {
                 )
             ,
             deck = Deck.defaultDeck(),
-            board = Deck(List(Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN))),
+            board = Deck(List(Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, false, 0))),
             stdout = None,
             stderr = None
         )
         val updatedGame = game.handleDiscard("1")
         assert(updatedGame.stderr.isEmpty)
         assert(updatedGame.players.head.hand.cards.isEmpty)
-        assert(updatedGame.board.cards.contains(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN)))
+        assert(updatedGame.board.cards.contains(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN, false, 0)))
     }
     "handleDiscard[GameStateRandom]" should "return error on invalid input" in {
         val game = GameStateRandom(
@@ -108,9 +108,9 @@ class GameSpec extends AnyFlatSpec with Matchers {
                 )
             ),
             deck = Deck.defaultDeck(),
-            board = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
+            board = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN, false, 0))),
             matched = Deck(List.empty),
-            queued = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN),
+            queued = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN, false, 0),
             stdout = None,
             stderr = None
         )
@@ -123,7 +123,7 @@ class GameSpec extends AnyFlatSpec with Matchers {
             players = List(
                 Player(yakusToIgnore = List.empty,
                     name = "",
-                    hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
+                    hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN, false, 0))),
                     side = Deck(List.empty),
                     score = 0, 
                     calledKoiKoi = false
@@ -137,9 +137,9 @@ class GameSpec extends AnyFlatSpec with Matchers {
                 )
             ),
             deck = Deck.defaultDeck(),
-            board = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN))),
+            board = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0))),
             matched = Deck(List.empty),
-            queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN),
+            queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0),
             stdout = None,
             stderr = None
         )
@@ -150,7 +150,7 @@ class GameSpec extends AnyFlatSpec with Matchers {
             players = List(
                 Player(yakusToIgnore = List.empty,
                     name = "",
-                    hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
+                    hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN, false, 0))),
                     side = Deck(List.empty),
                     score = 0, 
                     calledKoiKoi = false
@@ -164,9 +164,9 @@ class GameSpec extends AnyFlatSpec with Matchers {
                 )
             ),
             deck = Deck.defaultDeck(),
-            board = Deck(List(Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN))),
+            board = Deck(List(Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, false, 0))),
             matched = Deck(List.empty),
-            queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN),
+            queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0),
             stdout = None,
             stderr = None
         )
@@ -174,17 +174,17 @@ class GameSpec extends AnyFlatSpec with Matchers {
         assert(game.handleDiscard("").isInstanceOf[GameStatePlanned])
         assert(game.handleDiscard("").players === game.players.reverse)
         assert(game.handleDiscard("").board.cards === List(
-            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN),
-            Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN)))
+            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, false, 0),
+            Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0)))
     }
     it should "check for koi-koi" in {
         val game = GameStateRandom(
             players = List(
                 Player(yakusToIgnore = List.empty,
                     name = "",
-                    hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
+                    hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN, false, 0))),
                     side = Deck(List(
-                        Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON)
+                        Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON, false, 0)
                     )),
                     score = 0,
                     calledKoiKoi = false
@@ -198,9 +198,9 @@ class GameSpec extends AnyFlatSpec with Matchers {
                 )
             ),
             deck = Deck.defaultDeck(),
-            board = Deck(List(Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN))),
-            matched = Deck(List(Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP))),
-            queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN),
+            board = Deck(List(Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, false, 0))),
+            matched = Deck(List(Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP, false, 0))),
+            queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0),
             stdout = None,
             stderr = None
         )
@@ -215,14 +215,14 @@ class GameSpec extends AnyFlatSpec with Matchers {
                 Player("",
                     Deck(
                         List(
-                            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN),
-                            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN)
+                            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, false, 0),
+                            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, false, 0)
                         )
                     ), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
                 Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
-            board = Deck(List(Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN))),
+            board = Deck(List(Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, false, 0))),
             stdout = None,
             stderr = None
         )
@@ -238,25 +238,25 @@ class GameSpec extends AnyFlatSpec with Matchers {
                 Player("",
                     Deck(
                         List(
-                            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN),
-                            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN)
+                            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, false, 0),
+                            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, false, 0)
                         )
                     ), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
                 Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
-            board = Deck(List(Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN))),
+            board = Deck(List(Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, false, 0))),
             stdout = None,
             stderr = None
         )
         val updatedGame = game.handleMatch("1", "1")
         assert(updatedGame.isInstanceOf[GameStateRandom])
         assert(updatedGame.stderr.isEmpty)
-        assert(updatedGame.players.head.hand.cards === List(Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN)))
+        assert(updatedGame.players.head.hand.cards === List(Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, false, 0)))
         assert(updatedGame.board.cards.isEmpty)
         assert(updatedGame.matchedDeck.isDefined && updatedGame.matchedDeck.get.cards === List(
-            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN),
-            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN)
+            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, false, 0),
+            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, false, 0)
         ))
         assert(updatedGame.queuedCard.isDefined)
         assert(updatedGame.matchedDeck.isDefined)
@@ -267,8 +267,8 @@ class GameSpec extends AnyFlatSpec with Matchers {
                 Player("",
                     Deck(
                         List(
-                            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN),
-                            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN)
+                            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, false, 0),
+                            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, false, 0)
                         )
                     ), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
                 Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
@@ -276,9 +276,9 @@ class GameSpec extends AnyFlatSpec with Matchers {
             deck = Deck.defaultDeck(),
             board = Deck(
                 List(
-                    Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true),
-                    Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true),
-                    Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true)
+                    Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true, 0),
+                    Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true, 0),
+                    Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true, 0)
                 )
             ),
             stdout = None,
@@ -287,14 +287,14 @@ class GameSpec extends AnyFlatSpec with Matchers {
         val updatedGame = game.handleMatch("1", "1")
         assert(updatedGame.isInstanceOf[GameStateRandom])
         assert(updatedGame.stderr.isEmpty)
-        assert(updatedGame.players.head.hand.cards === List(Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN)))
+        assert(updatedGame.players.head.hand.cards === List(Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, false, 0)))
         assert(updatedGame.board.cards.isEmpty)
         assert(updatedGame.matchedDeck.isDefined && updatedGame.matchedDeck.get.cards.isEmpty)
         assert(updatedGame.players.head.side.cards === List(
-            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN),
-            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true),
-            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true),
-            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true)
+            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, false, 0),
+            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true, 0),
+            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true, 0),
+            Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true, 0)
         ))
         assert(updatedGame.queuedCard.isDefined)
         assert(updatedGame.matchedDeck.isDefined)
@@ -307,13 +307,13 @@ class GameSpec extends AnyFlatSpec with Matchers {
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN),
-                Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN)
+                Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, false, 0),
+                Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, false, 0)
             )),
             stdout = None,
             stderr = None,
             matched = Deck(List.empty),
-            queued = Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING)
+            queued = Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING, false, 0)
         )
         assert(game.handleMatch("dwasd", "1").stderr.isDefined)
         assert(game.handleMatch("1", "dwasd").stderr.isDefined)
@@ -328,22 +328,22 @@ class GameSpec extends AnyFlatSpec with Matchers {
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN)
+                Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, false, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, false, 0)
             )),
             stdout = None,
             stderr = None,
-            matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN))),
-            queued = Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING)
+            matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN, false, 0))),
+            queued = Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING, false, 0)
         )
         val updatedGame = game.handleMatch("2", "")
         assert(updatedGame.stderr.isEmpty)
         assert(updatedGame.isInstanceOf[GameStatePlanned])
-        assert(updatedGame.board.cards === List(Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN)))
+        assert(updatedGame.board.cards === List(Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, false, 0)))
         assert(updatedGame.players(1).side.cards === List(
-            Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING),
-            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN),
-            Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN)
+            Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING, false, 0),
+            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, false, 0),
+            Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN, false, 0)
         ))
         assert(updatedGame.queuedCard.isEmpty)
         assert(updatedGame.matchedDeck.isEmpty)
@@ -356,25 +356,25 @@ class GameSpec extends AnyFlatSpec with Matchers {
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0)
             )),
             stdout = None,
             stderr = None,
-            matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN))),
-            queued = Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING)
+            matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN, false, 0))),
+            queued = Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING, false, 0)
         )
         val updatedGame = game.handleMatch("2", "")
         assert(updatedGame.stderr.isEmpty)
         assert(updatedGame.isInstanceOf[GameStatePlanned])
         assert(updatedGame.board.cards.isEmpty)
         assert(updatedGame.players(1).side.cards === List(
-            Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING),
-            Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN),
-            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+            Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING, false, 0),
+            Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN, false, 0),
+            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+            Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0)
         ))
         assert(updatedGame.queuedCard.isEmpty)
         assert(updatedGame.matchedDeck.isEmpty)
@@ -384,7 +384,7 @@ class GameSpec extends AnyFlatSpec with Matchers {
             players = List(
                 Player(yakusToIgnore = List.empty,
                     name = "",
-                    hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
+                    hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN, false, 0))),
                     side = Deck(List.empty),
                     score = 0,
                     calledKoiKoi = false
@@ -398,9 +398,9 @@ class GameSpec extends AnyFlatSpec with Matchers {
                 )
             ),
             deck = Deck.defaultDeck(),
-            board = Deck(List(Card(CardMonth.AUGUST, CardType.TANE, CardName.PLAIN))),
-            matched = Deck(List(Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP))),
-            queued = Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON),
+            board = Deck(List(Card(CardMonth.AUGUST, CardType.TANE, CardName.PLAIN, false, 0))),
+            matched = Deck(List(Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP, false, 0))),
+            queued = Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON, false, 0),
             stdout = None,
             stderr = None
         )
@@ -411,7 +411,7 @@ class GameSpec extends AnyFlatSpec with Matchers {
             players = List(
                 Player(yakusToIgnore = List.empty,
                     name = "",
-                    hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN))),
+                    hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN, false, 0))),
                     side = Deck(List.empty),
                     score = 0,
                     calledKoiKoi = false
@@ -426,12 +426,12 @@ class GameSpec extends AnyFlatSpec with Matchers {
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.AUGUST, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.AUGUST, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.AUGUST, CardType.TANE, CardName.PLAIN, true)
+                Card(CardMonth.AUGUST, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.AUGUST, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.AUGUST, CardType.TANE, CardName.PLAIN, true, 0)
             )),
-            matched = Deck(List(Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP))),
-            queued = Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON),
+            matched = Deck(List(Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP, false, 0))),
+            queued = Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON, false, 0),
             stdout = None,
             stderr = None
         )
@@ -445,14 +445,14 @@ class GameSpec extends AnyFlatSpec with Matchers {
             ),
             deck = Deck(List.empty),
             board = Deck(List(
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0)
             )),
             stdout = None,
             stderr = None,
-            matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN))),
-            queued = Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING)
+            matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN, false, 0))),
+            queued = Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING, false, 0)
         )
         assert(game.handleMatch("1", "").isInstanceOf[GameStateSummary])
     }
@@ -464,14 +464,14 @@ class GameSpec extends AnyFlatSpec with Matchers {
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0)
             )),
             stdout = None,
             stderr = None,
-            matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN))),
-            queued = Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING)
+            matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN, false, 0))),
+            queued = Card(CardMonth.MARCH, CardType.HIKARI, CardName.LIGHTNING, false, 0)
         )
         assert(game.updateGameStateWithDisplayType(DisplayType.GAME) === game)
         assert(game.updateGameStateWithDisplayType(DisplayType.SUMMARY).displayType === DisplayType.SUMMARY)
@@ -490,9 +490,9 @@ class GameSpec extends AnyFlatSpec with Matchers {
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0)
             )),
             stdout = None,
             stderr = None
@@ -524,9 +524,9 @@ class GameSpec extends AnyFlatSpec with Matchers {
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0)
             )),
             stdout = None,
             stderr = None,
@@ -543,9 +543,9 @@ class GameSpec extends AnyFlatSpec with Matchers {
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0)
             )),
             stdout = None,
             stderr = None,
@@ -560,14 +560,14 @@ class GameSpec extends AnyFlatSpec with Matchers {
     "handleMatch[GameStateSummary]" should "return error in stderr" in {
         val game = GameStateSummary(
             players = List(
-                Player("", Deck(List(Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true))), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List(Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0))), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
                 Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0)
             )),
             stdout = None,
             stderr = None,
@@ -578,14 +578,14 @@ class GameSpec extends AnyFlatSpec with Matchers {
     "handleDiscard[GameStateSummary]" should "return error in stderr" in {
         val game = GameStateSummary(
             players = List(
-                Player("", Deck(List(Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true))), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player("", Deck(List(Card(CardMonth.JULY, CardType.TANE, CardName.PLAIN, true, 0))), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
                 Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true),
-                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true)
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0),
+                Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, true, 0)
             )),
             stdout = None,
             stderr = None,

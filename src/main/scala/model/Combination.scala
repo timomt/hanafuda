@@ -1,5 +1,9 @@
 package model
 
+def containsCard(cards: List[Card], card: Card): Boolean = {
+    cards.exists(c => card.cardType == c.cardType && card.cardName == c.cardName && c.month == card.month)
+}
+
 trait Combination {
     val points: Int
     val unicode: String
@@ -21,20 +25,19 @@ val instantWinCombinations: List[Combination] = List(
 /* ------------------------------------- */
 
 /* ------ Yaku combinations ------ */
-
 case object GokoCombination extends Combination {
     override val points: Int = 10
     override val unicode: String = "Gokō (五光) \"Five Hikari\"\t10pts."
     override val unicodeShort: String = "Gokō"
     override def evaluate(player: Player): Int = {
         val hikariCards = List(
-            Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE),
-            Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
-            Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON),
-            Card(CardMonth.NOVEMBER, CardType.HIKARI, CardName.RAIN),
-            Card(CardMonth.DECEMBER, CardType.HIKARI, CardName.PHOENIX),
+            Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE, false, 1),
+            Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 9),
+            Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON, false, 29),
+            Card(CardMonth.NOVEMBER, CardType.HIKARI, CardName.RAIN, false, 41),
+            Card(CardMonth.DECEMBER, CardType.HIKARI, CardName.PHOENIX, false, 45),
         )
-        if hikariCards.forall(c => player.side.cards.contains(c)) then points else 0
+        if hikariCards.forall(c => containsCard(player.side.cards, c)) then points else 0
     }
 }
 
@@ -44,12 +47,12 @@ case object ShikoCombination extends Combination {
     override val unicodeShort: String = "Shikō"
     override def evaluate(player: Player): Int = {
         val shikoCards = List(
-            Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE),
-            Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
-            Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON),
-            Card(CardMonth.DECEMBER, CardType.HIKARI, CardName.PHOENIX),
+            Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE, false, 1),
+            Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 9),
+            Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON, false, 29),
+            Card(CardMonth.DECEMBER, CardType.HIKARI, CardName.PHOENIX, false, 45),
         )
-        if shikoCards.forall(c => player.side.cards.contains(c)) then points else 0
+        if shikoCards.forall(c => containsCard(player.side.cards, c)) then points else 0
     }
 }
 
@@ -59,7 +62,7 @@ case object AmeShikoCombination extends Combination {
     override val unicodeShort: String = "Ame-Shikō"
     override def evaluate(player: Player): Int = {
         if player.side.cards.count(_.cardType == CardType.HIKARI) >= 4
-            && player.side.cards.contains(Card(CardMonth.NOVEMBER, CardType.HIKARI, CardName.RAIN))
+            && containsCard(player.side.cards, Card(CardMonth.NOVEMBER, CardType.HIKARI, CardName.RAIN, false, 41))
             then points else 0
     }
 }
@@ -70,7 +73,7 @@ case object SankoCombination extends Combination {
     override val unicodeShort: String = "Sankō"
     override def evaluate(player: Player): Int = {
         if player.side.cards.count(_.cardType == CardType.HIKARI) >= 3
-            && !player.side.cards.contains(Card(CardMonth.NOVEMBER, CardType.HIKARI, CardName.RAIN))
+            && !containsCard(player.side.cards, Card(CardMonth.NOVEMBER, CardType.HIKARI, CardName.RAIN, false, 41))
         then points else 0
     }
 }
@@ -81,10 +84,10 @@ case object TsukimiZakeCombination extends Combination {
     override val unicodeShort: String = "Tsukimi-zake"
     override def evaluate(player: Player): Int = {
         val tzCards = List(
-            Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON),
-            Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
+            Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON, false, 29),
+            Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP, false, 33)
         )
-        if tzCards.forall(c => player.side.cards.contains(c)) then points else 0
+        if tzCards.forall(c => containsCard(player.side.cards, c)) then points else 0
     }
 }
 
@@ -94,10 +97,10 @@ case object HanamiZakeCombination extends Combination {
     override val unicodeShort: String = "Hanami-zake"
     override def evaluate(player: Player): Int = {
         val tzCards = List(
-            Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
-            Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
+            Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 9),
+            Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP, false, 33)
         )
-        if tzCards.forall(c => player.side.cards.contains(c)) then points else 0
+        if tzCards.forall(c => containsCard(player.side.cards, c)) then points else 0
     }
 }
 
@@ -107,11 +110,11 @@ case object InoshiKachoCombination extends Combination {
     override val unicodeShort: String = "Inoshikachō"
     override def evaluate(player: Player): Int = {
         val tzCards = List(
-            Card(CardMonth.JULY, CardType.TANE, CardName.BOAR),
-            Card(CardMonth.OCTOBER, CardType.TANE, CardName.DEER),
-            Card(CardMonth.JUNE, CardType.TANE, CardName.BUTTERFLIES)
+            Card(CardMonth.JULY, CardType.TANE, CardName.BOAR, false, 25),
+            Card(CardMonth.OCTOBER, CardType.TANE, CardName.DEER, false, 37),
+            Card(CardMonth.JUNE, CardType.TANE, CardName.BUTTERFLIES, false, 21)
         )
-        if tzCards.forall(c => player.side.cards.contains(c)) then points else 0
+        if tzCards.forall(c => containsCard(player.side.cards, c)) then points else 0
     }
 }
 
@@ -131,14 +134,14 @@ case object AkatanAotanCombination extends Combination {
     override val points: Int = 10
     override def evaluate(player: Player): Int = {
         val aaCards = List(
-            Card(CardMonth.JANUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU),
-            Card(CardMonth.FEBRUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU),
-            Card(CardMonth.MARCH, CardType.TANZAKU, CardName.POETRY_TANZAKU),
-            Card(CardMonth.JUNE, CardType.TANZAKU, CardName.BLUE_TANZAKU),
-            Card(CardMonth.SEPTEMBER, CardType.TANZAKU, CardName.BLUE_TANZAKU),
-            Card(CardMonth.OCTOBER, CardType.TANZAKU, CardName.BLUE_TANZAKU)
+            Card(CardMonth.JANUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU, false, 2),
+            Card(CardMonth.FEBRUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU, false, 6),
+            Card(CardMonth.MARCH, CardType.TANZAKU, CardName.POETRY_TANZAKU, false, 10),
+            Card(CardMonth.JUNE, CardType.TANZAKU, CardName.BLUE_TANZAKU, false, 22),
+            Card(CardMonth.SEPTEMBER, CardType.TANZAKU, CardName.BLUE_TANZAKU, false, 34),
+            Card(CardMonth.OCTOBER, CardType.TANZAKU, CardName.BLUE_TANZAKU, false, 38)
         )
-        if aaCards.forall(c => player.side.cards.contains(c)) then points else 0
+        if aaCards.forall(c => containsCard(player.side.cards, c)) then points else 0
     }
 }
 
@@ -148,11 +151,11 @@ case object AkatanCombination extends Combination {
     override val unicodeShort: String = "Akatan"
     override def evaluate(player: Player): Int = {
         val aCards = List(
-            Card(CardMonth.JANUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU),
-            Card(CardMonth.FEBRUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU),
-            Card(CardMonth.MARCH, CardType.TANZAKU, CardName.POETRY_TANZAKU)
+            Card(CardMonth.JANUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU, false, 2),
+            Card(CardMonth.FEBRUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU, false, 6),
+            Card(CardMonth.MARCH, CardType.TANZAKU, CardName.POETRY_TANZAKU, false, 10)
         )
-        if aCards.forall(c => player.side.cards.contains(c)) then points else 0
+        if aCards.forall(c => containsCard(player.side.cards, c)) then points else 0
     }
 }
 
@@ -162,11 +165,11 @@ case object AotanCombination extends Combination {
     override val unicodeShort: String = "Aotan"
     override def evaluate(player: Player): Int = {
         val aCards = List(
-            Card(CardMonth.JUNE, CardType.TANZAKU, CardName.BLUE_TANZAKU),
-            Card(CardMonth.SEPTEMBER, CardType.TANZAKU, CardName.BLUE_TANZAKU),
-            Card(CardMonth.OCTOBER, CardType.TANZAKU, CardName.BLUE_TANZAKU)
+            Card(CardMonth.JUNE, CardType.TANZAKU, CardName.BLUE_TANZAKU, false, 22),
+            Card(CardMonth.SEPTEMBER, CardType.TANZAKU, CardName.BLUE_TANZAKU, false, 34),
+            Card(CardMonth.OCTOBER, CardType.TANZAKU, CardName.BLUE_TANZAKU, false, 38)
         )
-        if aCards.forall(c => player.side.cards.contains(c)) then points else 0
+        if aCards.forall(c => containsCard(player.side.cards, c)) then points else 0
     }
 }
 

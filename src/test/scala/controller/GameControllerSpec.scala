@@ -25,12 +25,12 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
     it should "handle pending koikoi correctly (koi-koi) input" in {
         GameController.gameState = GameStatePendingKoiKoi(
             players = List(
-                Player(name = "Player1", hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN))), side = Deck(List.empty), score = 0, yakusToIgnore = List.empty, calledKoiKoi = false),
+                Player(name = "Player1", hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0))), side = Deck(List.empty), score = 0, yakusToIgnore = List.empty, calledKoiKoi = false),
                 Player(name = "Player2", hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN)
+                Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0)
             )),
             displayType = DisplayType.GAME,
             stdout = None,
@@ -43,12 +43,12 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
     it should "handle pending koikoi correctly (finish) input" in {
         GameController.gameState = GameStatePendingKoiKoi(
             players = List(
-                Player(name = "Player1", hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN))), side = Deck(List.empty), score = 0, yakusToIgnore = List.empty, calledKoiKoi = false),
+                Player(name = "Player1", hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0))), side = Deck(List.empty), score = 0, yakusToIgnore = List.empty, calledKoiKoi = false),
                 Player(name = "Player2", hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN)
+                Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0)
             )),
             displayType = DisplayType.GAME,
             stdout = None,
@@ -61,12 +61,12 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
     it should "handle pending koikoi correctly (_) input" in {
         GameController.gameState = GameStatePendingKoiKoi(
             players = List(
-                Player(name = "Player1", yakusToIgnore = List.empty, hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN))), side = Deck(List.empty), score = 0, calledKoiKoi = false),
+                Player(name = "Player1", yakusToIgnore = List.empty, hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0))), side = Deck(List.empty), score = 0, calledKoiKoi = false),
                 Player(name = "Player2", yakusToIgnore = List.empty, hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false)
             ),
             deck = Deck.defaultDeck(),
             board = Deck(List(
-                Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN)
+                Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0)
             )),
             displayType = DisplayType.GAME,
             stdout = None,
@@ -99,12 +99,12 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
     it should "process input 'match 1 2'" in {
     GameController.gameState = GameStatePlanned(
         players = List(
-            Player(name = "Player1", yakusToIgnore = List.empty, hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN))), side = Deck(List.empty), score = 0, calledKoiKoi = false),
+            Player(name = "Player1", yakusToIgnore = List.empty, hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0))), side = Deck(List.empty), score = 0, calledKoiKoi = false),
             Player(name = "Player2", yakusToIgnore = List.empty, hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false)
         ),
         deck = Deck.defaultDeck(),
         board = Deck(List(
-            Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN)
+            Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0)
         )),
         displayType = DisplayType.GAME,
         stdout = None,
@@ -123,13 +123,13 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
           ),
           deck = Deck.defaultDeck(),
           board = Deck(List(
-              Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN)
+              Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0)
           )),
           displayType = DisplayType.GAME,
           stdout = None,
           stderr = None,
           matched = Deck(List.empty),
-          queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN)
+          queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0)
       )
       GameController.processInput("match 1")
       GameController.gameState.board.cards should be (List.empty)
@@ -139,7 +139,7 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
     it should "process input 'discard 1'" in {
       GameController.gameState = GameStatePlanned(
           players = List(
-              Player(name = "Player1", yakusToIgnore = List.empty, hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN))), side = Deck(List.empty), score = 0, calledKoiKoi = false),
+              Player(name = "Player1", yakusToIgnore = List.empty, hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0))), side = Deck(List.empty), score = 0, calledKoiKoi = false),
               Player(name = "Player2", yakusToIgnore = List.empty, hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false)
           ),
           deck = Deck.defaultDeck(),
@@ -150,7 +150,7 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
       )
       GameController.processInput("discard 1")
       GameController.gameState.players.head.hand.cards should be(List.empty)
-      GameController.gameState.board.cards should be (List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN)))
+      GameController.gameState.board.cards should be (List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0)))
       GameController.gameState.stderr.isEmpty should be(true)
     }
 
@@ -166,10 +166,10 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
           stdout = None,
           stderr = None,
           matched = Deck(List.empty),
-          queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN)
+          queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0)
       )
           GameController.processInput("discard")
-          GameController.gameState.board.cards should be(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN)))
+          GameController.gameState.board.cards should be(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0)))
           GameController.gameState.stderr.isEmpty should be(true)
     }
 

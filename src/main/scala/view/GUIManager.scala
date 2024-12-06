@@ -448,7 +448,7 @@ object GUIManager extends JFXApp3 with Observer {
             hgrow = Priority.Always
         }
         new ToolBar {
-            alignmentInParent = Pos.TopCenter
+            alignmentInParent = Pos.BottomCenter
             padding = Insets(10)
             items = List(
                 leftSpacer,
