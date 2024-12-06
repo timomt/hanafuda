@@ -1,0 +1,522 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="5204e14e-97a3-4a41-b98e-ab77cc0211c8" name="Changes" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="CoverageOptionsProvider">
+    <option name="myAddOrReplace" value="0" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="SBT">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="Hanafuda" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="module-info" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {}
+}</component>
+  <component name="GitHubPullRequestState">{
+  &quot;prStates&quot;: [
+    {
+      &quot;id&quot;: {
+        &quot;id&quot;: &quot;PR_kwDOM-VHns5-9W6-&quot;,
+        &quot;number&quot;: 6
+      },
+      &quot;lastSeen&quot;: 1729242658520
+    }
+  ]
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;git@github.com:timomt/hanafuda.git&quot;,
+    &quot;accountId&quot;: &quot;aa72970c-00e2-4df5-a728-018dd36ed8d7&quot;
+  }
+}</component>
+  <component name="ProjectCodeStyleSettingsMigration">
+    <option name="version" value="2" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="2nA3ZDPv3XuSt8GXfXMyyUEi02f" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Hanafuda.executor&quot;: &quot;Run&quot;,
+    &quot;Application.main.executor&quot;: &quot;Run&quot;,
+    &quot;JavaScript Debug.index.html.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;ScalaTest.CardSpec.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.CombinationSpec.All Combinations should return 0 for no yaku.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.CombinationSpec.KuttsukiCombination should return 6 points for being dealt four pairs of cards with matching suits.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.CombinationSpec.TeshiCombination should return 6 points for being dealt four cards of the same suit.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.CombinationSpec.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.CommandSpec.Command should throw exception if undo called before execute.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.CommandSpec.CommandSpec should return some in stderr if redo called on empty stack.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.CommandSpec.CommandSpec should return some in stderr if undo called on empty stack.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.DeckSpec.A default Deck should have 4 cards of each month.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.DeckSpec.A default Deck should have 48 cards.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.DeckSpec.A default Deck should have 5 Hikari cards.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.DeckSpec.Poll Multiple should poll n cards from the deck.executor&quot;: &quot;Coverage&quot;,
+    &quot;ScalaTest.DeckSpec.Poll Multiple should return an empty list and the same deck if the deck is empty.executor&quot;: &quot;Coverage&quot;,
+    &quot;ScalaTest.DeckSpec.Poll should return a card and a deck without that exact card.executor&quot;: &quot;Coverage&quot;,
+    &quot;ScalaTest.DeckSpec.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.A GameController should process input 'discard 1'.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.A GameController should process input 'match 1 2'.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.A GameController should process input 'match 1'.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.GameController should do nothing on invalid input before start.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.GameController should initialize a new game.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.GameController should process input 'exit'.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.GameController should redo moves correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.GameController should undo moves correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.handleMatchRandomMatch should execute default match properly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.handleMatchRandomMatch should return error for invalid match\nhandleMatchRandomMatch should collect a whole month properly\nhandleMatchRandomMatch should execute default match properly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.matchCards should call handleMatchPlanned when matchType is PLANNED.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.matchCards should return error for negative input.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.pass valid input to handleMatchPlanned if planned.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameControllerSpec.pass valid input to matchCardsPlanned if planned.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameManagerSpec.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameManagerSpec.initializePlayers should correctly initialize a list of 2 Players.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameManagerSpec.koiKoiCallHandler should continue planned game with calledKoiKoi attribute set.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameManagerSpec.koiKoiHandler should double the points of the caller in case of a successful call.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameManagerSpec.koiKoiHandler should return instance of GameStatePendingKoiKoi if koi-koi not already called.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameManagerSpec.koiKoiHandler should set the points of the caller to 0 and double the points of opponent if call failed.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameManagerSpec.newGame() should group 3 cards of the same month together.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameManagerSpec.newGame() should handle instant win conditions.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameManagerSpec.newGame() should not deal a full month.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameManagerSpec.newGame() should return a game initialized with the given player names.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.GameStateSummary should initialize regular values to None or empty.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.executor&quot;: &quot;Debug&quot;,
+    &quot;ScalaTest.GameSpec.handleDiscard[GameStatePlanned] should discard properly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleDiscard[GameStatePlanned] should return error on invalid input.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleDiscard[GameStateRandom] should check for koi-koi.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleDiscard[GameStateRandom] should discard properly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleDiscard[GameStateRandom] should only discard as last resort.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleDiscard[GameStateRandom] should return error on invalid input.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleDiscard[GameStateSummary] should return error in stderr.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleDiscard[GameStateUninitialized] should return error in stderr.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleMatch[GameStatePlanned] should match 3/4 rule properly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleMatch[GameStatePlanned] should match default rules properly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleMatch[GameStatePlanned] should match properly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleMatch[GameStatePlanned] should return error for invalid input.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleMatch[GameStateRandom] should check for koi-koi in 3/4 rule.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleMatch[GameStateRandom] should check for koi-koi.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleMatch[GameStateRandom] should handle koi-koi if deck is empty or both players hands are empty.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleMatch[GameStateRandom] should match 3/4 rule properly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleMatch[GameStateRandom] should match default rules properly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleMatch[GameStateRandom] should return error for invalid input.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleMatch[GameStateSummary] should return error in stderr.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.handleMatch[GameStateUninitialized] should return error in stderr.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.updateGameStateWithDisplayType[GameStatePendingKoiKoi] should set displayType attribute correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.updateGameStateWithDisplayType[GameStatePlanned] should set displayType attribute correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.updateGameStateWithDisplayType[GameStateRandom] should set displayType attribute correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.updateGameStateWithDisplayType[GameStateSummary] should set displayType attribute correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.updateGameStateWithDisplayType[GameStateUninitialized] should set displayType attribute correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.GameSpec.updateGameStateWithError[GameStatePendingKoiKoi], handleDiscard and handleMatch should return Some in stderr.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.Hanafuda.executor&quot;: &quot;Coverage&quot;,
+    &quot;ScalaTest.HanafudaSpec.Hanafuda main should run and process input.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.HanafudaSpec.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.ObservableSpec.An Observable should allow observers to be added (1).executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.ObservableSpec.An Observable should allow observers to be added.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.ObservableSpec.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.clearScreen should clear the screen correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.colorizeOverviewCard should colorize the cards correctly for each player.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.printBoard print board with matched cards correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.printBoard print board with queued correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.printBoard print board with two matched cards correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.printBoard should handle stderr correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.printBoard should handle stdout correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.printBoard should print the board correctly\nprintBoard print board with queued correctly\nprintBoard print board with matched cards correctly\nprintBoard print board with two matched cards correctly\nprintBoard should handle stdout correctly\nprintBoard should handle stderr correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.printBoard should print the board correctly (size &lt; 8 &amp;&amp; size &gt;= 5).executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.printBoard should print the board correctly (size &gt; 8 &amp;&amp; size mod 2 == 0).executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.printBoard should print the board correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.printHelp should print the help text correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.printOverview should printOverview/ combinations correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.printSpoiler should print the spoiler text correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.printSummary should print the summary text correctly.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.update should call printBoard and print the correct output for a game state\nupdate should update the TUI correctly for an empty game state\nupdate should update the TUI correctly for a non-empty game state.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.update should call printBoard and print the correct output for a game state.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.update should output combinations.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.update should output game.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.update should output help.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.update should output spoiler.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.update should update the TUI correctly for a non-empty game state.executor&quot;: &quot;Run&quot;,
+    &quot;ScalaTest.TUIManagerSpec.update should update the TUI correctly for an empty game state.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;timos-playground&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/timo/Development/se/Hanafuda/src/main/resources/img/background&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Project&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;sbt Task.Hanafuda.executor&quot;: &quot;Debug&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources/img/background" />
+      <recent name="$PROJECT_DIR$/src/main/resources/img/card" />
+      <recent name="$PROJECT_DIR$" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/resources/img/background" />
+      <recent name="$PROJECT_DIR$/src/main/resources/img/logo" />
+      <recent name="$PROJECT_DIR$/src/main/scala/model" />
+      <recent name="$PROJECT_DIR$/src/main/scala/controller" />
+      <recent name="$PROJECT_DIR$/project" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.main">
+    <configuration name="main" type="Application" factoryName="Application">
+      <option name="ALTERNATIVE_JRE_PATH" value="graalvm-jdk-21" />
+      <option name="MAIN_CLASS_NAME" value="main" />
+      <module name="Hanafuda" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Hanafuda" type="SbtRunConfiguration" factoryName="sbt Task" show_console_on_std_err="false" show_console_on_std_out="false">
+      <option name="allowRunningInParallel" value="false" />
+      <option name="projectPathOnTarget" />
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="tasks" value="run" />
+      <option name="useSbtShell" value="true" />
+      <option name="vmparams" value="-Xms512M -Xmx1024M -Xss1M -XX:+CMSClassUnloadingEnabled" />
+      <option name="workingDir" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CardSpec" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true" nameIsGenerated="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <module name="Hanafuda" />
+      <option name="VMParameters" value="" />
+      <option name="allowRunningInParallel" value="false" />
+      <option name="alternativeJrePath" />
+      <option name="alternativeJrePathEnabled" value="false" />
+      <option name="classpathModifications">
+        <list />
+      </option>
+      <option name="envs">
+        <map />
+      </option>
+      <option name="passParentEnvs" value="true" />
+      <option name="programParameters" value="" />
+      <option name="projectPathOnTarget" />
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="testKind" value="Class" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <option name="testClassPath" value="CardSpec" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DeckSpec.A default Deck should have 4 cards of each month" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true" nameIsGenerated="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <module name="Hanafuda" />
+      <option name="VMParameters" value="" />
+      <option name="allowRunningInParallel" value="false" />
+      <option name="alternativeJrePath" />
+      <option name="alternativeJrePathEnabled" value="false" />
+      <option name="classpathModifications">
+        <list />
+      </option>
+      <option name="envs">
+        <map />
+      </option>
+      <option name="passParentEnvs" value="true" />
+      <option name="programParameters" value="" />
+      <option name="projectPathOnTarget" />
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="testKind" value="Test name" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <option name="testClassPath" value="DeckSpec" />
+      <option name="testName" value="A default Deck should have 4 cards of each month" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DeckSpec.A default Deck should have 48 cards" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true" nameIsGenerated="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <module name="Hanafuda" />
+      <option name="VMParameters" value="" />
+      <option name="allowRunningInParallel" value="false" />
+      <option name="alternativeJrePath" />
+      <option name="alternativeJrePathEnabled" value="false" />
+      <option name="classpathModifications">
+        <list />
+      </option>
+      <option name="envs">
+        <map />
+      </option>
+      <option name="passParentEnvs" value="true" />
+      <option name="programParameters" value="" />
+      <option name="projectPathOnTarget" />
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="testKind" value="Test name" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <option name="testClassPath" value="DeckSpec" />
+      <option name="testName" value="A default Deck should have 48 cards" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="DeckSpec.A default Deck should have 5 Hikari cards" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true" nameIsGenerated="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <module name="Hanafuda" />
+      <option name="VMParameters" value="" />
+      <option name="allowRunningInParallel" value="false" />
+      <option name="alternativeJrePath" />
+      <option name="alternativeJrePathEnabled" value="false" />
+      <option name="classpathModifications">
+        <list />
+      </option>
+      <option name="envs">
+        <map />
+      </option>
+      <option name="passParentEnvs" value="true" />
+      <option name="programParameters" value="" />
+      <option name="projectPathOnTarget" />
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="testKind" value="Test name" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <option name="testClassPath" value="DeckSpec" />
+      <option name="testName" value="A default Deck should have 5 Hikari cards" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ObservableSpec" type="ScalaTestRunConfiguration" factoryName="ScalaTest" temporary="true" nameIsGenerated="true" show_console_on_std_err="false" show_console_on_std_out="false">
+      <module name="Hanafuda" />
+      <option name="VMParameters" value="" />
+      <option name="allowRunningInParallel" value="false" />
+      <option name="alternativeJrePath" />
+      <option name="alternativeJrePathEnabled" value="false" />
+      <option name="classpathModifications">
+        <list />
+      </option>
+      <option name="envs">
+        <map />
+      </option>
+      <option name="passParentEnvs" value="true" />
+      <option name="programParameters" value="" />
+      <option name="projectPathOnTarget" />
+      <option name="selectedOptions">
+        <list />
+      </option>
+      <option name="testKind" value="Class" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <option name="testClassPath" value="ObservableSpec" />
+      <option name="workingDirectory" value="$PROJECT_DIR$" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="Application.main" />
+      <item itemvalue="sbt Task.Hanafuda" />
+      <item itemvalue="ScalaTest.ObservableSpec" />
+      <item itemvalue="ScalaTest.CardSpec" />
+      <item itemvalue="ScalaTest.DeckSpec.A default Deck should have 4 cards of each month" />
+      <item itemvalue="ScalaTest.DeckSpec.A default Deck should have 48 cards" />
+      <item itemvalue="ScalaTest.DeckSpec.A default Deck should have 5 Hikari cards" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="ScalaTest.ObservableSpec" />
+        <item itemvalue="ScalaTest.CardSpec" />
+        <item itemvalue="ScalaTest.DeckSpec.A default Deck should have 4 cards of each month" />
+        <item itemvalue="ScalaTest.DeckSpec.A default Deck should have 5 Hikari cards" />
+        <item itemvalue="ScalaTest.DeckSpec.A default Deck should have 48 cards" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ScalaProjectSettings">
+    <option name="migrateConfigurationsNotificationShown" value="true" />
+    <option name="scala3DisclaimerShown" value="true" />
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-28b599e66164-intellij.indexing.shared.core-IU-242.23339.11" />
+        <option value="bundled-js-predefined-d6986cc7102b-5c90d61e3bab-JavaScript-IU-242.23339.11" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="5204e14e-97a3-4a41-b98e-ab77cc0211c8" name="Changes" comment="" />
+      <created>1728402108932</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1728402108932</updated>
+      <workItem from="1728402110108" duration="502000" />
+      <workItem from="1728402624838" duration="6927000" />
+      <workItem from="1728459686080" duration="235000" />
+      <workItem from="1728559194355" duration="5541000" />
+      <workItem from="1728564759766" duration="7395000" />
+      <workItem from="1728632242275" duration="4335000" />
+      <workItem from="1728894708540" duration="2470000" />
+      <workItem from="1728917833915" duration="24000" />
+      <workItem from="1728917870737" duration="56000" />
+      <workItem from="1729147243706" duration="45000" />
+      <workItem from="1729162445828" duration="2595000" />
+      <workItem from="1729236975395" duration="5490000" />
+      <workItem from="1729360137477" duration="181000" />
+      <workItem from="1729501858679" duration="1937000" />
+      <workItem from="1729503806148" duration="8694000" />
+      <workItem from="1729609760044" duration="9594000" />
+      <workItem from="1729673199763" duration="1638000" />
+      <workItem from="1729702804238" duration="52000" />
+      <workItem from="1729702875269" duration="5004000" />
+      <workItem from="1729764873741" duration="14289000" />
+      <workItem from="1729836641722" duration="2253000" />
+      <workItem from="1729843974795" duration="3741000" />
+      <workItem from="1729948911558" duration="64000" />
+      <workItem from="1729948994908" duration="6130000" />
+      <workItem from="1730107731043" duration="2221000" />
+      <workItem from="1730197702819" duration="7337000" />
+      <workItem from="1730206024475" duration="30000" />
+      <workItem from="1730216969306" duration="2332000" />
+      <workItem from="1730295767535" duration="52000" />
+      <workItem from="1730295835521" duration="8358000" />
+      <workItem from="1730363339432" duration="13197000" />
+      <workItem from="1730378605958" duration="10663000" />
+      <workItem from="1730722483606" duration="2808000" />
+      <workItem from="1730909860248" duration="20543000" />
+      <workItem from="1730976648610" duration="11247000" />
+      <workItem from="1731011327285" duration="382000" />
+      <workItem from="1731049696390" duration="10693000" />
+      <workItem from="1731077036047" duration="9780000" />
+      <workItem from="1731235237152" duration="8122000" />
+      <workItem from="1731421171600" duration="558000" />
+      <workItem from="1731425748766" duration="1641000" />
+      <workItem from="1731429634275" duration="461000" />
+      <workItem from="1731579751166" duration="3647000" />
+      <workItem from="1731586816912" duration="2372000" />
+      <workItem from="1731589652930" duration="7538000" />
+      <workItem from="1731654517986" duration="3157000" />
+      <workItem from="1731683133858" duration="6655000" />
+      <workItem from="1731700275267" duration="7985000" />
+      <workItem from="1731751105041" duration="1591000" />
+      <workItem from="1731752736966" duration="2721000" />
+      <workItem from="1731755474256" duration="7918000" />
+      <workItem from="1731929626991" duration="11437000" />
+      <workItem from="1731941941887" duration="8860000" />
+      <workItem from="1732017288796" duration="958000" />
+      <workItem from="1732020643106" duration="29000" />
+      <workItem from="1732021005496" duration="295000" />
+      <workItem from="1732092647817" duration="78000" />
+      <workItem from="1732103258349" duration="1299000" />
+      <workItem from="1732108030571" duration="12000" />
+      <workItem from="1732194674236" duration="6866000" />
+      <workItem from="1732263312761" duration="3839000" />
+      <workItem from="1732287335765" duration="10376000" />
+      <workItem from="1732371096635" duration="47000" />
+      <workItem from="1732525087736" duration="5224000" />
+      <workItem from="1732712395828" duration="9000" />
+      <workItem from="1733129972985" duration="176000" />
+      <workItem from="1733130193593" duration="137000" />
+      <workItem from="1733130979957" duration="1962000" />
+      <workItem from="1733155166002" duration="10418000" />
+      <workItem from="1733165596649" duration="3332000" />
+      <workItem from="1733249384189" duration="604000" />
+      <workItem from="1733255186852" duration="15946000" />
+      <workItem from="1733316193290" duration="3643000" />
+      <workItem from="1733319884725" duration="85000" />
+      <workItem from="1733322284738" duration="3087000" />
+      <workItem from="1733330117391" duration="25000" />
+      <workItem from="1733330454890" duration="2758000" />
+      <workItem from="1733403060150" duration="8300000" />
+      <workItem from="1733428411096" duration="91000" />
+      <workItem from="1733430862111" duration="1673000" />
+      <workItem from="1733469093462" duration="4163000" />
+      <workItem from="1733498195488" duration="46000" />
+      <workItem from="1733498870307" duration="7160000" />
+      <workItem from="1733506039528" duration="306000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/Hanafuda$DeckSpec_Poll_Multiple_should_poll_n_cards_from_the_deck.ic" NAME="DeckSpec.Poll Multiple should poll n cards from the deck Coverage Results" MODIFIED="1729770854847" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Hanafuda$main.ic" NAME="main Coverage Results" MODIFIED="1729674582104" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Hanafuda$DeckSpec_Poll_should_return_a_card_and_a_deck_without_that_exact_card.ic" NAME="DeckSpec.Poll should return a card and a deck without that exact card Coverage Results" MODIFIED="1729768333180" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Hanafuda$HanafudaSpec.ic" NAME="HanafudaSpec Coverage Results" MODIFIED="1729618819810" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Hanafuda$DeckSpec.ic" NAME="DeckSpec Coverage Results" MODIFIED="1729777057185" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Hanafuda$Hanafuda.ic" NAME="Hanafuda Coverage Results" MODIFIED="1729617382366" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+    <SUITE FILE_PATH="coverage/Hanafuda$DeckSpec_Poll_Multiple_should_return_an_empty_list_and_the_same_deck_if_the_deck_is_empty.ic" NAME="DeckSpec.Poll Multiple should return an empty list and the same deck if the deck is empty Coverage Results" MODIFIED="1729777170167" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true" />
+  </component>
+</project>
