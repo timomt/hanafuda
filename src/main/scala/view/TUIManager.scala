@@ -2,18 +2,21 @@ package view
 import controller.Observer
 import model.{Card, CardName, CardType, Deck, DisplayType, GameState, GameStateSummary, instantWinCombinations, yakuCombinations}
 
-/*
-* MVC: View
-* object TUIManager
-* an object to manage the text user interface.
-* */
+/**
+ * MVC: View
+ * Object to manage the text user interface.
+ */
 object TUIManager extends Observer {
+    /**
+     * Clears the screen.
+     */
     val clearScreen: String = "\u001b[2J\u001b[3J\u001b[1;1H"
 
-    /*
-    * def update(...)
-    * updates the TUI according to the current GameState.
-    * */
+    /**
+     * Updates the TUI according to the current GameState.
+     *
+     * @param gameState the current game state
+     */
     override def update(gameState: GameState): Unit = {
         gameState.displayType match
             case DisplayType.GAME => print(printBoard(gameState))
@@ -22,11 +25,13 @@ object TUIManager extends Observer {
             case DisplayType.SPOILER => print(printSpoiler())
             case DisplayType.SUMMARY => print(printSummary(gameState))
     }
-    
-    /*
-    * def printBoard(...)
-    * returns a String representation of the provided GameState.
-    * */
+
+    /**
+     * Returns a String representation of the provided GameState.
+     *
+     * @param game the current game state
+     * @return the string representation of the game state
+     */
     def printBoard(game: GameState): String = {
         val card = s"""╔══════╗
                       |║      ║
@@ -81,10 +86,11 @@ object TUIManager extends Observer {
             + topRow + "\n\n" + upperMiddleRow + "\n" + lowerMiddleRow + "\n\n" + bottomRow + stdoutRow + stderrRow + "\n"
     }
 
-    /*
-    * def printHelp(...)
-    * returns a String of the help page.
-    * */
+    /**
+     * Returns a String of the help page.
+     *
+     * @return the help page string
+     */
     def printHelp(): String = {
         val helpText =
             clearScreen +
@@ -124,6 +130,11 @@ object TUIManager extends Observer {
         helpText
     }
 
+    /**
+     * Returns a String of the spoiler protection page.
+     *
+     * @return the spoiler protection page string
+     */
     def printSpoiler(): String = {
         val helpText =
             clearScreen +
@@ -154,6 +165,12 @@ object TUIManager extends Observer {
         helpText
     }
 
+    /**
+     * Returns a String representation of the summary of the game state.
+     *
+     * @param game the current game state
+     * @return the summary string
+     */
     def printSummary(game: GameState): String = {
         def formatPlayerName(name: String): String = {
             if (name.length > 20) name.take(17) + "..." else name.padTo(20, ' ')
@@ -183,10 +200,13 @@ object TUIManager extends Observer {
         summaryHeader + combinationRows + summaryFooter
     }
 
-    /*
-    * def printOverview(...)
-    * returns a String representation of the overview of all (un)collected cards and their value.
-    * *///TODO: kasu is not correct, test further
+    /**
+     * Returns a String representation of the overview of all (un)collected cards and their value.
+     *
+     * @param game the current game state
+     * @return the overview string
+     */
+    //TODO: kasu is not correct, test further
     def printOverview(game: GameState): String = {
         val goko = "Gokō (五光) \"Five Hikari\"\t10pts.\t(exact yaku)\n" + Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
         val shiko = "Shikō (四光) \"Four Hikari\"\t8pts.\t(exact yaku)\n" + Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN).map(c => colorizeOverviewCard(game, c)).transpose.map(_.mkString(" ")).mkString("\n") + "\n\n"
@@ -225,11 +245,14 @@ object TUIManager extends Observer {
         val overview = clearScreen + goko + shiko + ameShiko + sanko + tsukimiZake + hanamiZake + inoshikacho + tane + akatanAotan + akatan + aotan + tanzaku + kasu
         overview
     }
-    
-    /*
-    * def colorizeOverviewCard(...)
-    * returns the colorized unicode representation of given card depending on who owns it.
-    * */
+
+    /**
+     * Returns the colorized unicode representation of the given card depending on who owns it.
+     *
+     * @param game the current game state
+     * @param card the card to colorize
+     * @return the colorized unicode representation of the card
+     */
     def colorizeOverviewCard(game: GameState, card: Card): List[String] = card match {
         case c if game.players.head.side.cards.exists(c => c.month == card.month && c.cardType == card.cardType && c.cardName == card.cardName) => c.unicode.map(line => s"\u001b[32m$line\u001b[0m")
         case c if game.players(1).side.cards.exists(c => c.month == card.month && c.cardType == card.cardType && c.cardName == card.cardName) => c.unicode.map(line => s"\u001b[31m$line\u001b[0m")

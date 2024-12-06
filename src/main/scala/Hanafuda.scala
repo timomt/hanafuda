@@ -1,14 +1,14 @@
-import controller.GameController
 import view.TUIManager
 import controller.GameController
 import view.GUIManager
 
-/*
-* object Hanafuda
-* entry point of this application.
-* */
-
+/**
+ * Entry point of the Hanafuda application.
+ */
 object Hanafuda {
+    /**
+     * Main method to start the application.
+     */
     @main
     def main(): Unit = {
         GameController.add(TUIManager)

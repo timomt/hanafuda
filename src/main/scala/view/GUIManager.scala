@@ -18,22 +18,50 @@ import scalafx.scene.input.MouseEvent
 import scalafx.stage.Screen
 import view.ComponentDecoraters.{BasicTextField, StyleDecorator}
 
+/**
+ * MVC: View
+ * Object to manage the graphical user interface.
+ */
 object GUIManager extends JFXApp3 with Observer {
-    /* Viewport sizes */
+    /**
+     * The viewport height.
+     */
     private var vh: Double = 0
+    
+    /**
+     * The viewport width.
+     */
     private var vw: Double = 0
-    /* Cache for card images to reduce IO significantly */
+
+    /**
+     * Cache for card images to reduce IO significantly.
+     */
     private var cardCache: Map[Int, Image] = Map()
+    
+    /**
+     * The currently selected card from the player's hand.
+     */
     private var selectedHandCard: Option[Card] = None
+
+    /**
+     * The currently selected card from the board.
+     */
     private var selectedBoardCard: Option[Card] = None
+
+    /**
+     * The pane containing the currently selected card from the player's hand.
+     */
     private var selectedHandCardPane: Option[StackPane] = None
+
+    /**
+     * The pane containing the currently selected card from the board.
+     */
     private var selectedBoardCardPane: Option[StackPane] = None
     //TODO: scale selected cards correctly without blurr
 
-    /*
-    * def start()
-    * initialization of GUIManager.
-    * */
+    /**
+     * Initializes the GUIManager.
+     */
     override def start(): Unit = {
         /* Subscribing to GameController Observable */
         GameController.add(this)
@@ -63,6 +91,12 @@ object GUIManager extends JFXApp3 with Observer {
 
     /* ------------------------------------------------------- */
     /* --------------- Scenes for update() -------------------- */
+
+    /**
+     * Creates the scene for the uninitialized state.
+     *
+     * @return the scene for the uninitialized state
+     */
     def sceneUninitialized(): Scene = new Scene {
         val rootPane: StackPane = new StackPane {
             background = new Background(Array(
@@ -130,6 +164,12 @@ object GUIManager extends JFXApp3 with Observer {
         root = rootPane
     }
 
+    /**
+     * Creates the scene for the game state.
+     *
+     * @param gameState the current game state
+     * @return the scene for the game state
+     */
     def gameScene(gameState: GameState): Scene = {
         new Scene {
             val rootPane: StackPane = new StackPane {
@@ -267,6 +307,12 @@ object GUIManager extends JFXApp3 with Observer {
         }
     }
 
+    /**
+     * Creates the scene for the combinations display.
+     *
+     * @param gameState the current game state
+     * @return the scene for the combinations display
+     */
     def combinationsScene(gameState: GameState): Scene = {
         new Scene {
             val rootPane = new StackPane {
@@ -363,6 +409,12 @@ object GUIManager extends JFXApp3 with Observer {
         }
     }
 
+    /**
+     * Creates the scene for the spoiler protection display.
+     *
+     * @param gameState the current game state
+     * @return the scene for the spoiler protection display
+     */
     def spoilerScene(gameState: GameState): Scene = {
         new Scene {
             val button = new Button("Continue the game")
@@ -375,6 +427,12 @@ object GUIManager extends JFXApp3 with Observer {
         }
     }
 
+    /**
+     * Creates the scene for the summary display.
+     *
+     * @param gameState the current game state
+     * @return the scene for the summary display
+     */
     def summaryScene(gameState: GameState): Scene = {
         new Scene {
             val button = new Button("Back")
@@ -387,6 +445,12 @@ object GUIManager extends JFXApp3 with Observer {
         }
     }
 
+    /**
+     * Creates the scene for the help display.
+     *
+     * @param gameState the current game state
+     * @return the scene for the help display
+     */
     def helpScene(gameState: GameState): Scene = {
         new Scene(600, 600) {
             val button = new Button("Back")
@@ -398,12 +462,15 @@ object GUIManager extends JFXApp3 with Observer {
             content = List(button)
         }
     }
+    
     /* ------------------------------------------------------- */
 
-    /*
-    * def createGameTaskbar(..)
-    * returns a ToolBar für DisplayType.GAME
-    * */
+    /**
+     * Creates a ToolBar for the game display.
+     *
+     * @param gameState the current game state
+     * @return the ToolBar for the game display
+     */
     def createGameTaskbar(gameState: GameState): ToolBar = {
         val button1 = createGameTaskbarButton("Help", (e: ActionEvent) => {
             GameController.processInput("help")
@@ -463,10 +530,13 @@ object GUIManager extends JFXApp3 with Observer {
         }
     }
 
-    /*
-    * def createGameTaskbarButton(..)
-    * returns a styled Button with given text and action to trigger on click.
-    * */
+    /**
+     * Creates a styled Button with the given text and action to trigger on click.
+     *
+     * @param text the text to display on the button
+     * @param action the action to perform when the button is clicked
+     * @return the styled Button
+     */
     def createGameTaskbarButton(text: String, action: ActionEvent => Unit): Button = {
         val button: Button = new Button(text) {
             style = "-fx-background-color: #B82025;" +
@@ -489,9 +559,12 @@ object GUIManager extends JFXApp3 with Observer {
         button
     }
 
-    /*
-    * def createStyledTextField(..)
-    * returns a prestyled TextField. */
+    /**
+     * Creates a pre-styled TextField with the given prompt text.
+     *
+     * @param textString the prompt text to display in the text field
+     * @return the styled TextField
+     */
     def createStyledTextField(textString: String): TextField = {
         val basicTextField = new BasicTextField(textString)
         val styles = Map(
@@ -506,10 +579,11 @@ object GUIManager extends JFXApp3 with Observer {
         styledTextField.render().asInstanceOf[TextField]
     }
 
-    /*
-    * def update(..)
-    * update the GUI on observer notification.
-    * */
+    /**
+     * Updates the GUI on observer notification.
+     *
+     * @param gameState the current state of the game
+     */
     override def update(gameState: GameState): Unit = {
         Platform.runLater {
             if (gameState.isInstanceOf[GameStateUninitialized]) {
