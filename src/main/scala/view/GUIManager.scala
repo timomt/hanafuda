@@ -1,17 +1,21 @@
 package view
 
 import controller.{GameController, Observer}
-import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameState, GameStatePlanned, GameStateRandom, GameStateUninitialized}
+import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameState, GameStatePlanned, GameStateRandom, GameStateSummary, GameStateUninitialized, instantWinCombinations, yakuCombinations}
 import scalafx.application.{JFXApp3, Platform}
 import scalafx.geometry.{HPos, Insets, Pos, VPos}
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, Label, ScrollPane, TextField, ToolBar}
+import scalafx.scene.control.{Button, Label, ScrollPane, TableColumn, TableView, TextField, ToolBar}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.Includes.*
+import scalafx.beans.property.{IntegerProperty, StringProperty}
+import scalafx.beans.value.ObservableValue
+import scalafx.collections.ObservableBuffer
 import scalafx.event
 import scalafx.event.ActionEvent
 import scalafx.geometry.Pos.TopCenter
+import scalafx.scene.control.cell.TextFieldTableCell
 import scalafx.scene.effect.{DropShadow, GaussianBlur}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.MouseEvent
@@ -417,7 +421,7 @@ object GUIManager extends JFXApp3 with Observer {
      */
     def spoilerScene(gameState: GameState): Scene = {
         new Scene {
-            val rootPane: StackPane = new StackPane {
+            val backgroundPane: StackPane = new StackPane {
                 background = new Background(Array(
                     new BackgroundImage(
                         new Image("/img/background/board.png"),
@@ -429,89 +433,103 @@ object GUIManager extends JFXApp3 with Observer {
                         )
                     )
                 ))
+                effect = new GaussianBlur(10) // Apply blur effect to the background
+            }
 
-                def createCard(isBoardCard: Boolean, card: Card): StackPane = {
-                    val cardImage = cardCache(card.index)
-                    val cardStackPane = new StackPane {
-                        children = new ImageView {
-                            image = cardImage
-                            preserveRatio = true
-                        }
-                        effect = new DropShadow {
-                            color = Color.Black
-                            radius = 10
-                            spread = 0.2
-                        }
+            def createCard(isBoardCard: Boolean, card: Card): StackPane = {
+                val cardImage = cardCache(card.index)
+                val cardStackPane = new StackPane {
+                    children = new ImageView {
+                        image = cardImage
+                        preserveRatio = true
                     }
-                    val defaultScale = 1.0
-                    val highlightedScale = 1.05
-                    val defaultEffect = new DropShadow {
+                    effect = new DropShadow {
                         color = Color.Black
                         radius = 10
                         spread = 0.2
                     }
-                    val highlightedEffect = new DropShadow {
-                        color = Color.Black
-                        radius = 20
-                        spread = 0.4
-                    }
-                    cardStackPane
+                }
+                val defaultScale = 1.0
+                val highlightedScale = 1.05
+                val defaultEffect = new DropShadow {
+                    color = Color.Black
+                    radius = 10
+                    spread = 0.2
+                }
+                val highlightedEffect = new DropShadow {
+                    color = Color.Black
+                    radius = 20
+                    spread = 0.4
                 }
 
-                val topRow: HBox = new HBox {
-                    alignment = Pos.Center
-                    spacing = vw * 0.005
-                    children = gameState.players(1).hand.cards.map(card => createCard(false, Card(CardMonth.BACK, CardType.BACK, CardName.BACK, false, 0))) // Display player's full hand
+                cardStackPane
+            }
+
+            val topRow: HBox = new HBox {
+                alignment = Pos.Center
+                spacing = vw * 0.005
+                children = gameState.players(1).hand.cards.map(card => createCard(false, Card(CardMonth.BACK, CardType.BACK, CardName.BACK, false, 0))) // Display player's full hand
+            }
+
+            val middleRow: GridPane = new GridPane {
+                alignment = Pos.Center
+                hgap = vw * 0.005
+                vgap = vh * 0.03 * 0.5
+
+                val halfSize: Int = (gameState.board.cards.length + 1) / 2
+
+                for (i <- 0 until halfSize) {
+                    val card = if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
+                    add(card, i, 0)
+                    GridPane.setHalignment(card, HPos.CENTER)
+                    GridPane.setValignment(card, VPos.CENTER)
                 }
 
-                val middleRow: GridPane = new GridPane {
-                    alignment = Pos.Center
-                    hgap = vw * 0.005
-                    vgap = vh * 0.03 * 0.5
-
-                    val halfSize: Int = (gameState.board.cards.length + 1) / 2
-
-                    for (i <- 0 until halfSize) {
-                        val card = if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
-                        add(card, i, 0)
-                        GridPane.setHalignment(card, HPos.CENTER)
-                        GridPane.setValignment(card, VPos.CENTER)
-                    }
-
-                    for (i <- halfSize until gameState.board.cards.length) {
-                        val card = if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
-                        add(card, i - halfSize, 1)
-                        GridPane.setHalignment(card, HPos.CENTER)
-                        GridPane.setValignment(card, VPos.CENTER)
-                    }
+                for (i <- halfSize until gameState.board.cards.length) {
+                    val card = if (gameState.board.cards.length > i) createCard(true, gameState.board.cards(i)) else new Region()
+                    add(card, i - halfSize, 1)
+                    GridPane.setHalignment(card, HPos.CENTER)
+                    GridPane.setValignment(card, VPos.CENTER)
                 }
-                val bottomRow: HBox = new HBox {
-                    alignment = Pos.Center
-                    spacing = vw * 0.005
-                    children = gameState.players(1).hand.cards.map(card => createCard(false, Card(CardMonth.BACK, CardType.BACK, CardName.BACK, false, 0))) // Display player's full hand
-                }
+            }
+            val bottomRow: HBox = new HBox {
+                alignment = Pos.Center
+                spacing = vw * 0.005
+                children = gameState.players(1).hand.cards.map(card => createCard(false, Card(CardMonth.BACK, CardType.BACK, CardName.BACK, false, 0))) // Display player's full hand
+            }
 
-                val cardLayout: VBox = new VBox {
-                    alignment = Pos.Center
-                    spacing = vh * 0.03
-                    children = List(topRow, middleRow, bottomRow)
-                }
+            val cardLayout: VBox = new VBox {
+                alignment = Pos.Center
+                spacing = vh * 0.03
+                children = List(topRow, middleRow, bottomRow)
+                effect = new GaussianBlur(10)
+            }
 
-                val combinedLayout: HBox = new HBox {
-                    val singleCardRow: Region = gameState.queuedCard.map(createCard(false, _)).getOrElse(new Region())
-                    singleCardRow.padding = Insets(0, vw * 0.05, 0, 0)
-                    alignment = Pos.Center
-                    spacing = vw * 0.005
-                    children = List(
-                        singleCardRow,
-                        cardLayout,
-                    )
+            val combinedLayout: HBox = new HBox {
+                val singleCardRow: Region = gameState.queuedCard.map(createCard(false, _)).getOrElse(new Region())
+                singleCardRow.padding = Insets(0, vw * 0.05, 0, 0)
+                alignment = Pos.Center
+                spacing = vw * 0.005
+                children = List(
+                    singleCardRow,
+                    cardLayout,
+                )
+            }
+
+            val continueButton: Button = new Button("Press to Continue") {
+                onAction = (e: ActionEvent) => {
+                    GameController.processInput("continue")
                 }
-                children = List(combinedLayout, createGameTaskbar(gameState))
+                style = "-fx-background-color: #B82025; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20 10 20; -fx-background-radius: 5;"
+                StackPane.setAlignment(this, Pos.Center)
+                StackPane.setMargin(this, Insets(20))
+            }
+
+            val rootPane: StackPane = new StackPane {
+                children = List(backgroundPane, combinedLayout, /*createGameTaskbar(gameState),*/ continueButton)
             }
             root = rootPane
         }
-
     }
 
     /**
@@ -520,15 +538,71 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the scene for the summary display
      */
+    case class SummaryRow(yaku: String, player1Score: Int, player2Score: Int) {
+        val yakuProperty = new StringProperty(this, "yaku", yaku)
+        val player1ScoreProperty = new IntegerProperty(this, "player1Score", player1Score)
+        val player2ScoreProperty = new IntegerProperty(this, "player2Score", player2Score)
+    }
+
     def summaryScene(gameState: GameState): Scene = {
         new Scene {
-            val button = new Button("Back")
-            button.layoutX = 200
-            button.layoutY = 150
-            button.onAction = (e:ActionEvent) => {
-                GameController.processInput("continue")
+            def createSummaryTable(game: GameState): TableView[SummaryRow] = {
+                def formatPlayerName(name: String): String = {
+                    if (name.length > 20) name.take(17) + "..." else name.padTo(20, ' ')
+                }
+
+                val summaryData = ObservableBuffer[SummaryRow](
+                    yakuCombinations.appendedAll(instantWinCombinations).map { combo =>
+                        val player1Score = if (game.asInstanceOf[GameStateSummary].outOfCardsEnding) 0 else combo.evaluate(game.players.head)
+                        val player2Score = if (game.asInstanceOf[GameStateSummary].outOfCardsEnding) 0 else combo.evaluate(game.players(1))
+                        SummaryRow(combo.unicodeShort, player1Score, player2Score)
+                    }: _*
+                )
+
+                new TableView[SummaryRow](summaryData) {
+                    columns ++= List(
+                        new TableColumn[SummaryRow, String]("Yaku") {
+                            cellValueFactory = _.value.yakuProperty
+                            cellFactory = TextFieldTableCell.forTableColumn[SummaryRow]()
+                            prefWidth = 200
+                        },
+                        new TableColumn[SummaryRow, Number]("Player 1 Score") {
+                            cellValueFactory = _.value.player1ScoreProperty.asInstanceOf[ObservableValue[Number, Number]]
+                            prefWidth = 100
+                        },
+                        new TableColumn[SummaryRow, Number]("Player 2 Score") {
+                            cellValueFactory = _.value.player2ScoreProperty.asInstanceOf[ObservableValue[Number, Number]]
+                            prefWidth = 100
+                        }
+                    )
+                }
             }
-            content = List(button)
+
+            val rootPane: StackPane = new StackPane {
+                children = List(
+                    new VBox {
+                        children = List(
+                            new Label("Summary") {
+                                style = "-fx-font-size: 24px; -fx-font-weight: bold;"
+                            },
+                            new Label("Score of each player") {
+                                style = "-fx-font-size: 18px; -fx-font-weight: bold;"
+                            },
+                            createSummaryTable(gameState)
+                        )
+                        spacing = 10
+                        alignment = Pos.Center
+                    },
+                    new Button("Back") {
+                        layoutX = 200
+                        layoutY = 150
+                        onAction = (e: ActionEvent) => {
+                            GameController.processInput("continue")
+                        }
+                    }
+                )
+            }
+            root = rootPane
         }
     }
 
