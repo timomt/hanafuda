@@ -5,7 +5,7 @@ import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameState,
 import scalafx.application.{JFXApp3, Platform}
 import scalafx.geometry.{HPos, Insets, Pos, VPos}
 import scalafx.scene.Scene
-import scalafx.scene.control.{Button, Label, ScrollPane, TableColumn, TableView, TextField, ToolBar}
+import scalafx.scene.control.{Alert, Button, Label, ScrollPane, TableColumn, TableView, TextArea, TextField, ToolBar}
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.Includes.*
@@ -15,6 +15,7 @@ import scalafx.collections.ObservableBuffer
 import scalafx.event
 import scalafx.event.ActionEvent
 import scalafx.geometry.Pos.TopCenter
+import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.cell.TextFieldTableCell
 import scalafx.scene.effect.{DropShadow, GaussianBlur}
 import scalafx.scene.image.{Image, ImageView}
@@ -625,6 +626,18 @@ object GUIManager extends JFXApp3 with Observer {
     }
     
     /* ------------------------------------------------------- */
+    def showErrorPopup(message: String): Unit = {
+        val alert = new Alert(AlertType.Error) {
+            title = "Error"
+            headerText = "An error occurred"
+            dialogPane().content = new TextArea {
+                text = message
+                editable = true
+                wrapText = true
+            }
+        }
+        alert.showAndWait()
+    }
 
     /**
      * Creates a ToolBar for the game display.
@@ -646,6 +659,7 @@ object GUIManager extends JFXApp3 with Observer {
                     GameController.processInput(s"match ${gameState.board.cards.indexOf(selectedBoardCard.get) + 1}")
                 case _ =>
             //TODO error reporting
+                    showErrorPopup("No card selected or invalid game state for discarding.")
         })
         val button3 = createGameTaskbarButton("Discard", (e: ActionEvent) => {
             gameState match
@@ -655,6 +669,7 @@ object GUIManager extends JFXApp3 with Observer {
                     GameController.processInput("discard")
                 case _ =>
             //TODO error reporting
+                    showErrorPopup("No card selected or invalid game state for discarding.")
         })
         val button4 = createGameTaskbarButton("Combinations", (e: ActionEvent) => {
             GameController.processInput(if gameState.displayType == DisplayType.COMBINATIONS then "con" else "com")
