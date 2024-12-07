@@ -2,18 +2,55 @@ package controller
 
 import model.{DisplayType, GameManager, GameState}
 
+/**
+ * Trait representing a command that can be executed, undone, and redone.
+ */
 trait Command {
+    /**
+     * The previous state of the game before the command was executed.
+     */
     protected var previousState: Option[GameState] = None
+
+    /**
+     * Executes the command and returns the new game state and the executed command.
+     *
+     * @param currentState the current state of the game
+     * @return a tuple containing the new game state and the executed command
+     */
     def execute(currentState: GameState): (GameState, Command)
+
+    /**
+     * Undoes the command and returns the previous game state.
+     *
+     * @param currentState the current state of the game
+     * @return the previous game state
+     */
     def undo(currentState: GameState): GameState = {
         previousState.getOrElse(throw new IllegalStateException("Undo called before execute. Call execute first."))
     }
 }
 
+/**
+ * Class managing the execution, undoing, and redoing of commands.
+ */
 class CommandManager {
+    /**
+     * Stack of commands that can be undone.
+     */
     private val undoStack = scala.collection.mutable.Stack[Command]()
+
+    /**
+     * Stack of commands that can be redone.
+     */
     private val redoStack = scala.collection.mutable.Stack[Command]()
 
+    /**
+     * Executes a command and returns the new game state.
+     *
+     * @param command the command to execute
+     * @param currentState the current state of the game
+     * @return the new game state
+     */
     def executeCommand(command: Command, currentState: GameState): GameState = {
         val (newState, executedCommand) = command.execute(currentState)
         undoStack.push(executedCommand)
@@ -21,6 +58,12 @@ class CommandManager {
         newState
     }
 
+    /**
+     * Undoes the last executed command and returns the new game state.
+     *
+     * @param currentState the current state of the game
+     * @return the new game state
+     */
     def undo(currentState: GameState): GameState = {
         if (undoStack.nonEmpty) {
             val command = undoStack.pop()
@@ -32,6 +75,12 @@ class CommandManager {
         }
     }
 
+    /**
+     * Redoes the last undone command and returns the new game state.
+     *
+     * @param currentState the current state of the game
+     * @return the new game state
+     */
     def redo(currentState: GameState): GameState = {
         if (redoStack.nonEmpty) {
             val command = redoStack.pop()
@@ -44,6 +93,12 @@ class CommandManager {
     }
 }
 
+/**
+ * Command to start a new game.
+ *
+ * @param firstPlayer the name of the first player
+ * @param secondPlayer the name of the second player
+ */
 class StartGameCommand(firstPlayer: String, secondPlayer: String) extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
@@ -52,6 +107,9 @@ class StartGameCommand(firstPlayer: String, secondPlayer: String) extends Comman
     }
 }
 
+/**
+ * Command to display the help information.
+ */
 class HelpCommand extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
@@ -60,6 +118,9 @@ class HelpCommand extends Command {
     }
 }
 
+/**
+ * Command to display the combinations information.
+ */
 class CombinationsCommand extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
@@ -68,6 +129,9 @@ class CombinationsCommand extends Command {
     }
 }
 
+/**
+ * Command to handle the koi-koi call.
+ */
 class KoiKoiCommand extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
@@ -76,6 +140,9 @@ class KoiKoiCommand extends Command {
     }
 }
 
+/**
+ * Command to finish the game.
+ */
 class FinishCommand extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
@@ -85,6 +152,9 @@ class FinishCommand extends Command {
     }
 }
 
+/**
+ * Command to continue the game.
+ */
 class ContinueCommand extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
@@ -93,6 +163,9 @@ class ContinueCommand extends Command {
     }
 }
 
+/**
+ * Command to start a new game with the same players.
+ */
 class NewCommand extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
@@ -101,6 +174,12 @@ class NewCommand extends Command {
     }
 }
 
+/**
+ * Command to match cards.
+ *
+ * @param xString the index+1 of the card in the player's hand  (or board if from stack)
+ * @param yString the index+1 of the card on the board  
+ */
 class MatchCommand(xString: String, yString: String) extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
@@ -109,6 +188,11 @@ class MatchCommand(xString: String, yString: String) extends Command {
     }
 }
 
+/**
+ * Command to discard a card.
+ *
+ * @param xString the index+1 of the card in the player's hand (or from stack)
+ */
 class DiscardCommand(xString: String) extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
