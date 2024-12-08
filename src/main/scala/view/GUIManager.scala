@@ -9,6 +9,7 @@ import scalafx.scene.control.{Alert, Button, Label, ScrollPane, TableColumn, Tab
 import scalafx.scene.layout.*
 import scalafx.scene.paint.Color
 import scalafx.Includes.*
+import scalafx.animation.{AnimationTimer, RotateTransition, TranslateTransition}
 import scalafx.beans.property.{IntegerProperty, StringProperty}
 import scalafx.beans.value.ObservableValue
 import scalafx.collections.ObservableBuffer
@@ -21,7 +22,10 @@ import scalafx.scene.effect.{DropShadow, GaussianBlur}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.MouseEvent
 import scalafx.stage.Screen
+import scalafx.util.Duration
 import view.ComponentDecoraters.{BasicTextField, StyleDecorator}
+
+import scala.util.Random
 
 /**
  * MVC: View
@@ -117,6 +121,77 @@ object GUIManager extends JFXApp3 with Observer {
                     )
                 )
             ))
+
+            //--------------------------------------------------------------------------------
+            //animation properties for the falling leaf animation
+            def createFallingLeaf(
+                                   imagePath: String,
+                                   sceneWidth: Double,
+                                   sceneHeight: Double,
+                                   leafWidth: Double,
+                                   leafHeight: Double
+                                 ): ImageView = {
+                val leafImage = new Image(imagePath)
+
+                val leafImageView = new ImageView(leafImage) {
+                    fitWidth = leafWidth
+                    fitHeight = leafHeight
+                    layoutX = 0
+                    layoutY = 0
+                }
+
+                val random = new Random()
+
+                val animation = new TranslateTransition {
+                    duration = Duration(5000) // Duration for one full fall (in milliseconds)
+                    node = leafImageView
+                    fromX = random.nextDouble() * sceneWidth
+                    fromY = - sceneHeight
+                    toX = random.nextDouble() * sceneWidth
+                    toY = sceneHeight
+                    onFinished = _ => {
+                        fromX = random.nextDouble() * sceneWidth
+                        toX = random.nextDouble() * sceneWidth
+                        fromY = - sceneHeight
+                        toY = sceneHeight
+                        playFromStart()
+                    }
+                }
+
+                val sway = new RotateTransition {
+                    duration = Duration(1000) // Time for one sway (back and forth)
+                    node = leafImageView
+                    byAngle = 20 // Sway angle
+                    cycleCount = TranslateTransition.Indefinite
+                    autoReverse = true // Sway back and forth
+                }
+
+                val timer = AnimationTimer(_ => {
+                    leafImageView.translateX.value += math.sin(System.currentTimeMillis() / 300.0) * 0.5
+                })
+
+                // Start the animations
+                animation.play()
+                sway.play()
+                timer.start()
+
+                leafImageView
+            }
+
+            val leaves = (1 to 19).map { i =>
+                val leaf = createFallingLeaf(
+                    s"/img/background/leaf$i.png",
+                    vw,
+                    vh,
+                    vw * 0.05,
+                    vh * 0.05
+                )
+                leaf.layoutX = Random.nextDouble() * vw // Spread leaves across the width of the scene
+                leaf
+            }
+
+            //--------------------------------------------------------------------------------
+
             val textField_p1: TextField = createStyledTextField("First player name")
             textField_p1.prefWidth = vw * 0.1
             textField_p1.prefHeight = vh * 0.03
@@ -164,7 +239,7 @@ object GUIManager extends JFXApp3 with Observer {
                     }, startButton
                 )
             }
-            children = List(logo, vbox)
+            children = List(logo, vbox) ++ leaves
         }
         root = rootPane
     }
