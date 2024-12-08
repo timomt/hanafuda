@@ -626,6 +626,12 @@ object GUIManager extends JFXApp3 with Observer {
     }
     
     /* ------------------------------------------------------- */
+
+    /**
+     * Shows a popup with the given message.
+     * @param message
+     */
+    //TODO: Add styling and make it look better
     def showErrorPopup(message: String): Unit = {
         val alert = new Alert(AlertType.Error) {
             title = "Error"
@@ -658,7 +664,6 @@ object GUIManager extends JFXApp3 with Observer {
                 case _: GameStateRandom if selectedBoardCard.isDefined =>
                     GameController.processInput(s"match ${gameState.board.cards.indexOf(selectedBoardCard.get) + 1}")
                 case _ =>
-            //TODO error reporting
                     showErrorPopup("No card selected or invalid game state for discarding.")
         })
         val button3 = createGameTaskbarButton("Discard", (e: ActionEvent) => {
@@ -668,8 +673,7 @@ object GUIManager extends JFXApp3 with Observer {
                 case _: GameStateRandom =>
                     GameController.processInput("discard")
                 case _ =>
-            //TODO error reporting
-                    showErrorPopup("No card selected or invalid game state for discarding.")
+                    showErrorPopup("No card selected or invalid game state for matching.")
         })
         val button4 = createGameTaskbarButton("Combinations", (e: ActionEvent) => {
             GameController.processInput(if gameState.displayType == DisplayType.COMBINATIONS then "con" else "com")
