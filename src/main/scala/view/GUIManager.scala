@@ -136,24 +136,28 @@ object GUIManager extends JFXApp3 with Observer {
                 val leafImageView = new ImageView(leafImage) {
                     fitWidth = leafWidth
                     fitHeight = leafHeight
-                    layoutX = 0
-                    layoutY = 0
+                    layoutX = 1000
+                    layoutY = 1000
+                    visible = false // Initially make the leaf invisible
                 }
 
                 val random = new Random()
 
-                val animation = new TranslateTransition {
+                val animation: TranslateTransition = new TranslateTransition {
                     duration = Duration(5000) // Duration for one full fall (in milliseconds)
                     node = leafImageView
                     fromX = random.nextDouble() * sceneWidth
-                    fromY = - sceneHeight
+                    fromY = -sceneHeight
                     toX = random.nextDouble() * sceneWidth
                     toY = sceneHeight
+                    delay = Duration(random.nextInt(3000)) // Random delay between 0 and 3000 milliseconds
+                    leafImageView.visible = false // Make the leaf invisible when the animation starts
                     onFinished = _ => {
                         fromX = random.nextDouble() * sceneWidth
                         toX = random.nextDouble() * sceneWidth
-                        fromY = - sceneHeight
+                        fromY = -sceneHeight
                         toY = sceneHeight
+                        leafImageView.visible = true // Make the leaf visible when the animation is going
                         playFromStart()
                     }
                 }
@@ -162,7 +166,7 @@ object GUIManager extends JFXApp3 with Observer {
                     duration = Duration(1000) // Time for one sway (back and forth)
                     node = leafImageView
                     byAngle = 20 // Sway angle
-                    cycleCount = TranslateTransition.Indefinite
+                    cycleCount = RotateTransition.Indefinite
                     autoReverse = true // Sway back and forth
                 }
 
@@ -171,13 +175,18 @@ object GUIManager extends JFXApp3 with Observer {
                 })
 
                 // Start the animations
+                animation.onFinished = _ => {
+                    leafImageView.visible = true // Make the leaf visible when the animation starts
+                    sway.play()
+                    timer.start()
+                    animation.play()
+                }
                 animation.play()
-                sway.play()
-                timer.start()
 
                 leafImageView
             }
 
+            // Create multiple leaves and position them
             val leaves = (1 to 19).map { i =>
                 val leaf = createFallingLeaf(
                     s"/img/background/leaf$i.png",
@@ -189,6 +198,7 @@ object GUIManager extends JFXApp3 with Observer {
                 leaf.layoutX = Random.nextDouble() * vw // Spread leaves across the width of the scene
                 leaf
             }
+
 
             //--------------------------------------------------------------------------------
 
