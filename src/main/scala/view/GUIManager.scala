@@ -1,7 +1,7 @@
 package view
 
 import controller.{GameController, Observer}
-import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameState, GameStatePlanned, GameStateRandom, GameStateSummary, GameStateUninitialized, instantWinCombinations, yakuCombinations}
+import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameState, GameStatePlanned, GameStateRandom, GameStateSummary, GameStateUninitialized, Player, instantWinCombinations, yakuCombinations}
 import scalafx.application.{JFXApp3, Platform}
 import scalafx.geometry.{HPos, Insets, Pos, VPos}
 import scalafx.scene.Scene
@@ -25,6 +25,7 @@ import scalafx.stage.Screen
 import scalafx.util.Duration
 import view.ComponentDecoraters.{BasicTextField, StyleDecorator}
 
+import scala.collection.immutable.List
 import scala.util.Random
 
 /**
@@ -146,14 +147,14 @@ object GUIManager extends JFXApp3 with Observer {
                 val animation: TranslateTransition = new TranslateTransition {
                     duration = Duration(5000) // Duration for one full fall (in milliseconds)
                     node = leafImageView
-                    fromX = random.nextDouble() * sceneWidth
+                    fromX = random.nextDouble() * stage.width.value
                     fromY = -sceneHeight
-                    toX = random.nextDouble() * sceneWidth
+                    toX = random.nextDouble() * (sceneWidth - leafWidth)
                     toY = sceneHeight
                     delay = Duration(random.nextInt(3000)) // Random delay between 0 and 3000 milliseconds
                     leafImageView.visible = false // Make the leaf invisible when the animation starts
                     onFinished = _ => {
-                        fromX = random.nextDouble() * sceneWidth
+                        fromX = random.nextDouble() * stage.width.value
                         toX = random.nextDouble() * sceneWidth
                         fromY = -sceneHeight
                         toY = sceneHeight
@@ -190,8 +191,8 @@ object GUIManager extends JFXApp3 with Observer {
             val leaves = (1 to 19).map { i =>
                 val leaf = createFallingLeaf(
                     s"/img/background/leaf$i.png",
-                    vw,
-                    vh,
+                    stage.width.value,
+                    stage.height.value,
                     vw * 0.05,
                     vh * 0.05
                 )
@@ -479,12 +480,14 @@ object GUIManager extends JFXApp3 with Observer {
                                 )
                             )
                         ))
+
                     }
                     fitToWidth = true
                     fitToHeight = true
                     hbarPolicy = ScrollPane.ScrollBarPolicy.Never
                     vbarPolicy = ScrollPane.ScrollBarPolicy.AsNeeded
                     vgrow = Priority.Always
+                    background = Background.fill(Color.Transparent)
                 }
                 val taskbarChild = createGameTaskbar(gameState)
                 children = List(
@@ -772,6 +775,11 @@ object GUIManager extends JFXApp3 with Observer {
         val button7 = createGameTaskbarButton("Exit", (e: ActionEvent) => {
             GameController.processInput("exit")
         })
+        //-----
+        val button8 = createGameTaskbarButton("Summary", (e: ActionEvent) => {
+            GameController.processInput("summary")
+        })
+        //-----
 
         val leftSpacer = new Region {
             hgrow = Priority.Always
@@ -787,7 +795,7 @@ object GUIManager extends JFXApp3 with Observer {
                 new HBox {
                     alignment = Pos.Center
                     spacing = 20
-                    children = List(button1, button2, button3, button4, button5, button6, button7)
+                    children = List(button1, button2, button3, button4, button5, button6, button7, button8)
                 },
                 rightSpacer
             )
