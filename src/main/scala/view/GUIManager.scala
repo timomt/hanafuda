@@ -74,7 +74,7 @@ object GUIManager extends JFXApp3 with Observer {
      */
     override def start(): Unit = {
         /* Subscribing to GameController Observable */
-        GameController.add(this)
+        //GameController.add(this)
 
         /* Initialize vars */
         /* Is necessary here because ScalaFX properties cannot be called outside of ScalaFX Thread */
@@ -145,20 +145,22 @@ object GUIManager extends JFXApp3 with Observer {
                 val random = new Random()
 
                 val animation: TranslateTransition = new TranslateTransition {
-                    duration = Duration(5000) // Duration for one full fall (in milliseconds)
+                    duration = Duration(1) // Duration for one full fall (in milliseconds)
                     node = leafImageView
                     fromX = random.nextDouble() * stage.width.value
                     fromY = -sceneHeight
                     toX = random.nextDouble() * (sceneWidth - leafWidth)
                     toY = sceneHeight
-                    delay = Duration(random.nextInt(3000)) // Random delay between 0 and 3000 milliseconds
+                    delay = Duration(random.nextInt(3000)) // Random delay between 0 and 3000 millisecondss
                     leafImageView.visible = false // Make the leaf invisible when the animation starts
                     onFinished = _ => {
+                        duration = Duration(5000)
                         fromX = random.nextDouble() * stage.width.value
                         toX = random.nextDouble() * sceneWidth
                         fromY = -sceneHeight
                         toY = sceneHeight
                         leafImageView.visible = true // Make the leaf visible when the animation is going
+                        duration = Duration(5000)
                         playFromStart()
                     }
                 }
@@ -175,6 +177,7 @@ object GUIManager extends JFXApp3 with Observer {
                     leafImageView.translateX.value += math.sin(System.currentTimeMillis() / 300.0) * 0.5
                 })
 
+                /*
                 // Start the animations
                 animation.onFinished = _ => {
                     leafImageView.visible = true // Make the leaf visible when the animation starts
@@ -182,7 +185,10 @@ object GUIManager extends JFXApp3 with Observer {
                     timer.start()
                     animation.play()
                 }
+                 */
                 animation.play()
+
+
 
                 leafImageView
             }
@@ -405,102 +411,103 @@ object GUIManager extends JFXApp3 with Observer {
      * @return the scene for the combinations display
      */
     def combinationsScene(gameState: GameState): Scene = {
-        new Scene {
-            val rootPane = new StackPane {
-                def createCard(card: Card): StackPane = {
-                    val cardImage = cardCache(card.index)
-                    new StackPane {
-                        children = new ImageView {
-                            image = cardImage
-                            fitWidth = vw * 0.055 * 0.5
-                            fitHeight = vw * 0.055 * 1.5 * 0.5
-                            smooth = true
-                            preserveRatio = true
-                        }
-                        effect = new DropShadow {
-                            color = Color.Black
-                            radius = 10
-                            spread = 0.2
-                        }
-                        padding = Insets(0)
-                    }
-                }
-
-                def createCombinationRow(title: String, cards: Seq[Card]): VBox = {
-                    new VBox {
-                        alignment = Pos.Center
-                        spacing = 0.025 * vh
-                        children = List(
-                            new Label(title) {
-                                style = "-fx-font-size: 16px; -fx-text-fill: black;"
-                            },
-                            new FlowPane {
-                                alignment = Pos.Center
-                                hgap = 0.005 * vh
-                                vgap = 0.005 * vh
-                                children = cards.map(createCard)
-                            }
-                        )
-                    }
-                }
-
-                val combinations = List(
-                    createCombinationRow("Gokō (五光) \"Five Hikari\" 10pts.", Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI)),
-                    createCombinationRow("Shikō (四光) \"Four Hikari\" 8pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
-                    createCombinationRow("Ame-Shikō (雨四光) \"Rainy Four Hikari\" 7pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI)),
-                    createCombinationRow("Sankō (三光) \"Three Hikari\" 6pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
-                    createCombinationRow("Tsukimi-zake (月見酒) \"Moon Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.MOON || c.cardName == CardName.SAKE_CUP)),
-                    createCombinationRow("Hanami-zake (花見酒) \"Cherry Blossom Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.CURTAIN || c.cardName == CardName.SAKE_CUP)),
-                    createCombinationRow("Inoshikachō (猪鹿蝶) \"Boar, Deer, Butterfly\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.BOAR || c.cardName == CardName.DEER || c.cardName == CardName.BUTTERFLIES)),
-                    createCombinationRow("Tane (タネ) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANE)),
-                    createCombinationRow("Akatan Aotan no Chōfuku (赤短青短の重複) \"Red Poem, Blue Poem\" 10pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.POETRY_TANZAKU || c.cardName == CardName.BLUE_TANZAKU)),
-                    createCombinationRow("Akatan (赤短) \"Red Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.POETRY_TANZAKU)),
-                    createCombinationRow("Aotan (青短) \"Blue Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.BLUE_TANZAKU)),
-                    createCombinationRow("Tanzaku (短冊) \"Ribbons\" 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANZAKU)),
-                    createCombinationRow("Kasu (カス) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.KASU))
+    new Scene {
+        val rootPane = new StackPane {
+            background = new Background(Array(
+                new BackgroundImage(
+                    new Image("/img/background/board_cards.png"),
+                    BackgroundRepeat.NoRepeat,
+                    BackgroundRepeat.NoRepeat,
+                    BackgroundPosition.Center,
+                    new BackgroundSize(
+                        vw, vh, true, true, false, true
+                    )
                 )
-
-                val combinationsLayout = new ScrollPane {
-                    content = new FlowPane {
-                        alignment = Pos.TopCenter
-                        hgap = vw * 0.01
-                        vgap = vh * 0.02
-                        children = combinations
-                        padding = Insets(0.05*vh, 0, 0, 0)
-                        background = new Background(Array(
-                            new BackgroundImage(
-                                new Image("/img/background/board.png",
-                                    requestedWidth = vw, requestedHeight = vh,
-                                    preserveRatio = false, smooth = true, backgroundLoading = false),
-                                BackgroundRepeat.NoRepeat,
-                                BackgroundRepeat.NoRepeat,
-                                BackgroundPosition.Center,
-                                new BackgroundSize(
-                                    vw, vh, false, false, false, false
-                                )
-                            )
-                        ))
-
+            ))
+            def createCard(card: Card): StackPane = {
+                val cardImage = cardCache(card.index)
+                new StackPane {
+                    children = new ImageView {
+                        image = cardImage
+                        fitWidth = vw * 0.055 * 0.5
+                        fitHeight = vw * 0.055 * 1.5 * 0.5
+                        smooth = true
+                        preserveRatio = true
                     }
-                    fitToWidth = true
-                    fitToHeight = true
-                    hbarPolicy = ScrollPane.ScrollBarPolicy.Never
-                    vbarPolicy = ScrollPane.ScrollBarPolicy.AsNeeded
-                    vgrow = Priority.Always
-                    background = Background.fill(Color.Transparent)
+                    effect = new DropShadow {
+                        color = Color.Black
+                        radius = 10
+                        spread = 0.2
+                    }
+                    padding = Insets(0)
                 }
-                val taskbarChild = createGameTaskbar(gameState)
-                children = List(
-                    new VBox {
-                        alignment = Pos.Center
-                        vgrow = Priority.Always
-                        children = List(taskbarChild, combinationsLayout)
-                    }
-                )
             }
-            root = rootPane
+
+            def createCombinationRow(title: String, cards: Seq[Card]): VBox = {
+                new VBox {
+                    alignment = Pos.Center
+                    spacing = 0.025 * vh
+                    children = List(
+                        new Label(title) {
+                            style = "-fx-font-size: 16px; -fx-text-fill: white;"
+                        },
+                        new FlowPane {
+                            alignment = Pos.Center
+                            hgap = 0.005 * vh
+                            vgap = 0.005 * vh
+                            children = cards.map(createCard)
+                        }
+                    )
+                }
+            }
+
+            val combinations = List(
+                createCombinationRow("Gokō (五光) \"Five Hikari\" 10pts.", Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI)),
+                createCombinationRow("Shikō (四光) \"Four Hikari\" 8pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
+                createCombinationRow("Ame-Shikō (雨四光) \"Rainy Four Hikari\" 7pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI)),
+                createCombinationRow("Sankō (三光) \"Three Hikari\" 6pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
+                createCombinationRow("Tsukimi-zake (月見酒) \"Moon Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.MOON || c.cardName == CardName.SAKE_CUP)),
+                createCombinationRow("Hanami-zake (花見酒) \"Cherry Blossom Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.CURTAIN || c.cardName == CardName.SAKE_CUP)),
+                createCombinationRow("Inoshikachō (猪鹿蝶) \"Boar, Deer, Butterfly\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.BOAR || c.cardName == CardName.DEER || c.cardName == CardName.BUTTERFLIES)),
+                createCombinationRow("Tane (タネ) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANE)),
+                createCombinationRow("Akatan Aotan no Chōfuku (赤短青短の重複) \"Red Poem, Blue Poem\" 10pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.POETRY_TANZAKU || c.cardName == CardName.BLUE_TANZAKU)),
+                createCombinationRow("Akatan (赤短) \"Red Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.POETRY_TANZAKU)),
+                createCombinationRow("Aotan (青短) \"Blue Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.BLUE_TANZAKU)),
+                createCombinationRow("Tanzaku (短冊) \"Ribbons\" 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANZAKU)),
+                createCombinationRow("Kasu (カス) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.KASU))
+            )
+
+            val combinationsLayout = new FlowPane {
+                alignment = Pos.TopCenter
+                hgap = vw * 0.01
+                vgap = vh * 0.02
+                children = combinations.map { combination =>
+                    new VBox {
+                        alignment = Pos.Center
+                        spacing = vh * 0.01
+                        children = List(combination)
+                        padding = Insets(0)
+                        style = "-fx-border-color: transparent; -fx-border-width: 0; -fx-background-color: transparent;"
+                    }
+                }
+                padding = Insets(0.05 * vh, 0, 0, 0)
+                prefWidth = vw * 0.8
+                prefHeight = vh * 0.8
+            }
+
+            val taskbarChild = createGameTaskbar(gameState)
+
+            children = List(
+                new VBox {
+                    alignment = Pos.Center
+                    vgrow = Priority.Always
+                    children = List(combinationsLayout, taskbarChild)
+                }
+            )
         }
+        root = rootPane
     }
+}
 
     /**
      * Creates the scene for the spoiler protection display.
@@ -775,11 +782,6 @@ object GUIManager extends JFXApp3 with Observer {
         val button7 = createGameTaskbarButton("Exit", (e: ActionEvent) => {
             GameController.processInput("exit")
         })
-        //-----
-        val button8 = createGameTaskbarButton("Summary", (e: ActionEvent) => {
-            GameController.processInput("summary")
-        })
-        //-----
 
         val leftSpacer = new Region {
             hgrow = Priority.Always
@@ -795,7 +797,7 @@ object GUIManager extends JFXApp3 with Observer {
                 new HBox {
                     alignment = Pos.Center
                     spacing = 20
-                    children = List(button1, button2, button3, button4, button5, button6, button7, button8)
+                    children = List(button1, button2, button3, button4, button5, button6, button7)
                 },
                 rightSpacer
             )
