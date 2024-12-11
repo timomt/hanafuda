@@ -73,9 +73,6 @@ object GUIManager extends JFXApp3 with Observer {
      * Initializes the GUIManager.
      */
     override def start(): Unit = {
-        /* Subscribing to GameController Observable */
-        //GameController.add(this)
-
         /* Initialize vars */
         /* Is necessary here because ScalaFX properties cannot be called outside of ScalaFX Thread */
         vh = Screen.primary.visualBounds.height
@@ -126,41 +123,35 @@ object GUIManager extends JFXApp3 with Observer {
             //--------------------------------------------------------------------------------
             //animation properties for the falling leaf animation
             def createFallingLeaf(
-                                   imagePath: String,
-                                   sceneWidth: Double,
-                                   sceneHeight: Double,
-                                   leafWidth: Double,
-                                   leafHeight: Double
+                                     imagePath: String,
+                                     sceneWidth: Double,
+                                     sceneHeight: Double,
+                                     leafWidth: Double,
+                                     leafHeight: Double
                                  ): ImageView = {
                 val leafImage = new Image(imagePath)
 
                 val leafImageView = new ImageView(leafImage) {
                     fitWidth = leafWidth
                     fitHeight = leafHeight
-                    layoutX = 1000
-                    layoutY = 1000
-                    visible = false // Initially make the leaf invisible
                 }
 
                 val random = new Random()
 
                 val animation: TranslateTransition = new TranslateTransition {
-                    duration = Duration(1) // Duration for one full fall (in milliseconds)
+                    duration = Duration(50) // Duration for one full fall (in milliseconds)
                     node = leafImageView
-                    fromX = random.nextDouble() * stage.width.value
-                    fromY = -sceneHeight
-                    toX = random.nextDouble() * (sceneWidth - leafWidth)
+                    toX = random.nextDouble() * (sceneWidth - leafWidth) // End at a random X position
                     toY = sceneHeight
-                    delay = Duration(random.nextInt(3000)) // Random delay between 0 and 3000 millisecondss
-                    leafImageView.visible = false // Make the leaf invisible when the animation starts
+                    delay = Duration(random.nextInt(3000)) // Random delay between 0 and 3000 milliseconds
+                    leafImageView.visible = false
                     onFinished = _ => {
-                        duration = Duration(5000)
-                        fromX = random.nextDouble() * stage.width.value
-                        toX = random.nextDouble() * sceneWidth
+                        // Restart with new random positions
                         fromY = -sceneHeight
+                        duration = Duration(5000) // Duration for one full fall (in milliseconds)
+                        toX = random.nextDouble() * (sceneWidth - leafWidth)
                         toY = sceneHeight
-                        leafImageView.visible = true // Make the leaf visible when the animation is going
-                        duration = Duration(5000)
+                        leafImageView.visible = true // Make the leaf visible again
                         playFromStart()
                     }
                 }
@@ -174,22 +165,11 @@ object GUIManager extends JFXApp3 with Observer {
                 }
 
                 val timer = AnimationTimer(_ => {
+                    // Additional swaying motion during falling
                     leafImageView.translateX.value += math.sin(System.currentTimeMillis() / 300.0) * 0.5
                 })
 
-                /*
-                // Start the animations
-                animation.onFinished = _ => {
-                    leafImageView.visible = true // Make the leaf visible when the animation starts
-                    sway.play()
-                    timer.start()
-                    animation.play()
-                }
-                 */
                 animation.play()
-
-
-
                 leafImageView
             }
 
@@ -197,15 +177,15 @@ object GUIManager extends JFXApp3 with Observer {
             val leaves = (1 to 19).map { i =>
                 val leaf = createFallingLeaf(
                     s"/img/background/leaf$i.png",
-                    stage.width.value,
-                    stage.height.value,
+                    vw,
+                    vh,
                     vw * 0.05,
                     vh * 0.05
                 )
                 leaf.layoutX = Random.nextDouble() * vw // Spread leaves across the width of the scene
+                leaf.layoutY = -vh*0.5
                 leaf
             }
-
 
             //--------------------------------------------------------------------------------
 
@@ -411,37 +391,26 @@ object GUIManager extends JFXApp3 with Observer {
      * @return the scene for the combinations display
      */
     def combinationsScene(gameState: GameState): Scene = {
-    new Scene {
-        val rootPane = new StackPane {
-            background = new Background(Array(
-                new BackgroundImage(
-                    new Image("/img/background/board_cards.png"),
-                    BackgroundRepeat.NoRepeat,
-                    BackgroundRepeat.NoRepeat,
-                    BackgroundPosition.Center,
-                    new BackgroundSize(
-                        vw, vh, true, true, false, true
-                    )
-                )
-            ))
-            def createCard(card: Card): StackPane = {
-                val cardImage = cardCache(card.index)
-                new StackPane {
-                    children = new ImageView {
-                        image = cardImage
-                        fitWidth = vw * 0.055 * 0.5
-                        fitHeight = vw * 0.055 * 1.5 * 0.5
-                        smooth = true
-                        preserveRatio = true
+        new Scene {
+            val rootPane = new StackPane {
+                def createCard(card: Card): StackPane = {
+                    val cardImage = cardCache(card.index)
+                    new StackPane {
+                        children = new ImageView {
+                            image = cardImage
+                            fitWidth = vw * 0.055 * 0.5
+                            fitHeight = vw * 0.055 * 1.5 * 0.5
+                            smooth = true
+                            preserveRatio = true
+                        }
+                        effect = new DropShadow {
+                            color = Color.Black
+                            radius = 10
+                            spread = 0.2
+                        }
+                        padding = Insets(0)
                     }
-                    effect = new DropShadow {
-                        color = Color.Black
-                        radius = 10
-                        spread = 0.2
-                    }
-                    padding = Insets(0)
                 }
-            }
 
             def createCombinationRow(title: String, cards: Seq[Card]): VBox = {
                 new VBox {
@@ -724,6 +693,7 @@ object GUIManager extends JFXApp3 with Observer {
 
     /**
      * Shows a popup with the given message.
+     *
      * @param message
      */
     //TODO: Add styling and make it look better
@@ -758,8 +728,7 @@ object GUIManager extends JFXApp3 with Observer {
                     GameController.processInput(s"match $handCardIndex $boardCardIndex")
                 case _: GameStateRandom if selectedBoardCard.isDefined =>
                     GameController.processInput(s"match ${gameState.board.cards.indexOf(selectedBoardCard.get) + 1}")
-                case _ =>
-                    showErrorPopup("No card selected or invalid game state for discarding.")
+                case _ => GameController.processInput(s"match")
         })
         val button3 = createGameTaskbarButton("Discard", (e: ActionEvent) => {
             gameState match
@@ -767,8 +736,7 @@ object GUIManager extends JFXApp3 with Observer {
                     GameController.processInput(s"discard ${gameState.players.head.hand.cards.indexOf(selectedHandCard.get) + 1}")
                 case _: GameStateRandom =>
                     GameController.processInput("discard")
-                case _ =>
-                    showErrorPopup("No card selected or invalid game state for matching.")
+                case _ => GameController.processInput(s"discard")
         })
         val button4 = createGameTaskbarButton("Combinations", (e: ActionEvent) => {
             GameController.processInput(if gameState.displayType == DisplayType.COMBINATIONS then "con" else "com")
@@ -861,6 +829,9 @@ object GUIManager extends JFXApp3 with Observer {
      */
     override def update(gameState: GameState): Unit = {
         Platform.runLater {
+            if (gameState.stderr.isDefined) {
+                showErrorPopup(gameState.stderr.get)
+            }
             if (gameState.isInstanceOf[GameStateUninitialized]) {
                 stage.scene = sceneUninitialized()
             } else {
