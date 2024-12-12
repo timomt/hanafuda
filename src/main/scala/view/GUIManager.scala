@@ -646,19 +646,13 @@ object GUIManager extends JFXApp3 with Observer {
                         BackgroundRepeat.NoRepeat,
                         BackgroundRepeat.NoRepeat,
                         BackgroundPosition.Center,
-                        new BackgroundSize(
-                            vw, vh, true, true, false, true
-                        )
+                        new BackgroundSize(vw, vh, true, true, false, true)
                     )
                 ))
-                effect = new GaussianBlur(10) // Apply blur effect to the background
+                effect = new GaussianBlur(10)
             }
 
             def createSummaryTable(game: GameState): TableView[SummaryRow] = {
-                def formatPlayerName(name: String): String = {
-                    if (name.length > 20) name.take(17) + "..." else name.padTo(20, ' ')
-                }
-
                 val summaryData = ObservableBuffer[SummaryRow](
                     yakuCombinations.appendedAll(instantWinCombinations).map { combo =>
                         val player1Score = if (game.asInstanceOf[GameStateSummary].outOfCardsEnding) 0 else combo.evaluate(game.players.head)
@@ -672,52 +666,38 @@ object GUIManager extends JFXApp3 with Observer {
                         new TableColumn[SummaryRow, String]("Yaku") {
                             cellValueFactory = _.value.yakuProperty
                             cellFactory = TextFieldTableCell.forTableColumn[SummaryRow]()
-                            prefWidth = 200
                         },
-                        new TableColumn[SummaryRow, Number]("Player 1 Score") {
+                        new TableColumn[SummaryRow, Number](gameState.players.head.name) {
                             cellValueFactory = _.value.player1ScoreProperty.asInstanceOf[ObservableValue[Number, Number]]
-                            prefWidth = 100
                         },
-                        new TableColumn[SummaryRow, Number]("Player 2 Score") {
+                        new TableColumn[SummaryRow, Number](gameState.players(1).name) {
                             cellValueFactory = _.value.player2ScoreProperty.asInstanceOf[ObservableValue[Number, Number]]
-                            prefWidth = 100
                         }
                     )
-                    // Use CSS to set the background image
-                    style = "-fx-background-image: url('/img/background/board_cards.png'); " +
-                      "-fx-background-repeat: no-repeat; " +
-                      "-fx-background-position: center; " +
-                      "-fx-background-size: cover;"
-                    prefWidth = 500
-                    maxWidth = 500
+                    stylesheets += getClass.getResource("/styles/tableview.css").toExternalForm
+                    minHeight = 0.55 * vh
                 }
             }
 
             def createGameTaskbarSummary(gameState: GameState): ToolBar = {
-                val button1 = createGameTaskbarButton("New", (e: ActionEvent) => {
-                    GameController.processInput("new")
-                })
-                val button2 = createGameTaskbarButton("Exit", (e: ActionEvent) => {
-                    GameController.processInput("exit")
-                })
+                val button1 = createGameTaskbarButton("New", (e: ActionEvent) => GameController.processInput("new"))
+                val button2 = createGameTaskbarButton("Exit", (e: ActionEvent) => GameController.processInput("exit"))
 
-                val leftSpacer = new Region {
-                    hgrow = Priority.Always
-                }
-                val rightSpacer = new Region {
-                    hgrow = Priority.Always
-                }
                 new ToolBar {
                     alignmentInParent = Pos.BottomCenter
                     padding = Insets(10)
                     items = List(
-                        leftSpacer,
+                        new Region {
+                            hgrow = Priority.Always
+                        },
                         new HBox {
                             alignment = Pos.Center
                             spacing = 20
                             children = List(button1, button2)
                         },
-                        rightSpacer
+                        new Region {
+                            hgrow = Priority.Always
+                        }
                     )
                     style = "-fx-background-color: #231F20;"
                 }
@@ -736,12 +716,12 @@ object GUIManager extends JFXApp3 with Observer {
                             },
                             createSummaryTable(gameState)
                         )
-                        spacing = 10
+                        spacing = 0.01*vw
                         alignment = Pos.Center
+                        maxWidth = 0.2*vw
                     },
                     createGameTaskbarSummary(gameState)
                 )
-                // Zentrierung und Transparenz-Effekt
                 style = "-fx-background-color: transparent;"
             }
             root = rootPane
@@ -802,10 +782,10 @@ object GUIManager extends JFXApp3 with Observer {
                     )
 
                     val textAreaPane: StackPane = new StackPane {
-                        val drawingBoundsX: Double = 360  // X position of the drawing area
-                        val drawingBoundsY: Double = 150  // Y position of the drawing area
+                        val drawingBoundsX: Double = 300  // X position of the drawing area
+                        val drawingBoundsY: Double = 100  // Y position of the drawing area
                         val drawingWidth: Double = 1000   // Width of the drawing area
-                        val drawingHeight: Double = 600   // Height of the drawing area
+                        val drawingHeight: Double = 800   // Height of the drawing area
 
                         val drawingPane: Pane = new Pane {
                             style = "-fx-background-color: transparent;"
@@ -874,7 +854,6 @@ object GUIManager extends JFXApp3 with Observer {
      *
      * @param message
      */
-    //TODO: Add styling and make it look better
     def showErrorPopup(message: String): Unit = {
         val alert = new Alert(AlertType.Error) {
             title = "Error"
@@ -885,6 +864,7 @@ object GUIManager extends JFXApp3 with Observer {
                 wrapText = true
             }
         }
+        alert.dialogPane().getStylesheets.add(getClass.getResource("/styles/alert.css").toExternalForm)
         alert.showAndWait()
     }
 
@@ -1072,21 +1052,6 @@ object GUIManager extends JFXApp3 with Observer {
      */
     override def update(gameState: GameState): Unit = {
         Platform.runLater {
-            //--------------------------------------------------------------------------------
-            //Testcase Summary
-            /*
-            val gameState: GameState = new GameStateSummary(players = List(
-                Player(name = "???", hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty),
-                Player(name = "???", hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)),
-                deck = Deck(List.empty),
-                board = Deck(List.empty),
-                displayType = SUMMARY,
-                stdout = None,
-                stderr = None,
-                outOfCardsEnding = false)
-             */
-            //--------------------------------------------------------------------------------
-
             if (gameState.stderr.isDefined) {
                 showErrorPopup(gameState.stderr.get)
             }
