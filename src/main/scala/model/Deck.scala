@@ -2,23 +2,25 @@ package model
 
 import scala.util.Random
 
-/*
-* case class Deck(...)
-* a deck of hanafuda playing cards.
-* */
+/**
+ * Represents a regular deck of hanafuda playing cards.
+ *
+ * @param cards the list of cards in the deck
+ */
 case class Deck(cards: List[Card])
 
-/*
-* object Deck
-* providing static methods for case class Deck
-* */
+/**
+ * Provides static methods for the Deck case class.
+ */
 object Deck {
-    /*
-    * def defaultDeck()
-    * returns a new Deck filled with the default hanafuda cards.
-    * */
+
+    /**
+     * Returns a new Deck filled with the default hanafuda cards.
+     *
+     * @return a Deck containing the default hanafuda cards
+     */
     def defaultDeck(): Deck = Deck(List(
-        /* Index 0 reserved for card back */
+        // Index 0 reserved for card back
         Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE, index = 1),
         Card(CardMonth.JANUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU, index = 2),
         Card(CardMonth.JANUARY, CardType.KASU, CardName.PLAIN, index = 3),
@@ -79,12 +81,13 @@ object Deck {
         Card(CardMonth.DECEMBER, CardType.KASU, CardName.PLAIN, index = 47),
         Card(CardMonth.DECEMBER, CardType.KASU, CardName.PLAIN, index = 48)
     ))
-    
-    /*
-    * def poll(...)
-    * returns a random card drawn from the provided deck 
-    * and a new deck without this specific card.
-    * */
+
+    /**
+     * Returns a random card drawn from the provided deck and a new deck without this specific card.
+     *
+     * @param deck the deck to draw a card from
+     * @return a tuple containing an optional card and the new deck without the drawn card
+     */
     def poll(deck: Deck): (Option[Card], Deck) = {
         if (deck.cards.isEmpty) {
             (None, deck)
@@ -95,12 +98,15 @@ object Deck {
         }
     }
 
-    /*
-    * def pollMultiple(..)
-    * extension of poll() for convenient use.
-    * */
+    /**
+     * Draws multiple random cards from the provided deck.
+     *
+     * @param deck the deck to draw cards from
+     * @param n the number of cards to draw
+     * @return a tuple containing a list of drawn cards and the new deck without the drawn cards
+     */
     def pollMultiple(deck: Deck, n: Int): (List[Card], Deck) = {
-        (1 to n).foldLeft((List.empty, deck)) { case ((cards, currentDeck), _) =>
+        (1 to n).foldLeft((List.empty[Card], deck)) { case ((cards, currentDeck), _) =>
             val (polledCard, polledDeck) = poll(currentDeck)
             polledCard match {
                 case Some(c) => (cards :+ c, polledDeck)

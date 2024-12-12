@@ -9,7 +9,7 @@ class CommandSpec extends AnyFlatSpec with Matchers {
         val cmdManager = new CommandManager()
         cmdManager.undo(GameStatePlanned(
             players = List(
-                Player(name = "Player1", yakusToIgnore = List.empty, hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN))), side = Deck(List.empty), score = 0, calledKoiKoi = false),
+                Player(name = "Player1", yakusToIgnore = List.empty, hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0))), side = Deck(List.empty), score = 0, calledKoiKoi = false),
                 Player(name = "Player2", yakusToIgnore = List.empty, hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false)
             ),
             deck = Deck.defaultDeck(),
@@ -23,7 +23,7 @@ class CommandSpec extends AnyFlatSpec with Matchers {
         val cmdManager = new CommandManager()
         cmdManager.redo(GameStatePlanned(
             players = List(
-                Player(name = "Player1", yakusToIgnore = List.empty, hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN))), side = Deck(List.empty), score = 0, calledKoiKoi = false),
+                Player(name = "Player1", yakusToIgnore = List.empty, hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0))), side = Deck(List.empty), score = 0, calledKoiKoi = false),
                 Player(name = "Player2", yakusToIgnore = List.empty, hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false)
             ),
             deck = Deck.defaultDeck(),
@@ -41,7 +41,7 @@ class CommandSpec extends AnyFlatSpec with Matchers {
         intercept[IllegalStateException] {
             cmd.undo(GameStatePlanned(
                 players = List(
-                    Player(name = "Player1", yakusToIgnore = List.empty, hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN))), side = Deck(List.empty), score = 0, calledKoiKoi = false),
+                    Player(name = "Player1", yakusToIgnore = List.empty, hand = Deck(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0))), side = Deck(List.empty), score = 0, calledKoiKoi = false),
                     Player(name = "Player2", yakusToIgnore = List.empty, hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false)
                 ),
                 deck = Deck.defaultDeck(),

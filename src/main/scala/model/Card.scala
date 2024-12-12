@@ -1,17 +1,17 @@
 package model
 
-/*
-* enum CardPlant
-* used to differentiate the plants displayed in hanafuda playing cards.
-* */
+/**
+ * Enum representing the different plants displayed in hanafuda playing cards.
+ */
 enum CardPlant {
     case Pine, Plum, Cherry, Wisteria, Iris, Peony, Bush_Clover, Susuki_Grass, Chrysanthemum, Willow, Paulownia
 
-    /*
-    * def unicode
-    * returns a String representation of this enum.
-    * Meant for display in TUI.
-    * */
+    /**
+     * Returns a String representation of this enum.
+     * Meant for display in TUI.
+     *
+     * @return the unicode representation of the plant
+     */
     def unicode: String = this match {
         case Pine => " Pine "
         case Plum => " Plum "
@@ -27,17 +27,19 @@ enum CardPlant {
     }
 }
 
-/*
-* enum CardMonth
-* a specialized version of a regular Month enum for koi-koi.
-* */
+/**
+ * Enum representing the months in hanafuda playing cards.
+ * BACK is reserved for the visual card back in GUI.
+ */
 enum CardMonth {
     case JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER, BACK
 
-    /*
-    * def unicode
-    * returns a String representation of this enum.
-    * Meant for display in TUI.*/
+    /**
+     * Returns a String representation of this enum.
+     * Meant for display in TUI.
+     *
+     * @return the unicode representation of the month
+     */
     def unicode: String = this match {
         case JANUARY => " Jan. "
         case FEBRUARY => " Feb. "
@@ -55,18 +57,19 @@ enum CardMonth {
     }
 }
 
-/*
-* enum CardType
-* used to differentiate the 4 card types in hanafuda
-* */
+/**
+ * Enum representing the different card types in hanafuda.
+ * BACK is reserved for the visual card back in GUI.
+ */
 enum CardType {
     case HIKARI, TANE, TANZAKU, KASU, BACK
-    
-    /*
-    * def unicode
-    * returns the String representation of this enum.
-    * Meant for display in TUI.
-    * */
+
+    /**
+     * Returns the String representation of this enum.
+     * Meant for display in TUI.
+     *
+     * @return the unicode representation of the card type
+     */
     def unicode: String = this match {
         case HIKARI => "Hikari"
         case TANE => " Tane "
@@ -76,20 +79,21 @@ enum CardType {
     }
 }
 
-/*
-* enum CardName
-* all possible specific names of hanafuda cards.
-* */
+/**
+ * Enum representing all possible specific names of hanafuda cards.
+ * BACK is reserved for the visual card back in GUI.
+ */
 enum CardName {
     case CRANE, PLAIN, NIGHTINGALE, POETRY_TANZAKU, CURTAIN,
-         CUCKOO, BRIDGE, BUTTERFLIES, BLUE_TANZAKU,
-         BOAR, MOON, GEESE, SAKE_CUP, DEER, RAIN, SWALLOW, LIGHTNING, PHOENIX, BACK
+    CUCKOO, BRIDGE, BUTTERFLIES, BLUE_TANZAKU,
+    BOAR, MOON, GEESE, SAKE_CUP, DEER, RAIN, SWALLOW, LIGHTNING, PHOENIX, BACK
 
-    /*
-    * def unicode
-    * returns a String representation of this enum.
-    * Meant for display in TUI.
-    * */
+    /**
+     * Returns a String representation of this enum.
+     * Meant for display in TUI.
+     *
+     * @return the unicode representation of the card name
+     */
     def unicode: String = this match {
         case PLAIN => "Plane "
         case CRANE => "Crane "
@@ -113,18 +117,23 @@ enum CardName {
     }
 }
 
-/*
-* case class Card(..)
-* a class to represent a hanafuda playing card.
-* grouped := true if 3 cards of the same month have been dealt.
-* */
-case class Card(month:CardMonth, cardType: CardType, cardName:CardName, grouped:Boolean = false, index: Int = 0) {
-    /*
-    * def unicode
-    * returns a List[String] representation of the card
-    * where each entry in List is one line of the String representation.
-    * Meant for display in TUI.
-    * */
+/**
+ * Class representing a hanafuda playing card.
+ *
+ * @param month the month of the card
+ * @param cardType the type of the card
+ * @param cardName the name of the card
+ * @param grouped true if 3 cards of the same month have been dealt
+ * @param index the index of the card
+ */
+case class Card(month: CardMonth, cardType: CardType, cardName: CardName, grouped: Boolean = false, index: Int) {
+    /**
+     * Returns a List[String] representation of the card
+     * where each entry in the List is one line of the String representation.
+     * Meant for display in TUI.
+     *
+     * @return the unicode representation of the card
+     */
     def unicode: List[String] = {
         s"""╔══════╗
            |║${month.unicode}║
