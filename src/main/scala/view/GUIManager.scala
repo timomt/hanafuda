@@ -21,6 +21,7 @@ import scalafx.scene.control.cell.TextFieldTableCell
 import scalafx.scene.effect.{DropShadow, GaussianBlur}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.MouseEvent
+import scalafx.scene.shape.{Line, StrokeLineCap}
 import scalafx.stage.Screen
 import scalafx.util.Duration
 import view.ComponentDecoraters.{BasicTextField, StyleDecorator}
@@ -393,6 +394,20 @@ object GUIManager extends JFXApp3 with Observer {
     def combinationsScene(gameState: GameState): Scene = {
         new Scene {
             val rootPane = new StackPane {
+                background = new Background(Array(
+                    new BackgroundImage(
+                        new Image("/img/background/board_cards.png",
+                            requestedWidth = vw, requestedHeight = vh,
+                            preserveRatio = true, smooth = true, backgroundLoading = false),
+                        BackgroundRepeat.NoRepeat,
+                        BackgroundRepeat.NoRepeat,
+                        BackgroundPosition.Center,
+                        new BackgroundSize(
+                            vw, vh, true, true, false, true
+                        )
+                    )
+                ))
+
                 def createCard(card: Card): StackPane = {
                     val cardImage = cardCache(card.index)
                     new StackPane {
@@ -412,71 +427,70 @@ object GUIManager extends JFXApp3 with Observer {
                     }
                 }
 
-            def createCombinationRow(title: String, cards: Seq[Card]): VBox = {
-                new VBox {
-                    alignment = Pos.Center
-                    spacing = 0.025 * vh
-                    children = List(
-                        new Label(title) {
-                            style = "-fx-font-size: 16px; -fx-text-fill: white;"
-                        },
-                        new FlowPane {
-                            alignment = Pos.Center
-                            hgap = 0.005 * vh
-                            vgap = 0.005 * vh
-                            children = cards.map(createCard)
-                        }
-                    )
-                }
-            }
-
-            val combinations = List(
-                createCombinationRow("Gokō (五光) \"Five Hikari\" 10pts.", Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI)),
-                createCombinationRow("Shikō (四光) \"Four Hikari\" 8pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
-                createCombinationRow("Ame-Shikō (雨四光) \"Rainy Four Hikari\" 7pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI)),
-                createCombinationRow("Sankō (三光) \"Three Hikari\" 6pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
-                createCombinationRow("Tsukimi-zake (月見酒) \"Moon Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.MOON || c.cardName == CardName.SAKE_CUP)),
-                createCombinationRow("Hanami-zake (花見酒) \"Cherry Blossom Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.CURTAIN || c.cardName == CardName.SAKE_CUP)),
-                createCombinationRow("Inoshikachō (猪鹿蝶) \"Boar, Deer, Butterfly\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.BOAR || c.cardName == CardName.DEER || c.cardName == CardName.BUTTERFLIES)),
-                createCombinationRow("Tane (タネ) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANE)),
-                createCombinationRow("Akatan Aotan no Chōfuku (赤短青短の重複) \"Red Poem, Blue Poem\" 10pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.POETRY_TANZAKU || c.cardName == CardName.BLUE_TANZAKU)),
-                createCombinationRow("Akatan (赤短) \"Red Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.POETRY_TANZAKU)),
-                createCombinationRow("Aotan (青短) \"Blue Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.BLUE_TANZAKU)),
-                createCombinationRow("Tanzaku (短冊) \"Ribbons\" 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANZAKU)),
-                createCombinationRow("Kasu (カス) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.KASU))
-            )
-
-            val combinationsLayout = new FlowPane {
-                alignment = Pos.TopCenter
-                hgap = vw * 0.01
-                vgap = vh * 0.02
-                children = combinations.map { combination =>
+                def createCombinationRow(title: String, cards: Seq[Card]): VBox = {
                     new VBox {
                         alignment = Pos.Center
-                        spacing = vh * 0.01
-                        children = List(combination)
-                        padding = Insets(0)
-                        style = "-fx-border-color: transparent; -fx-border-width: 0; -fx-background-color: transparent;"
+                        spacing = 0.025 * vh
+                        children = List(
+                            new Label(title) {
+                                style = "-fx-font-size: 16px; -fx-text-fill: white;"
+                            },
+                            new FlowPane {
+                                alignment = Pos.Center
+                                hgap = 0.005 * vh
+                                vgap = 0.005 * vh
+                                children = cards.map(createCard)
+                            }
+                        )
                     }
                 }
-                padding = Insets(0.05 * vh, 0, 0, 0)
-                prefWidth = vw * 0.8
-                prefHeight = vh * 0.8
-            }
 
-            val taskbarChild = createGameTaskbar(gameState)
+                val combinations = List(
+                    createCombinationRow("Gokō (五光) \"Five Hikari\" 10pts.", Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI)),
+                    createCombinationRow("Shikō (四光) \"Four Hikari\" 8pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
+                    createCombinationRow("Ame-Shikō (雨四光) \"Rainy Four Hikari\" 7pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI)),
+                    createCombinationRow("Sankō (三光) \"Three Hikari\" 6pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
+                    createCombinationRow("Tsukimi-zake (月見酒) \"Moon Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.MOON || c.cardName == CardName.SAKE_CUP)),
+                    createCombinationRow("Hanami-zake (花見酒) \"Cherry Blossom Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.CURTAIN || c.cardName == CardName.SAKE_CUP)),
+                    createCombinationRow("Inoshikachō (猪鹿蝶) \"Boar, Deer, Butterfly\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.BOAR || c.cardName == CardName.DEER || c.cardName == CardName.BUTTERFLIES)),
+                    createCombinationRow("Tane (タネ) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANE)),
+                    createCombinationRow("Akatan Aotan no Chōfuku (赤短青短の重複) \"Red Poem, Blue Poem\" 10pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.POETRY_TANZAKU || c.cardName == CardName.BLUE_TANZAKU)),
+                    createCombinationRow("Akatan (赤短) \"Red Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.POETRY_TANZAKU)),
+                    createCombinationRow("Aotan (青短) \"Blue Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.BLUE_TANZAKU)),
+                    createCombinationRow("Tanzaku (短冊) \"Ribbons\" 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANZAKU)),
+                    createCombinationRow("Kasu (カス) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.KASU))
+                )
 
-            children = List(
-                new VBox {
-                    alignment = Pos.Center
-                    vgrow = Priority.Always
-                    children = List(combinationsLayout, taskbarChild)
+                val combinationsLayout = new FlowPane {
+                    alignment = Pos.TopCenter
+                    hgap = vw * 0.01
+                    vgap = vh * 0.02
+                    children = combinations.map { combination =>
+                        new VBox {
+                            alignment = Pos.Center
+                            spacing = vh * 0.01
+                            children = List(combination)
+                            padding = Insets(0)
+                            style = "-fx-border-color: transparent; -fx-border-width: 0; -fx-background-color: transparent;"
+                        }
+                    }
+                    padding = Insets(0.05 * vh, 0, 0, 0)
+                    prefWidth = vw * 0.8
+                    prefHeight = vh * 0.8
                 }
-            )
+
+                val taskbarChild = createGameTaskbar(gameState)
+
+                children = List(
+                    new BorderPane {
+                        center = combinationsLayout
+                        bottom = taskbarChild
+                    }
+                )
+            }
+            root = rootPane
         }
-        root = rootPane
     }
-}
 
     /**
      * Creates the scene for the spoiler protection display.
@@ -678,17 +692,118 @@ object GUIManager extends JFXApp3 with Observer {
      * @return the scene for the help display
      */
     def helpScene(gameState: GameState): Scene = {
-        new Scene(600, 600) {
-            val button = new Button("Back")
-            button.layoutX = 200
-            button.layoutY = 150
-            button.onAction = (e:ActionEvent) => {
-                GameController.processInput("continue")
+        new Scene {
+            val rootPane: StackPane = new StackPane {
+                val backgroundPane: StackPane = new StackPane {
+                    background = new Background(Array(
+                        new BackgroundImage(
+                            new Image("/img/background/bar.png"),
+                            BackgroundRepeat.NoRepeat,
+                            BackgroundRepeat.NoRepeat,
+                            BackgroundPosition.Center,
+                            new BackgroundSize(
+                                vw, vh, true, true, false, true
+                            )
+                        )
+                    ))
+
+                    def createTextField(initialText: String): TextField = {
+                        val textProperty = StringProperty(initialText)
+
+                        new TextField {
+                            text <==> textProperty
+                            editable = false
+                            style = "-fx-font-family: 'Chalkduster', 'Comic Sans MS', cursive; " +
+                              "-fx-text-fill: #ffffff; " +
+                              "-fx-font-size: 20px; " +
+                              "-fx-effect: dropshadow(gaussian, #000000, 2, 0.5, 1, 1); " +
+                              "-fx-background-color: transparent; " +
+                              "-fx-padding: 10px; " +
+                              "-fx-font-style: italic; " +
+                              "-fx-font-weight: bold;" +
+                              "-fx-border-color: transparent; " +
+                              "-fx-border-width: 0;"
+                        }
+                    }
+
+                    val helpText = List(
+                        createTextField("Welcome to Hanafuda! Here are the buttons you can use:"),
+                        createTextField("1. start \n   - Starts a new game with the given player names."),
+                        createTextField("2. continue \n   - return to the current game."),
+                        createTextField("3. match \n   - Matches cards at positions hand and deck on the board."),
+                        createTextField("4. discard \n   - discard card at given number.\n   - argument x is only to be provided when discarding from hand"),
+                        createTextField("5. new\n   - takes player names and creates a new game from scratch"),
+                        createTextField("6. combinations \n   - Displays the possible combinations of cards."),
+                        createTextField("7. help\n   - Displays this help page."),
+                        createTextField("8. exit\n   - Exits the game.")
+                    )
+
+                    val textAreaPane: StackPane = new StackPane {
+                        val drawingBoundsX: Double = 360  // X position of the drawing area
+                        val drawingBoundsY: Double = 150  // Y position of the drawing area
+                        val drawingWidth: Double = 1000   // Width of the drawing area
+                        val drawingHeight: Double = 600   // Height of the drawing area
+
+                        val drawingPane: Pane = new Pane {
+                            style = "-fx-background-color: transparent;"
+                        }
+
+                        val textLayer: VBox = new VBox {
+                            alignment = Pos.Center
+                            spacing = 10
+                            children = helpText
+                            maxWidth = drawingWidth
+                            maxHeight = drawingHeight
+                            style = "-fx-background-color: transparent;"
+                        }
+
+                        var dragStartX: Double = 0
+                        var dragStartY: Double = 0
+
+                        drawingPane.onMousePressed = (event: MouseEvent) => {
+                            if (event.x >= drawingBoundsX && event.x <= drawingBoundsX + drawingWidth &&
+                              event.y >= drawingBoundsY && event.y <= drawingBoundsY + drawingHeight) {
+                                dragStartX = event.x
+                                dragStartY = event.y
+                            }
+                        }
+
+                        drawingPane.onMouseDragged = (event: MouseEvent) => {
+                            val constrainedEndX = math.max(drawingBoundsX, math.min(event.x, drawingBoundsX + drawingWidth))
+                            val constrainedEndY = math.max(drawingBoundsY, math.min(event.y, drawingBoundsY + drawingHeight))
+
+                            val line = new Line {
+                                startX = dragStartX
+                                startY = dragStartY
+                                endX = constrainedEndX
+                                endY = constrainedEndY
+                                stroke = Color.White
+                                strokeWidth = 3
+                                strokeLineCap = StrokeLineCap.Round
+                            }
+
+                            if (dragStartX >= drawingBoundsX && dragStartX <= drawingBoundsX + drawingWidth &&
+                              dragStartY >= drawingBoundsY && dragStartY <= drawingBoundsY + drawingHeight) {
+                                drawingPane.children.add(line)
+                            }
+
+                            dragStartX = constrainedEndX
+                            dragStartY = constrainedEndY
+                        }
+                        children = List(textLayer, drawingPane)
+                    }
+
+                    val taskbarChild = createGameTaskbar(gameState)
+
+                    children = List(textAreaPane, taskbarChild)
+                }
+                children = List(backgroundPane)
             }
-            content = List(button)
+            root = rootPane
         }
     }
-    
+
+
     /* ------------------------------------------------------- */
 
     /**
