@@ -14,27 +14,27 @@ class GameManagerSpec extends AnyFlatSpec {
     
     it should "not deal a full month" in {
         val game = GameManager.newGame(" ", " ", 0, 0,
-            Some(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR))))
+            Some(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR, false, 0))))
         assert(game.board.cards.groupBy(_.month).forall((_, list) => list.size < 4))
     }
     
     it should "group 3 cards of the same month together" in {
         val game = GameManager.newGame(" ", " ", 0, 0,
-            Some(List(Card(CardMonth.NOVEMBER, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.JANUARY, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.JANUARY, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR))))
+            Some(List(Card(CardMonth.NOVEMBER, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.JANUARY, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.JANUARY, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR, false, 0),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR, false, 0))))
         assert(game.board.cards.forall(c => c.month == CardMonth.MARCH && c.grouped || c.month != CardMonth.MARCH && !c.grouped))
     }
 
@@ -43,10 +43,10 @@ class GameManagerSpec extends AnyFlatSpec {
             firstPlayer = "FirstPlayer",
             secondPlayer = "SecondPlayer",
             customHandFirst = Some(Deck(List(
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN)
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 0),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 0),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 0),
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 0)
             ))),
         )
         assert(game.players.head.score === TeshiCombination.points)
@@ -71,8 +71,8 @@ class GameManagerSpec extends AnyFlatSpec {
         val game = GameStateRandom(
             players = List(
                 Player(name = "Player1", score = 0, hand = Deck(List.empty), side = Deck(List(
-                    Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
-                    Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
+                    Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 0),
+                    Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP, false, 0)
                 )), calledKoiKoi = false, yakusToIgnore = List.empty),
                 Player(name = "Player2", score = 0, hand = Deck(List.empty), side = Deck(List.empty), calledKoiKoi = false, yakusToIgnore = List.empty),
             ),
@@ -80,7 +80,7 @@ class GameManagerSpec extends AnyFlatSpec {
             board = Deck(List.empty),
             matched = Deck(List.empty),
             displayType = DisplayType.GAME,
-            queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN),
+            queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0),
             stdout = None,
             stderr = None
         )
@@ -93,8 +93,8 @@ class GameManagerSpec extends AnyFlatSpec {
         val game = GameStateRandom(
             players = List(
                 Player(name = "Player1", score = 10, hand = Deck(List.empty), side = Deck(List(
-                    Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
-                    Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
+                    Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 0),
+                    Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP, false, 0)
                 )), calledKoiKoi = true, yakusToIgnore = List.empty),
                 Player(name = "Player2", score = 5, hand = Deck(List.empty), side = Deck(List.empty), calledKoiKoi = false, yakusToIgnore = List.empty),
             ),
@@ -102,7 +102,7 @@ class GameManagerSpec extends AnyFlatSpec {
             board = Deck(List.empty),
             matched = Deck(List.empty),
             displayType = DisplayType.GAME,
-            queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN),
+            queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0),
             stdout = None,
             stderr = None
         )
@@ -114,19 +114,19 @@ class GameManagerSpec extends AnyFlatSpec {
         val game = GameStateRandom(
             players = List(
                 Player(name = "Player1", score = 10, hand = Deck(List.empty), side = Deck(List(
-                    Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
-                    Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
+                    Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 0),
+                    Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP, false, 0)
                 )), calledKoiKoi = false, yakusToIgnore = List.empty),
                 Player(name = "Player2", score = 5, hand = Deck(List.empty), side = Deck(List(
-                    Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN),
-                    Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP)
+                    Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 0),
+                    Card(CardMonth.SEPTEMBER, CardType.TANE, CardName.SAKE_CUP, false, 0)
                 )), calledKoiKoi = true, yakusToIgnore = List.empty),
             ),
             deck = Deck(List.empty),
             board = Deck(List.empty),
             matched = Deck(List.empty),
             displayType = DisplayType.GAME,
-            queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN),
+            queued = Card(CardMonth.JULY, CardType.HIKARI, CardName.PLAIN, false, 0),
             stdout = None,
             stderr = None
         )

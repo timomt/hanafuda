@@ -3,24 +3,23 @@ package controller
 import controller.GameController.notifyObservers
 import model.{DisplayType, GameState, GameStatePendingKoiKoi, GameStateUninitialized}
 
-/*
-* MVC: Controller
-* object GameController
-* an object to operate in between model and view.
-* */
+/**
+ * MVC: Controller
+ * Object to operate in between model and view.
+ */
 object GameController extends Observable {
-    /*
-    * gameState
-    * the current state of the game operated by this object.
-    * */
+    /**
+     * The current state of the game operated by this object.
+     */
     var gameState: GameState = GameStateUninitialized(displayType = DisplayType.HELP, stderr = None)
     private val commandManager = new CommandManager()
 
-    /*
-    * def processInput(...)
-    * processes a String to change the current GameState
-    * and notifies observers of the new GameState.
-    * */
+    /**
+     * Processes a String to change the current GameState
+     * and notifies observers of the new GameState.
+     *
+     * @param input the input string to process
+     */
     def processInput(input: String): Unit = {
         gameState = input match {
             case "exit" =>

@@ -290,7 +290,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
         deck = Deck.defaultDeck(),
         board = tableDeck,
         matched = Deck(List.empty),
-        queued = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN),
+        queued = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN, false, 0),
         stdout = None,
         stderr = None
       )
@@ -343,8 +343,8 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
         ),
         deck = Deck.defaultDeck(),
         board = tableDeck,
-        matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN))),
-        queued = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN),
+        matched = Deck(List(Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN, false, 0))),
+        queued = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN, false, 0),
         stdout = None,
         stderr = None
       )
@@ -400,7 +400,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
         deck = Deck.defaultDeck(),
         board = tableDeck,
         matched = matched_deck,
-        queued = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN),
+        queued = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PLAIN, false, 0),
         stdout = None,
         stderr = None
       )
@@ -463,7 +463,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
 
   describe("update") {
     it("should call printBoard and print the correct output for a game state") {
-      val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
+      val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE, false, 0)
       val gameState = GameStatePlanned(
         List(
           Player("Player1", Deck(List(card)), Deck(List(card)), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
@@ -500,7 +500,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
     }
 
     it("should update the TUI correctly for a non-empty game state") {
-      val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
+      val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE, false, 0)
       val player1Deck = Deck(List(card))
       val player2Deck = Deck(List(card))
       val gameState = GameStatePlanned(
@@ -607,12 +607,12 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
           Player(
             name = "Player1",
             hand = Deck(List.empty),
-            side = Deck(List(Card(CardMonth.MARCH, CardType.KASU, CardName.PLAIN))),
+            side = Deck(List(Card(CardMonth.MARCH, CardType.KASU, CardName.PLAIN, false, 0))),
             score = 0, calledKoiKoi = false, yakusToIgnore = List.empty),
           Player(
             name = "Player2",
             hand = Deck(List.empty),
-            side = Deck(List(Card(CardMonth.JULY, CardType.KASU, CardName.PLAIN))),
+            side = Deck(List(Card(CardMonth.JULY, CardType.KASU, CardName.PLAIN, false, 0))),
             score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         ),
         deck = Deck.defaultDeck(),
@@ -734,8 +734,8 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
 
   describe("colorizeOverviewCard") {
     it("should colorize the cards correctly for each player") {
-      val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE)
-      val card2 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PHOENIX)
+      val card = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE, false, 0)
+      val card2 = Card(CardMonth.JANUARY, CardType.HIKARI, CardName.PHOENIX, false, 0)
       val player1 = Player("Player1", Deck(List(card)), Deck(List(card)), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
       val player2 = Player("Player2", Deck(List(card2)), Deck(List(card2)), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
       val gameState = GameStatePlanned(
