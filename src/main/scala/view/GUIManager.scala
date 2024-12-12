@@ -1,6 +1,7 @@
 package view
 
 import controller.{GameController, Observer}
+import model.DisplayType.{GAME, SUMMARY}
 import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameState, GameStatePlanned, GameStateRandom, GameStateSummary, GameStateUninitialized, Player, instantWinCombinations, yakuCombinations}
 import scalafx.application.{JFXApp3, Platform}
 import scalafx.geometry.{HPos, Insets, Pos, VPos}
@@ -140,33 +141,32 @@ object GUIManager extends JFXApp3 with Observer {
                 val random = new Random()
 
                 val animation: TranslateTransition = new TranslateTransition {
-                    duration = Duration(50) // Duration for one full fall (in milliseconds)
+                    duration = Duration(50)
                     node = leafImageView
-                    toX = random.nextDouble() * (sceneWidth - leafWidth) // End at a random X position
+                    toX = random.nextDouble() * (sceneWidth - leafWidth)
                     toY = sceneHeight
-                    delay = Duration(random.nextInt(3000)) // Random delay between 0 and 3000 milliseconds
+                    delay = Duration(random.nextInt(3000))
                     leafImageView.visible = false
                     onFinished = _ => {
                         // Restart with new random positions
                         fromY = -sceneHeight
-                        duration = Duration(5000) // Duration for one full fall (in milliseconds)
+                        duration = Duration(5000)
                         toX = random.nextDouble() * (sceneWidth - leafWidth)
                         toY = sceneHeight
-                        leafImageView.visible = true // Make the leaf visible again
+                        leafImageView.visible = true
                         playFromStart()
                     }
                 }
 
                 val sway = new RotateTransition {
-                    duration = Duration(1000) // Time for one sway (back and forth)
+                    duration = Duration(1000)
                     node = leafImageView
-                    byAngle = 20 // Sway angle
+                    byAngle = 20
                     cycleCount = RotateTransition.Indefinite
-                    autoReverse = true // Sway back and forth
+                    autoReverse = true
                 }
 
                 val timer = AnimationTimer(_ => {
-                    // Additional swaying motion during falling
                     leafImageView.translateX.value += math.sin(System.currentTimeMillis() / 300.0) * 0.5
                 })
 
@@ -174,7 +174,6 @@ object GUIManager extends JFXApp3 with Observer {
                 leafImageView
             }
 
-            // Create multiple leaves and position them
             val leaves = (1 to 19).map { i =>
                 val leaf = createFallingLeaf(
                     s"/img/background/leaf$i.png",
@@ -183,7 +182,7 @@ object GUIManager extends JFXApp3 with Observer {
                     vw * 0.05,
                     vh * 0.05
                 )
-                leaf.layoutX = Random.nextDouble() * vw // Spread leaves across the width of the scene
+                leaf.layoutX = Random.nextDouble() * vw
                 leaf.layoutY = -vh*0.5
                 leaf
             }
@@ -391,6 +390,8 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the scene for the combinations display
      */
+
+    // TODO: full functionality of original TUI output
     def combinationsScene(gameState: GameState): Scene = {
         new Scene {
             val rootPane = new StackPane {
@@ -408,9 +409,15 @@ object GUIManager extends JFXApp3 with Observer {
                     )
                 ))
 
-                def createCard(card: Card): StackPane = {
+                def colorizeOverviewCard(game: GameState, card: Card): List[String] = card match {
+                    case c if game.players.head.side.cards.exists(c => c.month == card.month && c.cardType == card.cardType && c.cardName == card.cardName) => c.unicode.map(line => s"\u001b[32m$line\u001b[0m")
+                    case c if game.players(1).side.cards.exists(c => c.month == card.month && c.cardType == card.cardType && c.cardName == card.cardName) => c.unicode.map(line => s"\u001b[31m$line\u001b[0m")
+                    case _ => card.unicode.map(line => s"\u001b[0m$line\u001b[0m")
+                }
+
+                def createCard(gameState: GameState, card: Card): StackPane = {
                     val cardImage = cardCache(card.index)
-                    new StackPane {
+                    val cardStackPane = new StackPane {
                         children = new ImageView {
                             image = cardImage
                             fitWidth = vw * 0.055 * 0.5
@@ -419,15 +426,22 @@ object GUIManager extends JFXApp3 with Observer {
                             preserveRatio = true
                         }
                         effect = new DropShadow {
-                            color = Color.Black
+                            color = if (gameState.players.head.side.cards.exists(c => c.month == card.month && c.cardType == card.cardType && c.cardName == card.cardName)) {
+                                Color.Blue
+                            } else if (gameState.players(1).side.cards.exists(c => c.month == card.month && c.cardType == card.cardType && c.cardName == card.cardName)) {
+                                Color.Red
+                            } else {
+                                Color.Black
+                            }
                             radius = 10
                             spread = 0.2
                         }
                         padding = Insets(0)
                     }
+                    cardStackPane
                 }
 
-                def createCombinationRow(title: String, cards: Seq[Card]): VBox = {
+                def createCombinationRow(gameState: GameState, title: String, cards: Seq[Card]): VBox = {
                     new VBox {
                         alignment = Pos.Center
                         spacing = 0.025 * vh
@@ -439,26 +453,26 @@ object GUIManager extends JFXApp3 with Observer {
                                 alignment = Pos.Center
                                 hgap = 0.005 * vh
                                 vgap = 0.005 * vh
-                                children = cards.map(createCard)
+                                children = cards.map(card => createCard(gameState, card))
                             }
                         )
                     }
                 }
 
                 val combinations = List(
-                    createCombinationRow("Gokō (五光) \"Five Hikari\" 10pts.", Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI)),
-                    createCombinationRow("Shikō (四光) \"Four Hikari\" 8pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
-                    createCombinationRow("Ame-Shikō (雨四光) \"Rainy Four Hikari\" 7pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI)),
-                    createCombinationRow("Sankō (三光) \"Three Hikari\" 6pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
-                    createCombinationRow("Tsukimi-zake (月見酒) \"Moon Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.MOON || c.cardName == CardName.SAKE_CUP)),
-                    createCombinationRow("Hanami-zake (花見酒) \"Cherry Blossom Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.CURTAIN || c.cardName == CardName.SAKE_CUP)),
-                    createCombinationRow("Inoshikachō (猪鹿蝶) \"Boar, Deer, Butterfly\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.BOAR || c.cardName == CardName.DEER || c.cardName == CardName.BUTTERFLIES)),
-                    createCombinationRow("Tane (タネ) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANE)),
-                    createCombinationRow("Akatan Aotan no Chōfuku (赤短青短の重複) \"Red Poem, Blue Poem\" 10pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.POETRY_TANZAKU || c.cardName == CardName.BLUE_TANZAKU)),
-                    createCombinationRow("Akatan (赤短) \"Red Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.POETRY_TANZAKU)),
-                    createCombinationRow("Aotan (青短) \"Blue Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.BLUE_TANZAKU)),
-                    createCombinationRow("Tanzaku (短冊) \"Ribbons\" 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANZAKU)),
-                    createCombinationRow("Kasu (カス) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.KASU))
+                    createCombinationRow(gameState ,"Gokō (五光) \"Five Hikari\" 10pts.", Deck.defaultDeck().cards.filter(_.cardType == CardType.HIKARI)),
+                    createCombinationRow(gameState ,"Shikō (四光) \"Four Hikari\" 8pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
+                    createCombinationRow(gameState ,"Ame-Shikō (雨四光) \"Rainy Four Hikari\" 7pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI)),
+                    createCombinationRow(gameState ,"Sankō (三光) \"Three Hikari\" 6pts.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.HIKARI && c.cardName != CardName.RAIN)),
+                    createCombinationRow(gameState ,"Tsukimi-zake (月見酒) \"Moon Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.MOON || c.cardName == CardName.SAKE_CUP)),
+                    createCombinationRow(gameState ,"Hanami-zake (花見酒) \"Cherry Blossom Viewing\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.CURTAIN || c.cardName == CardName.SAKE_CUP)),
+                    createCombinationRow(gameState ,"Inoshikachō (猪鹿蝶) \"Boar, Deer, Butterfly\" 5pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.BOAR || c.cardName == CardName.DEER || c.cardName == CardName.BUTTERFLIES)),
+                    createCombinationRow(gameState ,"Tane (タネ) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANE)),
+                    createCombinationRow(gameState ,"Akatan Aotan no Chōfuku (赤短青短の重複) \"Red Poem, Blue Poem\" 10pts.", Deck.defaultDeck().cards.filter(c => c.cardName == CardName.POETRY_TANZAKU || c.cardName == CardName.BLUE_TANZAKU)),
+                    createCombinationRow(gameState ,"Akatan (赤短) \"Red Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.POETRY_TANZAKU)),
+                    createCombinationRow(gameState ,"Aotan (青短) \"Blue Poem\" 5pts.", Deck.defaultDeck().cards.filter(_.cardName == CardName.BLUE_TANZAKU)),
+                    createCombinationRow(gameState ,"Tanzaku (短冊) \"Ribbons\" 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.TANZAKU)),
+                    createCombinationRow(gameState ,"Kasu (カス) 1pt.", Deck.defaultDeck().cards.filter(c => c.cardType == CardType.KASU))
                 )
 
                 val combinationsLayout = new FlowPane {
@@ -479,7 +493,7 @@ object GUIManager extends JFXApp3 with Observer {
                     prefHeight = vh * 0.8
                 }
 
-                val taskbarChild = createGameTaskbar(gameState)
+                val taskbarChild = createGameTaskbarSimple(gameState)
 
                 children = List(
                     new BorderPane {
@@ -625,6 +639,21 @@ object GUIManager extends JFXApp3 with Observer {
 
     def summaryScene(gameState: GameState): Scene = {
         new Scene {
+            val backgroundPane: StackPane = new StackPane {
+                background = new Background(Array(
+                    new BackgroundImage(
+                        new Image("/img/background/board.png"),
+                        BackgroundRepeat.NoRepeat,
+                        BackgroundRepeat.NoRepeat,
+                        BackgroundPosition.Center,
+                        new BackgroundSize(
+                            vw, vh, true, true, false, true
+                        )
+                    )
+                ))
+                effect = new GaussianBlur(10) // Apply blur effect to the background
+            }
+
             def createSummaryTable(game: GameState): TableView[SummaryRow] = {
                 def formatPlayerName(name: String): String = {
                     if (name.length > 20) name.take(17) + "..." else name.padTo(20, ' ')
@@ -654,32 +683,66 @@ object GUIManager extends JFXApp3 with Observer {
                             prefWidth = 100
                         }
                     )
+                    // Use CSS to set the background image
+                    style = "-fx-background-image: url('/img/background/board_cards.png'); " +
+                      "-fx-background-repeat: no-repeat; " +
+                      "-fx-background-position: center; " +
+                      "-fx-background-size: cover;"
+                    prefWidth = 500
+                    maxWidth = 500
+                }
+            }
+
+            def createGameTaskbarSummary(gameState: GameState): ToolBar = {
+                val button1 = createGameTaskbarButton("New", (e: ActionEvent) => {
+                    GameController.processInput("new")
+                })
+                val button2 = createGameTaskbarButton("Exit", (e: ActionEvent) => {
+                    GameController.processInput("exit")
+                })
+
+                val leftSpacer = new Region {
+                    hgrow = Priority.Always
+                }
+                val rightSpacer = new Region {
+                    hgrow = Priority.Always
+                }
+                new ToolBar {
+                    alignmentInParent = Pos.BottomCenter
+                    padding = Insets(10)
+                    items = List(
+                        leftSpacer,
+                        new HBox {
+                            alignment = Pos.Center
+                            spacing = 20
+                            children = List(button1, button2)
+                        },
+                        rightSpacer
+                    )
+                    style = "-fx-background-color: #231F20;"
                 }
             }
 
             val rootPane: StackPane = new StackPane {
                 children = List(
+                    backgroundPane,
                     new VBox {
                         children = List(
                             new Label("Summary") {
-                                style = "-fx-font-size: 24px; -fx-font-weight: bold;"
+                                style = "-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;"
                             },
                             new Label("Score of each player") {
-                                style = "-fx-font-size: 18px; -fx-font-weight: bold;"
+                                style = "-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"
                             },
                             createSummaryTable(gameState)
                         )
                         spacing = 10
                         alignment = Pos.Center
                     },
-                    new Button("Back") {
-                        layoutX = 200
-                        layoutY = 150
-                        onAction = (e: ActionEvent) => {
-                            GameController.processInput("continue")
-                        }
-                    }
+                    createGameTaskbarSummary(gameState)
                 )
+                // Zentrierung und Transparenz-Effekt
+                style = "-fx-background-color: transparent;"
             }
             root = rootPane
         }
@@ -793,7 +856,7 @@ object GUIManager extends JFXApp3 with Observer {
                         children = List(textLayer, drawingPane)
                     }
 
-                    val taskbarChild = createGameTaskbar(gameState)
+                    val taskbarChild = createGameTaskbarSimple(gameState)
 
                     children = List(textAreaPane, taskbarChild)
                 }
@@ -866,6 +929,9 @@ object GUIManager extends JFXApp3 with Observer {
             GameController.processInput("exit")
         })
 
+        val playerTextField = createStyledLabel(s"Player: ${gameState.players.head.name}")
+        val playerScoreField = createStyledLabel(s"Score: ${gameState.players.head.score}")
+
         val leftSpacer = new Region {
             hgrow = Priority.Always
         }
@@ -880,7 +946,52 @@ object GUIManager extends JFXApp3 with Observer {
                 new HBox {
                     alignment = Pos.Center
                     spacing = 20
-                    children = List(button1, button2, button3, button4, button5, button6, button7)
+                    children = List(button1, button2, button3, button4, button5, button6, button7, playerTextField, playerScoreField)
+                },
+                rightSpacer
+            )
+            style = "-fx-background-color: #231F20;"
+        }
+    }
+
+    /**
+     * Creates a simpler Toolbar.
+     *
+     * @param gameState the current game state
+     * @return the simpler ToolBar.
+     */
+    def createGameTaskbarSimple(gameState: GameState): ToolBar = {
+        val button1 = createGameTaskbarButton("Help", (e: ActionEvent) => {
+            GameController.processInput("help")
+        })
+        val button2 = createGameTaskbarButton("Combinations", (e: ActionEvent) => {
+            GameController.processInput(if gameState.displayType == DisplayType.COMBINATIONS then "con" else "com")
+        })
+        val button3 = createGameTaskbarButton("Continue", (e: ActionEvent) => {
+            GameController.processInput("continue")
+        })
+        val button4 = createGameTaskbarButton("Exit", (e: ActionEvent) => {
+            GameController.processInput("exit")
+        })
+
+        val playerTextField = createStyledLabel(s"Player: ${gameState.players.head.name}")
+        val playerScoreField = createStyledLabel(s"Score: ${gameState.players.head.score}")
+
+        val leftSpacer = new Region {
+            hgrow = Priority.Always
+        }
+        val rightSpacer = new Region {
+            hgrow = Priority.Always
+        }
+        new ToolBar {
+            alignmentInParent = Pos.BottomCenter
+            padding = Insets(10)
+            items = List(
+                leftSpacer,
+                new HBox {
+                    alignment = Pos.Center
+                    spacing = 20
+                    children = List(button1, button2, button3, button4, playerTextField, playerScoreField)
                 },
                 rightSpacer
             )
@@ -938,12 +1049,44 @@ object GUIManager extends JFXApp3 with Observer {
     }
 
     /**
+     * Creates a pre-styled Label with the given prompt text.
+     *
+     * @param textString the prompt text to display in the label
+     * @return the styled TLabel
+     */
+    def createStyledLabel(textString: String): Label = {
+        val label = new Label(textString)
+        label.style = "-fx-background-color: #231F20; " +
+                      "-fx-text-fill: White; " +
+                      "-fx-font-size: 14px; " +
+                      "-fx-font-family: Ubuntu; " +
+                      "-fx-padding: 10 20 10 20; " +
+                      "-fx-background-radius: 5;"
+        label
+    }
+
+    /**
      * Updates the GUI on observer notification.
      *
      * @param gameState the current state of the game
      */
     override def update(gameState: GameState): Unit = {
         Platform.runLater {
+            //--------------------------------------------------------------------------------
+            //Testcase Summary
+            /*
+            val gameState: GameState = new GameStateSummary(players = List(
+                Player(name = "???", hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                Player(name = "???", hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)),
+                deck = Deck(List.empty),
+                board = Deck(List.empty),
+                displayType = SUMMARY,
+                stdout = None,
+                stderr = None,
+                outOfCardsEnding = false)
+             */
+            //--------------------------------------------------------------------------------
+
             if (gameState.stderr.isDefined) {
                 showErrorPopup(gameState.stderr.get)
             }
