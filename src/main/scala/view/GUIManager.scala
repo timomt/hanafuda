@@ -106,7 +106,7 @@ object GUIManager extends JFXApp3 with Observer {
      *
      * @return the scene for the uninitialized state
      */
-    def sceneUninitialized(): Scene = new Scene {
+    private def sceneUninitialized(): Scene = new Scene {
         val rootPane: StackPane = new StackPane {
             background = new Background(Array(
                 new BackgroundImage(
@@ -247,7 +247,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the scene for the game state
      */
-    def gameScene(gameState: GameState): Scene = {
+    private def gameScene(gameState: GameState): Scene = {
         new Scene {
             val rootPane: StackPane = new StackPane {
                 background = new Background(Array(
@@ -392,7 +392,7 @@ object GUIManager extends JFXApp3 with Observer {
      */
 
     // TODO: full functionality of original TUI output
-    def combinationsScene(gameState: GameState): Scene = {
+    private def combinationsScene(gameState: GameState): Scene = {
         new Scene {
             val rootPane = new StackPane {
                 background = new Background(Array(
@@ -512,7 +512,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the scene for the spoiler protection display
      */
-    def spoilerScene(gameState: GameState): Scene = {
+    private def spoilerScene(gameState: GameState): Scene = {
         new Scene {
             val backgroundPane: StackPane = new StackPane {
                 background = new Background(Array(
@@ -631,13 +631,13 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the scene for the summary display
      */
-    case class SummaryRow(yaku: String, player1Score: Int, player2Score: Int) {
+    private case class SummaryRow(yaku: String, player1Score: Int, player2Score: Int) {
         val yakuProperty = new StringProperty(this, "yaku", yaku)
         val player1ScoreProperty = new IntegerProperty(this, "player1Score", player1Score)
         val player2ScoreProperty = new IntegerProperty(this, "player2Score", player2Score)
     }
 
-    def summaryScene(gameState: GameState): Scene = {
+    private def summaryScene(gameState: GameState): Scene = {
         new Scene {
             val backgroundPane: StackPane = new StackPane {
                 background = new Background(Array(
@@ -734,7 +734,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the scene for the help display
      */
-    def helpScene(gameState: GameState): Scene = {
+    private def helpScene(gameState: GameState): Scene = {
         new Scene {
             val rootPane: StackPane = new StackPane {
                 val backgroundPane: StackPane = new StackPane {
@@ -845,8 +845,7 @@ object GUIManager extends JFXApp3 with Observer {
             root = rootPane
         }
     }
-
-
+    
     /* ------------------------------------------------------- */
 
     /**
@@ -854,7 +853,7 @@ object GUIManager extends JFXApp3 with Observer {
      *
      * @param message
      */
-    def showErrorPopup(message: String): Unit = {
+    private def showErrorPopup(message: String): Unit = {
         val alert = new Alert(AlertType.Error) {
             title = "Error"
             headerText = "An error occurred"
@@ -874,7 +873,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the ToolBar for the game display
      */
-    def createGameTaskbar(gameState: GameState): ToolBar = {
+    private def createGameTaskbar(gameState: GameState): ToolBar = {
         val button1 = createGameTaskbarButton("Help", (e: ActionEvent) => {
             GameController.processInput("help")
         })
@@ -940,7 +939,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the simpler ToolBar.
      */
-    def createGameTaskbarSimple(gameState: GameState): ToolBar = {
+    private def createGameTaskbarSimple(gameState: GameState): ToolBar = {
         val button1 = createGameTaskbarButton("Help", (e: ActionEvent) => {
             GameController.processInput("help")
         })
@@ -986,7 +985,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param action the action to perform when the button is clicked
      * @return the styled Button
      */
-    def createGameTaskbarButton(text: String, action: ActionEvent => Unit): Button = {
+    private def createGameTaskbarButton(text: String, action: ActionEvent => Unit): Button = {
         val button: Button = new Button(text) {
             style = "-fx-background-color: #B82025;" +
               "-fx-text-fill: white;" +
@@ -1014,7 +1013,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param textString the prompt text to display in the text field
      * @return the styled TextField
      */
-    def createStyledTextField(textString: String): TextField = {
+    private def createStyledTextField(textString: String): TextField = {
         val basicTextField = new BasicTextField(textString)
         val styles = Map(
             "-fx-background-color" -> "#231F20",
@@ -1034,7 +1033,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param textString the prompt text to display in the label
      * @return the styled TLabel
      */
-    def createStyledLabel(textString: String): Label = {
+    private def createStyledLabel(textString: String): Label = {
         val label = new Label(textString)
         label.style = "-fx-background-color: #231F20; " +
                       "-fx-text-fill: White; " +
@@ -1051,7 +1050,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current state of the game
      */
     override def update(gameState: GameState): Unit = {
-        Platform.runLater {
+        Platform.runLater { //TODO: implement update for GameStatePendingKoiKoi
             if (gameState.stderr.isDefined) {
                 showErrorPopup(gameState.stderr.get)
             }

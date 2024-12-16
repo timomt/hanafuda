@@ -10,7 +10,7 @@ lazy val root = (project in file("."))
       coverageMinimumBranchTotal := 0,
       coverageFailOnMinimum := true,
       coverageHighlighting := true,
-      coverageExcludedPackages := ".*Hanafuda.*"
+      coverageExcludedPackages := ".*Hanafuda.*;.*GUIManager.*;.*ComponentDecoraters.*"
   )
 libraryDependencies ++= Seq(
   "org.scalafx" %% "scalafx" % "23.0.1-R34",

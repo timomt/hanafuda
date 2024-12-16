@@ -805,6 +805,7 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
           |║ Kuttsuki                ║ 0                    ║ 0                    ║
           |╚═════════════════════════╩══════════════════════╩══════════════════════╝
           |""".stripMargin
+      TUIManager.update(game)
       assert(TUIManager.printSummary(game) === expected)
     }
   }
