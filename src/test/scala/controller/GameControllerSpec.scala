@@ -1,10 +1,11 @@
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
-import controller.GameController
+import controller.{CommandManagerSaveCommand, GameController}
 import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameManager, GameStatePendingKoiKoi, GameStatePlanned, GameStateRandom, GameStateUninitialized, Player}
 
 class GameControllerSpec extends AnyFlatSpec with Matchers {
     "GameController" should "do nothing on invalid input before start" in {
+        GameController.commandManager = new CommandManagerSaveCommand
         GameController.processInput("continue")
         GameController.gameState.stderr.isDefined should be (true)
     }
