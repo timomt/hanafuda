@@ -512,7 +512,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the scene for the spoiler protection display
      */
-    private def spoilerScene(gameState: GameState, buttons: List[Button]): Scene = {
+    private def spoilerScene(gameState: GameState, buttons: List[Button], stdout: String): Scene = {
         new Scene {
             val backgroundPane: StackPane = new StackPane {
                 background = new Background(Array(
@@ -608,8 +608,23 @@ object GUIManager extends JFXApp3 with Observer {
                     cardLayout,
                 )
             }
-            val rootPane: StackPane = new StackPane {   //TODO: only last button is appended and visible
-                children = List(backgroundPane, combinedLayout).appendedAll(buttons)
+
+            val label: Label = new Label(stdout) {
+                style = "-fx-font-size: 24px; " +
+                    "-fx-text-fill: white; " +
+                    "-fx-background-color: #2b2b2b; " +
+                    "-fx-padding: 10px 20px; " +
+                    "-fx-background-radius: 10px;"
+            }
+
+            val buttonLayout: VBox = new VBox {
+                alignment = Pos.Center
+                spacing = 10
+                children = List(label) ++ buttons
+            }
+
+            val rootPane: StackPane = new StackPane {
+                children = List(backgroundPane, combinedLayout, buttonLayout)
             }
             root = rootPane
         }
@@ -843,7 +858,7 @@ object GUIManager extends JFXApp3 with Observer {
             }),
             createGameTaskbarButton("Koi-Koi", (e: ActionEvent) => {
                 GameController.processInput("koi-koi")
-            }))
+            })), gameState.stdout.getOrElse("")
         )
     }
     /* ------------------------------------------------------- */
@@ -1050,17 +1065,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current state of the game
      */
     override def update(gameState: GameState): Unit = {
-        Platform.runLater { //TODO: implement update for GameStatePendingKoiKoi
-
-/*
-            val gameState = GameStatePendingKoiKoi(
-                players = List(
-                    Player(name = "???", hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty),
-                    Player(name = "???", hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
-                ), deck = Deck(List.empty), board = Deck(List.empty), displayType = DisplayType.GAME, stdout = None, stderr = None
-            )
-*/
-
+        Platform.runLater {
             if (gameState.stderr.isDefined) {
                 showErrorPopup(gameState.stderr.get)
             }
@@ -1085,7 +1090,7 @@ object GUIManager extends JFXApp3 with Observer {
                                 style = "-fx-background-color: #B82025; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20 10 20; -fx-background-radius: 5;"
                                 StackPane.setAlignment(this, Pos.Center)
                                 StackPane.setMargin(this, Insets(20))
-                            }))
+                            }), "")
 
                         case DisplayType.SUMMARY =>
                             stage.scene = summaryScene(gameState)
