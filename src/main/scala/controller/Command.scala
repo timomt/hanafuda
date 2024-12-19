@@ -30,68 +30,106 @@ trait Command {
     }
 }
 
+trait CommandManager {
+    protected val undoStack: scala.collection.mutable.Stack[Any]
+    protected val redoStack: scala.collection.mutable.Stack[Any]
+    def executeCommand(command: Any, currentState: GameState): GameState
+    def undo(currentState: GameState): GameState
+    def redo(currentState: GameState): GameState
+}
+
 /**
  * Class managing the execution, undoing, and redoing of commands.
  */
-class CommandManager {
-    /**
-     * Stack of commands that can be undone.
-     */
-    private val undoStack = scala.collection.mutable.Stack[Command]()
+class CommandManagerSaveCommand extends CommandManager {
+    protected val undoStack = scala.collection.mutable.Stack[Any]()
+    protected val redoStack = scala.collection.mutable.Stack[Any]()
 
-    /**
-     * Stack of commands that can be redone.
-     */
-    private val redoStack = scala.collection.mutable.Stack[Command]()
-
-    /**
-     * Executes a command and returns the new game state.
-     *
-     * @param command the command to execute
-     * @param currentState the current state of the game
-     * @return the new game state
-     */
-    def executeCommand(command: Command, currentState: GameState): GameState = {
-        val (newState, executedCommand) = command.execute(currentState)
-        undoStack.push(executedCommand)
-        redoStack.clear()
-        newState
+    def executeCommand(command: Any, currentState: GameState): GameState = command match {
+        case cmd: Command =>
+            val (newState, executedCommand) = cmd.execute(currentState)
+            undoStack.push(executedCommand)
+            redoStack.clear()
+            newState
+        case _ =>
+            currentState.updateGameStateWithError("Invalid command type for CommandManagerSaveCommand.")
     }
 
-    /**
-     * Undoes the last executed command and returns the new game state.
-     *
-     * @param currentState the current state of the game
-     * @return the new game state
-     */
     def undo(currentState: GameState): GameState = {
         if (undoStack.nonEmpty) {
-            val command = undoStack.pop()
-            val newState = command.undo(currentState)
-            redoStack.push(command)
-            newState
+            undoStack.pop() match {
+                case command: Command =>
+                    val newState = command.undo(currentState)
+                    redoStack.push(command)
+                    newState
+                case _ =>
+                    currentState.updateGameStateWithError("Invalid undo operation.")
+            }
         } else {
             currentState.updateGameStateWithError("There is nothing to undo.")
         }
     }
 
-    /**
-     * Redoes the last undone command and returns the new game state.
-     *
-     * @param currentState the current state of the game
-     * @return the new game state
-     */
     def redo(currentState: GameState): GameState = {
         if (redoStack.nonEmpty) {
-            val command = redoStack.pop()
-            val (newState, executedCommand) = command.execute(currentState)
-            undoStack.push(executedCommand)
-            newState
+            redoStack.pop() match {
+                case command: Command =>
+                    val (newState, executedCommand) = command.execute(currentState)
+                    undoStack.push(executedCommand)
+                    newState
+                case _ =>
+                    currentState.updateGameStateWithError("Invalid redo operation.")
+            }
         } else {
             currentState.updateGameStateWithError("There is nothing to redo.")
         }
     }
 }
+
+
+class CommandManagerSaveState extends CommandManager {
+    protected val undoStack = scala.collection.mutable.Stack[Any]()
+    protected val redoStack = scala.collection.mutable.Stack[Any]()
+
+    def executeCommand(command: Any, currentState: GameState): GameState = command match {
+        case cmd: Command =>
+            val (newState, executedCommand) = cmd.execute(currentState)
+            undoStack.push(currentState)
+            redoStack.clear()
+            newState
+        case _ =>
+            currentState.updateGameStateWithError("Invalid state type for CommandManagerSaveState.")
+    }
+
+    def undo(currentState: GameState): GameState = {
+        if (undoStack.nonEmpty) {
+            undoStack.pop() match {
+                case previousState: GameState =>
+                    redoStack.push(currentState)
+                    previousState
+                case _ =>
+                    currentState.updateGameStateWithError("Invalid undo operation.")
+            }
+        } else {
+            currentState.updateGameStateWithError("There is nothing to undo.")
+        }
+    }
+
+    def redo(currentState: GameState): GameState = {
+        if (redoStack.nonEmpty) {
+            redoStack.pop() match {
+                case nextState: GameState =>
+                    undoStack.push(currentState)
+                    nextState
+                case _ =>
+                    currentState.updateGameStateWithError("Invalid redo operation.")
+            }
+        } else {
+            currentState.updateGameStateWithError("There is nothing to redo.")
+        }
+    }
+}
+
 
 /**
  * Command to start a new game.

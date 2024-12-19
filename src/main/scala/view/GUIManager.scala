@@ -2,7 +2,7 @@ package view
 
 import controller.{GameController, Observer}
 import model.DisplayType.{GAME, SUMMARY}
-import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameState, GameStatePlanned, GameStateRandom, GameStateSummary, GameStateUninitialized, Player, instantWinCombinations, yakuCombinations}
+import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameState, GameStatePendingKoiKoi, GameStatePlanned, GameStateRandom, GameStateSummary, GameStateUninitialized, Player, instantWinCombinations, yakuCombinations}
 import scalafx.application.{JFXApp3, Platform}
 import scalafx.geometry.{HPos, Insets, Pos, VPos}
 import scalafx.scene.Scene
@@ -512,7 +512,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the scene for the spoiler protection display
      */
-    private def spoilerScene(gameState: GameState): Scene = {
+    private def spoilerScene(gameState: GameState, buttons: List[Button]): Scene = {
         new Scene {
             val backgroundPane: StackPane = new StackPane {
                 background = new Background(Array(
@@ -608,18 +608,8 @@ object GUIManager extends JFXApp3 with Observer {
                     cardLayout,
                 )
             }
-
-            val continueButton: Button = new Button("Press to Continue") {
-                onAction = (e: ActionEvent) => {
-                    GameController.processInput("continue")
-                }
-                style = "-fx-background-color: #B82025; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20 10 20; -fx-background-radius: 5;"
-                StackPane.setAlignment(this, Pos.Center)
-                StackPane.setMargin(this, Insets(20))
-            }
-
-            val rootPane: StackPane = new StackPane {
-                children = List(backgroundPane, combinedLayout, /*createGameTaskbar(gameState),*/ continueButton)
+            val rootPane: StackPane = new StackPane {   //TODO: only last button is appended and visible
+                children = List(backgroundPane, combinedLayout).appendedAll(buttons)
             }
             root = rootPane
         }
@@ -845,7 +835,17 @@ object GUIManager extends JFXApp3 with Observer {
             root = rootPane
         }
     }
-    
+
+    private def scenePendingKoiKoi(gameState: GameState) : Scene = {
+        spoilerScene(gameState, List(
+            createGameTaskbarButton("Finish", (e: ActionEvent) => {
+                GameController.processInput("finish")
+            }),
+            createGameTaskbarButton("Koi-Koi", (e: ActionEvent) => {
+                GameController.processInput("koi-koi")
+            }))
+        )
+    }
     /* ------------------------------------------------------- */
 
     /**
@@ -1051,29 +1051,48 @@ object GUIManager extends JFXApp3 with Observer {
      */
     override def update(gameState: GameState): Unit = {
         Platform.runLater { //TODO: implement update for GameStatePendingKoiKoi
+
+/*
+            val gameState = GameStatePendingKoiKoi(
+                players = List(
+                    Player(name = "???", hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+                    Player(name = "???", hand = Deck(List.empty), side = Deck(List.empty), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
+                ), deck = Deck(List.empty), board = Deck(List.empty), displayType = DisplayType.GAME, stdout = None, stderr = None
+            )
+*/
+
             if (gameState.stderr.isDefined) {
                 showErrorPopup(gameState.stderr.get)
             }
-            if (gameState.isInstanceOf[GameStateUninitialized]) {
-                stage.scene = sceneUninitialized()
-            } else {
-                gameState.displayType match {
-                    case DisplayType.GAME =>
-                        stage.scene = gameScene(gameState)
+            gameState match
+                case _: GameStateUninitialized =>
+                    stage.scene = sceneUninitialized()
+                case _: GameStatePendingKoiKoi =>
+                    stage.scene = scenePendingKoiKoi(gameState)
+                case _ =>
+                    gameState.displayType match {
+                        case DisplayType.GAME =>
+                            stage.scene = gameScene(gameState)
 
-                    case DisplayType.COMBINATIONS =>
-                        stage.scene = combinationsScene(gameState)
+                        case DisplayType.COMBINATIONS =>
+                            stage.scene = combinationsScene(gameState)
 
-                    case DisplayType.SPOILER =>
-                        stage.scene = spoilerScene(gameState)
+                        case DisplayType.SPOILER =>
+                            stage.scene = spoilerScene(gameState, List(new Button("Press to Continue") {
+                                onAction = (e: ActionEvent) => {
+                                    GameController.processInput("continue")
+                                }
+                                style = "-fx-background-color: #B82025; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20 10 20; -fx-background-radius: 5;"
+                                StackPane.setAlignment(this, Pos.Center)
+                                StackPane.setMargin(this, Insets(20))
+                            }))
 
-                    case DisplayType.SUMMARY =>
-                        stage.scene = summaryScene(gameState)
+                        case DisplayType.SUMMARY =>
+                            stage.scene = summaryScene(gameState)
 
-                    case DisplayType.HELP =>
-                        stage.scene = helpScene(gameState)
-                }
-            }
+                        case DisplayType.HELP =>
+                            stage.scene = helpScene(gameState)
+                    }
         }
     }
 }

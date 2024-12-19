@@ -1,7 +1,9 @@
 package controller
 
-import controller.GameController.notifyObservers
+import com.google.inject.Inject
 import model.{DisplayType, GameState, GameStatePendingKoiKoi, GameStateUninitialized}
+
+import scala.compiletime.uninitialized
 
 /**
  * MVC: Controller
@@ -12,8 +14,8 @@ object GameController extends Observable {
      * The current state of the game operated by this object.
      */
     var gameState: GameState = GameStateUninitialized(displayType = DisplayType.HELP, stderr = None)
-    private val commandManager = new CommandManager()
-
+    @Inject var commandManager: CommandManager = uninitialized
+    
     /**
      * Processes a String to change the current GameState
      * and notifies observers of the new GameState.

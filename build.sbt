@@ -14,7 +14,8 @@ lazy val root = (project in file("."))
   )
 libraryDependencies ++= Seq(
   "org.scalafx" %% "scalafx" % "23.0.1-R34",
-  "org.scalatest" %% "scalatest" % "3.2.18" % Test
+  "org.scalatest" %% "scalatest" % "3.2.18" % Test,
+  "net.codingwell" %% "scala-guice" % "7.0.0"
 )
 libraryDependencies ++= {
   // Determine OS version of JavaFX binaries

@@ -1,5 +1,6 @@
+import com.google.inject.Guice
 import view.TUIManager
-import controller.GameController
+import controller.{CommandManager, GameController}
 import view.GUIManager
 
 /**
@@ -9,6 +10,10 @@ object Hanafuda {
     /**
      * Main method to start the application.
      */
+    val injector = Guice.createInjector(new HanafudaModule)
+    val commandManager = injector.getInstance(classOf[CommandManager])
+    GameController.commandManager = commandManager
+    
     @main
     def main(): Unit = {
         GameController.add(TUIManager)
