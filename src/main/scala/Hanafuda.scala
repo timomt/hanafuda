@@ -1,6 +1,7 @@
 import com.google.inject.Guice
 import view.TUIManager
-import controller.{CommandManager, GameController}
+import controller.CommandManager.CommandManager
+import controller.GameController
 import view.GUIManager
 
 /**

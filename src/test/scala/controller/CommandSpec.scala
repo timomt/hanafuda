@@ -1,4 +1,6 @@
-import controller.{CommandManager, CommandManagerSaveCommand, CommandManagerSaveState, GameController, HelpCommand}
+import controller.CommandManager.CommandManagerSaveCommand.CommandManagerSaveCommand
+import controller.CommandManager.CommandManagerSaveState.CommandManagerSaveState
+import controller.{CommandManager, GameController, HelpCommand}
 import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameStatePlanned, Player}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
@@ -88,7 +90,7 @@ class CommandSpec extends AnyFlatSpec with Matchers {
         )).stderr.isDefined should be(true)
     }
 
-    "CommandManagerSaveState" should "return some in stderr if undo called on empty stack" in {
+    "CommandManagerSaveState.scala" should "return some in stderr if undo called on empty stack" in {
         val cmdManager = new CommandManagerSaveState()
         cmdManager.undo(GameStatePlanned(
             players = List(

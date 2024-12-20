@@ -1,5 +1,7 @@
 import com.google.inject.{AbstractModule, TypeLiteral}
-import controller.{Command, CommandManager, CommandManagerSaveCommand, CommandManagerSaveState}
+import controller.CommandManager.CommandManager
+import controller.CommandManager.CommandManagerSaveCommand.CommandManagerSaveCommand
+import controller.CommandManager.CommandManagerSaveState.CommandManagerSaveState
 import net.codingwell.scalaguice.ScalaModule
 
 class HanafudaModule extends AbstractModule with ScalaModule {
