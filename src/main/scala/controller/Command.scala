@@ -1,6 +1,8 @@
 package controller
 
-import model.{DisplayType, GameManager, GameState}
+import model.GameManager.GameManager
+import model.{DisplayType, GameState}
+import model.GameManager.GameManagerInstance.given
 
 /**
  * Trait representing a command that can be executed, undone, and redone.
@@ -36,10 +38,10 @@ trait Command {
  * @param firstPlayer the name of the first player
  * @param secondPlayer the name of the second player
  */
-class StartGameCommand(firstPlayer: String, secondPlayer: String) extends Command {
+class StartGameCommand(firstPlayer: String, secondPlayer: String)(using gameManager: GameManager) extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
-        val newState = GameManager.newGame(firstPlayer, secondPlayer)
+        val newState = gameManager.newGame(firstPlayer, secondPlayer)
         (newState, this)
     }
 }
@@ -69,10 +71,10 @@ class CombinationsCommand extends Command {
 /**
  * Command to handle the koi-koi call.
  */
-class KoiKoiCommand extends Command {
+class KoiKoiCommand(using gameManager: GameManager) extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
-        val newState = GameManager.koiKoiCallHandler(currentState)
+        val newState = gameManager.koiKoiCallHandler(currentState)
         (newState, this)
     }
 }
@@ -80,11 +82,11 @@ class KoiKoiCommand extends Command {
 /**
  * Command to finish the game.
  */
-class FinishCommand extends Command {
+class FinishCommand(using gameManager: GameManager) extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
-        val (firstS, secS) = GameManager.evaluateScore(currentState.players, 1, 1)
-        val newState = GameManager.handleKoiKoi(currentState.players, firstS, secS, board = currentState.board, deck = currentState.deck)
+        val (firstS, secS) = gameManager.evaluateScore(currentState.players, 1, 1)
+        val newState = gameManager.handleKoiKoi(currentState.players, firstS, secS, board = currentState.board, deck = currentState.deck)
         (newState, this)
     }
 }
@@ -103,10 +105,10 @@ class ContinueCommand extends Command {
 /**
  * Command to start a new game with the same players.
  */
-class NewCommand extends Command {
+class NewCommand(using gameManager: GameManager) extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
-        val newState = GameManager.newGame(currentState.players.head.name, currentState.players(1).name, currentState.players.head.score, currentState.players(1).score)
+        val newState = gameManager.newGame(currentState.players.head.name, currentState.players(1).name, currentState.players.head.score, currentState.players(1).score)
         (newState, this)
     }
 }

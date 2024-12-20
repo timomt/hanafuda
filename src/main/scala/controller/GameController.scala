@@ -3,6 +3,8 @@ package controller
 import com.google.inject.Inject
 import model.{DisplayType, GameState, GameStatePendingKoiKoi, GameStateUninitialized}
 import controller.CommandManager.CommandManager
+import model.GameManager.GameManager
+import model.GameManager.GameManagerInstance.given_GameManager
 import scala.compiletime.uninitialized
 
 /**

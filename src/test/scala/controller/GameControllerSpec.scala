@@ -2,9 +2,13 @@ import controller.CommandManager.CommandManagerSaveCommand.CommandManagerSaveCom
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 import controller.GameController
-import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameManager, GameStatePendingKoiKoi, GameStatePlanned, GameStateRandom, GameStateUninitialized, Player}
+import model.GameManager.GameManager
+import model.GameManager.GameManagerDefault.GameManagerDefault
+import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameStatePendingKoiKoi, GameStatePlanned, GameStateRandom, GameStateUninitialized, Player}
 
 class GameControllerSpec extends AnyFlatSpec with Matchers {
+    given gameManager: GameManager = new GameManagerDefault()
+
     "GameController" should "do nothing on invalid input before start" in {
         GameController.commandManager = new CommandManagerSaveCommand
         GameController.processInput("continue")
@@ -18,7 +22,7 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
     }
 
     it should "return stderr on invalid input after start" in {
-        GameController.gameState = GameManager.newGame("Player1", "Player2")
+        GameController.gameState = gameManager.newGame("Player1", "Player2")
         GameController.notifyObservers(GameController.gameState)
         GameController.processInput("gkqapwd")
         GameController.gameState.stderr.isDefined should be (true)
@@ -79,20 +83,20 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
     }
 
     it should "initialize a new game" in {
-        GameController.gameState = GameManager.newGame("Player1", "Player2")
+        GameController.gameState = gameManager.newGame("Player1", "Player2")
         GameController.notifyObservers(GameController.gameState)
         GameController.gameState.isInstanceOf[GameStateUninitialized] should be (false)
     }
 
     it should "process input 'help'" in {
-        GameController.gameState = GameManager.newGame("Player1", "Player2")
+        GameController.gameState = gameManager.newGame("Player1", "Player2")
         GameController.notifyObservers(GameController.gameState)
         GameController.processInput("help")
         GameController.gameState.displayType should be (DisplayType.HELP)
     }
 
     it should "process input 'continue'" in {
-        GameController.gameState = GameManager.newGame("Player1", "Player2")
+        GameController.gameState = gameManager.newGame("Player1", "Player2")
         GameController.notifyObservers(GameController.gameState)
         GameController.processInput("continue")
         GameController.gameState.displayType should be (DisplayType.GAME)
@@ -176,21 +180,21 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
     }
 
     it should "process input 'new'" in {
-        GameController.gameState = GameManager.newGame("Player1", "Player2")
+        GameController.gameState = gameManager.newGame("Player1", "Player2")
         GameController.notifyObservers(GameController.gameState)
         GameController.processInput("new")
         GameController.gameState.players.map(_.name) should contain allOf("Player1", "Player2")
     }
 
     it should "process input 'combinations'" in {
-        GameController.gameState = GameManager.newGame("Player1", "Player2")
+        GameController.gameState = gameManager.newGame("Player1", "Player2")
         GameController.notifyObservers(GameController.gameState)
         GameController.processInput("combinations")
         GameController.gameState.displayType should be (DisplayType.COMBINATIONS)
     }
 
     it should "undo moves correctly" in {
-        GameController.gameState = GameManager.newGame("Player1", "Player2")
+        GameController.gameState = gameManager.newGame("Player1", "Player2")
         GameController.notifyObservers(GameController.gameState)
         GameController.processInput("combinations")
         GameController.processInput("help")
@@ -202,7 +206,7 @@ class GameControllerSpec extends AnyFlatSpec with Matchers {
     }
 
     it should "redo moves correctly" in {
-        GameController.gameState = GameManager.newGame("Player1", "Player2")
+        GameController.gameState = gameManager.newGame("Player1", "Player2")
         GameController.notifyObservers(GameController.gameState)
         GameController.processInput("combinations")
         GameController.processInput("help")

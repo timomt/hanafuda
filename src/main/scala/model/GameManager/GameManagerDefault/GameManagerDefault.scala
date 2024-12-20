@@ -1,11 +1,10 @@
-package model
+package model.GameManager.GameManagerDefault
+import model.GameManager.GameManager
+import model.{Card, Deck, DisplayType, GameState, GameStatePendingKoiKoi, GameStatePlanned, GameStateSummary, Player, instantWinCombinations, yakuCombinations}
 
 import scala.annotation.tailrec
 
-/**
- * Object to perform operations on GameState instances.
- */
-object GameManager {
+class GameManagerDefault extends GameManager {
 
     /**
      * Returns a new GameState as default game setup.
@@ -20,7 +19,7 @@ object GameManager {
      * @return a new GameState
      */
     @tailrec
-    def newGame(firstPlayer: String, secondPlayer: String, firstScore: Int = 0, secondScore: Int = 0, customBoard: Option[List[Card]] = None, customHandFirst: Option[Deck] = None, customHandSec: Option[Deck] = None): GameState = {
+    final def newGame(firstPlayer: String, secondPlayer: String, firstScore: Int = 0, secondScore: Int = 0, customBoard: Option[List[Card]] = None, customHandFirst: Option[Deck] = None, customHandSec: Option[Deck] = None): GameState = {
         val (polledBoard, deck) = Deck.pollMultiple(Deck.defaultDeck(), 8)
         val actualPolledBoard = customBoard.getOrElse(polledBoard)
 
@@ -92,22 +91,22 @@ object GameManager {
      * Either no player has called koi-koi before or one of them.
      * If no player has called, ask them for a decision -> GameStatePendingKoiKoi
      * If the player that just scored has already called koi-koi before, then double their points.
-     * If the opponent of the player that just scored has already called koi-koi before, 
+     * If the opponent of the player that just scored has already called koi-koi before,
      * then double the points of the one who just scored and set their opponents' to 0.
      * @param game the current game state
      * @return the new game state
      */
     def koiKoiHandler(game: GameState): GameState = {
         /* Player called koi-koi before */
-        if (game.players.head.calledKoiKoi) { 
+        if (game.players.head.calledKoiKoi) {
             val (firstS, secS) = evaluateScore(game.players, 2, 1)
             handleKoiKoi(game.players, firstS, secS, game.board, game.deck)
         }
         /* Opponent called koi-koi before */
-        else if (game.players(1).calledKoiKoi) {  
+        else if (game.players(1).calledKoiKoi) {
             val (firstS, secS) = evaluateScore(game.players, 2, 0)
             handleKoiKoi(game.players, firstS, secS, game.board, game.deck)
-        } 
+        }
         /* No one called koi-koi before */
         else {
             val yakuList = yakuCombinations.filter(c => c.evaluate(game.players.head) > 0)
@@ -153,7 +152,7 @@ object GameManager {
      * Handles the call for koi-koi.
      * Called when a player decides to continue after scoring a yaku.
      * (if koi-koi has not been previously called)
-     * 
+     *
      * @param game the current game state
      * @return the new game state
      */
@@ -174,7 +173,7 @@ object GameManager {
      * @param player the player
      * @return the instant win score
      */
-    private def calculateInstantWinScore(player: Player): Int = {
+    def calculateInstantWinScore(player: Player): Int = {
         instantWinCombinations.foldLeft(0) {
             case (acc, yaku) =>
                 acc + yaku.evaluate(player)
@@ -203,7 +202,7 @@ object GameManager {
 
     /**
      * Checks if a player has scored a *new* yaku.
-     * 
+     *
      * @param player the player
      * @return true if the player has scored a new yaku, false otherwise
      */

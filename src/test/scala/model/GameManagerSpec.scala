@@ -2,18 +2,21 @@ package model
 
 import model.GameManager.*
 import org.scalatest.flatspec.AnyFlatSpec
+import model.GameManager.GameManagerDefault.GameManagerDefault
 
 class GameManagerSpec extends AnyFlatSpec {
+    given gameManager: GameManager = new GameManagerDefault()
+
     "newGame()" should "return a game initialized with the given player names" in {
         val firstName = "5r2313^2_23sad"
         val secondName = "51280qehd0_.1q2du9132312"
-        val game = GameManager.newGame(firstName, secondName)
+        val game = gameManager.newGame(firstName, secondName)
         assert(game.players.head.name === firstName)
         assert(game.players(1).name === secondName)
     }
     
     it should "not deal a full month" in {
-        val game = GameManager.newGame(" ", " ", 0, 0,
+        val game = gameManager.newGame(" ", " ", 0, 0,
             Some(List(Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR, false, 0),
                 Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR, false, 0),
                 Card(CardMonth.MARCH, CardType.HIKARI, CardName.BOAR, false, 0),
@@ -26,7 +29,7 @@ class GameManagerSpec extends AnyFlatSpec {
     }
     
     it should "group 3 cards of the same month together" in {
-        val game = GameManager.newGame(" ", " ", 0, 0,
+        val game = gameManager.newGame(" ", " ", 0, 0,
             Some(List(Card(CardMonth.NOVEMBER, CardType.HIKARI, CardName.BOAR, false, 0),
                 Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR, false, 0),
                 Card(CardMonth.JULY, CardType.HIKARI, CardName.BOAR, false, 0),
@@ -39,7 +42,7 @@ class GameManagerSpec extends AnyFlatSpec {
     }
 
     it should "handle instant win conditions" in {
-        val game = GameManager.newGame(
+        val game = gameManager.newGame(
             firstPlayer = "FirstPlayer",
             secondPlayer = "SecondPlayer",
             customHandFirst = Some(Deck(List(
@@ -54,7 +57,7 @@ class GameManagerSpec extends AnyFlatSpec {
     }
 
     "initializePlayers" should "correctly initialize a list of 2 Players" in {
-        val (playerList, updatedDeck) = initializePlayers(
+        val (playerList, updatedDeck) = gameManager.initializePlayers(
             firstPlayer = "firstPlayer",
             secondPlayer = "secondPlayer",
             firstScore = 1,
@@ -84,7 +87,7 @@ class GameManagerSpec extends AnyFlatSpec {
             stdout = None,
             stderr = None
         )
-        val newGame = GameManager.koiKoiHandler(game)
+        val newGame = gameManager.koiKoiHandler(game)
         assert(newGame.isInstanceOf[GameStatePendingKoiKoi])
         assert(newGame.stdout === Some(s"You scored a yaku: \n\t- Hanami-zake (花見酒) \"Cherry Blossom Viewing\"\t5pts.\nYou can now either finish or call koi-koi."))
         assert(newGame.stderr.isEmpty)
@@ -106,7 +109,7 @@ class GameManagerSpec extends AnyFlatSpec {
             stdout = None,
             stderr = None
         )
-        val newGame = GameManager.koiKoiHandler(game)
+        val newGame = gameManager.koiKoiHandler(game)
         assert(newGame.players.head.score === game.players.head.score + 2*HanamiZakeCombination.points)
         assert(newGame.players(1).score === game.players(1).score)
     }
@@ -130,7 +133,7 @@ class GameManagerSpec extends AnyFlatSpec {
             stdout = None,
             stderr = None
         )
-        val newGame = GameManager.koiKoiHandler(game)
+        val newGame = gameManager.koiKoiHandler(game)
         assert(newGame.players.head.score === game.players.head.score + 2 * HanamiZakeCombination.points)
         assert(newGame.players(1).score === game.players(1).score)
     }
@@ -153,7 +156,7 @@ class GameManagerSpec extends AnyFlatSpec {
             stdout = None,
             stderr = None
         )
-        val newGame = GameManager.koiKoiCallHandler(game)
+        val newGame = gameManager.koiKoiCallHandler(game)
         assert(newGame.isInstanceOf[GameStatePlanned])
         assert(newGame.players.head === Player(
             name = "SecondPlayer", hand = Deck(List.empty), side = Deck(List.empty),

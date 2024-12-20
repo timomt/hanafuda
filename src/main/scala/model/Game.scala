@@ -1,4 +1,6 @@
 package model
+import model.GameManager.GameManager
+import model.GameManager.GameManagerInstance.given
 
 /**
  * Represents a player in the game.
@@ -39,7 +41,7 @@ enum DisplayType {
  */
 trait GameState {
     def players: List[Player]
-    def deck: Deck
+    def deck: Deck 
     def board: Deck
     def stdout: Option[String]
     def stderr: Option[String]
@@ -179,7 +181,7 @@ case class GameStatePlanned(players: List[Player], deck: Deck, board: Deck, disp
  * @param stdout a String for feedback messages
  * @param stderr a String for error messages
  */
-case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, matched: Deck, queued: Card, displayType: DisplayType = DisplayType.GAME, stdout: Option[String], stderr: Option[String]) extends GameState {
+case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, matched: Deck, queued: Card, displayType: DisplayType = DisplayType.GAME, stdout: Option[String], stderr: Option[String])(using gameManager: GameManager) extends GameState {
     /*
     * override class specific values since matchedDeck and queuedCard will be used.
     * */
@@ -222,9 +224,9 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
             /* Evaluate the score for the current state if either the deck or both players hand are empty */
             if (this.deck.cards.isEmpty
                 || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {
-                GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, board = updatedBoard, deck = this.deck, true)
-            } else if (GameManager.playerHasScoredNewYaku(updatedPlayers(1))) {    /* Check if a player has scored a yaku */
-                GameManager.koiKoiHandler(this.copy(
+                gameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, board = updatedBoard, deck = this.deck, true)
+            } else if (gameManager.playerHasScoredNewYaku(updatedPlayers(1))) {    /* Check if a player has scored a yaku */
+                gameManager.koiKoiHandler(this.copy(
                     players = updatedPlayers.reverse,
                     board = updatedBoard
                 ))
@@ -268,9 +270,9 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                     /* Evaluate the score for the current state if either the deck or both players hand are empty */
                     if (this.deck.cards.isEmpty
                         || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {
-                        GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, deck = this.deck, board = updatedBoard, true)
-                    } else if (GameManager.playerHasScoredNewYaku(updatedPlayers(1))) {    /* Check if a player has scored a yaku */
-                        GameManager.koiKoiHandler(this.copy(
+                        gameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, deck = this.deck, board = updatedBoard, true)
+                    } else if (gameManager.playerHasScoredNewYaku(updatedPlayers(1))) {    /* Check if a player has scored a yaku */
+                        gameManager.koiKoiHandler(this.copy(
                             players = updatedPlayers.reverse,
                             board = updatedBoard
                         ))
@@ -294,9 +296,9 @@ case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, match
                     /* Evaluate the score for the current state if either the deck or both players hand are empty */
                     if (this.deck.cards.isEmpty
                         || updatedPlayers.head.hand.cards.isEmpty && updatedPlayers(1).hand.cards.isEmpty) {
-                        GameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, deck = this.deck, board = updatedBoard, true)
-                    } else if (GameManager.playerHasScoredNewYaku(updatedPlayers(1))) {      /* Check if a player has scored a yaku */
-                        GameManager.koiKoiHandler(this.copy(
+                        gameManager.handleKoiKoi(updatedPlayers, updatedPlayers.head.score, updatedPlayers(1).score, deck = this.deck, board = updatedBoard, true)
+                    } else if (gameManager.playerHasScoredNewYaku(updatedPlayers(1))) {      /* Check if a player has scored a yaku */
+                        gameManager.koiKoiHandler(this.copy(
                             players = updatedPlayers.reverse,
                             board = updatedBoard
                         ))

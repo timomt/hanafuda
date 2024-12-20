@@ -1,11 +1,14 @@
 import org.scalatest.funspec.AnyFunSpec
 import org.scalatest.matchers.should.Matchers
-import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameManager, GameStatePlanned, GameStateRandom, GameStateSummary, Player}
+import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameStatePlanned, GameStateRandom, GameStateSummary, Player}
 import view.TUIManager
 import controller.GameController
 import model.DisplayType.SUMMARY
+import model.GameManager.GameManager
+import model.GameManager.GameManagerDefault.GameManagerDefault
 
 class TUIManagerSpec extends AnyFunSpec with Matchers {
+  given gameManager: GameManager = new GameManagerDefault()
 
   GameController.add(TUIManager)
 
