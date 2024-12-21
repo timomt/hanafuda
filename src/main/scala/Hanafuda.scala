@@ -1,3 +1,4 @@
+import FileIO.FileIO
 import com.google.inject.Guice
 import view.TUIManager
 import controller.CommandManager.CommandManager
@@ -13,7 +14,9 @@ object Hanafuda {
      */
     val injector = Guice.createInjector(new HanafudaModule)
     val commandManager = injector.getInstance(classOf[CommandManager])
+    val fileIO = injector.getInstance(classOf[FileIO])
     GameController.commandManager = commandManager
+    GameController.fileIO = fileIO
     
     @main
     def main(): Unit = {

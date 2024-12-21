@@ -1,10 +1,12 @@
 package controller
 
+import FileIO.FileIO
 import com.google.inject.Inject
 import model.{DisplayType, GameState, GameStatePendingKoiKoi, GameStateUninitialized}
 import controller.CommandManager.CommandManager
 import model.GameManager.GameManager
 import model.GameManager.GameManagerInstance.given_GameManager
+
 import scala.compiletime.uninitialized
 
 /**
@@ -17,6 +19,7 @@ object GameController extends Observable {
      */
     var gameState: GameState = GameStateUninitialized(displayType = DisplayType.HELP, stderr = None)
     @Inject var commandManager: CommandManager = uninitialized
+    @Inject var fileIO: FileIO = uninitialized
     
     /**
      * Processes a String to change the current GameState
@@ -77,6 +80,13 @@ object GameController extends Observable {
             case "new" =>
                 commandManager.executeCommand(new NewCommand, gameState)
 
+            case "save" =>
+                val succ = fileIO.save(gameState)
+                if succ then gameState else gameState.updateGameStateWithError("Saving failed.")
+
+            case "load" =>
+                fileIO.load
+                
             case _ =>
                 gameState.updateGameStateWithError("Wrong usage, see \"help\".")
         }

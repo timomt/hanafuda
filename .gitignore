@@ -38,3 +38,5 @@ sonarqube.sh
 
 *.jfr
 *.log
+gameState.json
+gameState.xml

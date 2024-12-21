@@ -41,7 +41,7 @@ enum DisplayType {
  */
 trait GameState {
     def players: List[Player]
-    def deck: Deck 
+    def deck: Deck
     def board: Deck
     def stdout: Option[String]
     def stderr: Option[String]
