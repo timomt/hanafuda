@@ -25,13 +25,10 @@ class FileIOJSONSpec extends AnyFlatSpec with Matchers {
       stderr = None
     )
 
-    // Save the GameState
     fileIO.save(game) shouldBe true
 
-    // Load the GameState
     val loadedGameState = fileIO.load
 
-    // Verify the loaded GameState
     loadedGameState shouldBe game
   }
 }
