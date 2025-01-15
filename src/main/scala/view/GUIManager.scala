@@ -19,7 +19,7 @@ import scalafx.event.ActionEvent
 import scalafx.geometry.Pos.TopCenter
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.cell.TextFieldTableCell
-import scalafx.scene.effect.{DropShadow, GaussianBlur}
+import scalafx.scene.effect.{ColorAdjust, DropShadow, GaussianBlur}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.shape.{Line, StrokeLineCap}
@@ -86,11 +86,11 @@ object GUIManager extends JFXApp3 with Observer {
         /* ---------------- */
 
         stage = new JFXApp3.PrimaryStage {
-            title = "Hanafuda"
+            title = "Hanafuda - KoiKoi"
             width = vw
             height = vh
             resizable = false
-            icons += new Image(getClass.getResourceAsStream("/img/logo/koikoi.png"))
+            icons += new Image(getClass.getResourceAsStream("/img/logo/icon.png"))
             onCloseRequest = _ => {
                 GameController.processInput("exit")
             }
@@ -110,7 +110,7 @@ object GUIManager extends JFXApp3 with Observer {
         val rootPane: StackPane = new StackPane {
             background = new Background(Array(
                 new BackgroundImage(
-                    new Image("/img/background/main_menu.png",
+                    new Image("/img/background/mockup.png", // mockup alternative
                         requestedWidth = vw, requestedHeight = vh,
                         preserveRatio = true, smooth = true, backgroundLoading = false),
                     BackgroundRepeat.NoRepeat,
@@ -121,7 +121,11 @@ object GUIManager extends JFXApp3 with Observer {
                     )
                 )
             ))
-
+            effect = new ColorAdjust {
+                brightness = -0.15
+            }
+        }
+        val contentPane: StackPane = new StackPane {
             //--------------------------------------------------------------------------------
             //animation properties for the falling leaf animation
             def createFallingLeaf(
@@ -197,7 +201,8 @@ object GUIManager extends JFXApp3 with Observer {
             textField_p2.prefHeight = vh * 0.03
             val logo: ImageView = new ImageView {
                 padding = Insets(vh * 0.2, 0, 0, 0)
-                image = new Image("/img/logo/koikoi.png")
+                image = new Image("/img/logo/logo.png", requestedWidth = vw*0.15, requestedHeight = vw*0.15,
+                    preserveRatio = true, smooth = true, backgroundLoading = false)
                 fitWidth = vw * 0.15
                 preserveRatio = true
                 alignmentInParent = TopCenter
@@ -238,7 +243,9 @@ object GUIManager extends JFXApp3 with Observer {
             }
             children = List(logo, vbox) ++ leaves
         }
-        root = rootPane
+        root = new StackPane {
+            children = List(rootPane, contentPane)
+        }
     }
 
     /**
