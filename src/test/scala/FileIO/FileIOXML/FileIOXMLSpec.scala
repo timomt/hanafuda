@@ -7,7 +7,8 @@ import model.GameManager.GameManagerInstance.given_GameManager
 
 class FileIOXMLSpec extends AnyFlatSpec with Matchers {
 
-  "FileIOXML" should "save and load GameState correctly" in {
+  "FileIOXML" should
+    "save and load GameStateRandom correctly" in {
     val player1 = Player("Alice", Deck(List(Card(CardMonth.JANUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU, false, 2))), Deck(List()), 0, false, List())
     val player2 = Player("Bob", Deck(List(Card(CardMonth.FEBRUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU, false, 6))), Deck(List()), 0, false, List())
     val game = GameStateRandom(
@@ -45,4 +46,43 @@ class FileIOXMLSpec extends AnyFlatSpec with Matchers {
 
     loadedGameState shouldEqual game
   }
+
+  it should
+  "save and load GameStatePlanned correctly" in {
+    val player1 = Player("Alice", Deck(List(Card(CardMonth.JANUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU, false, 2))), Deck(List()), 0, false, List())
+    val player2 = Player("Bob", Deck(List(Card(CardMonth.FEBRUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU, false, 6))), Deck(List()), 0, false, List())
+    val game = GameStatePlanned(
+      players = List(
+        Player(yakusToIgnore = List.empty,
+          name = "",
+          hand = Deck(List(Card(CardMonth.JANUARY, CardType.TANE, CardName.PLAIN, false, 0))),
+          side = Deck(List(
+            Card(CardMonth.AUGUST, CardType.HIKARI, CardName.MOON, false, 0)
+          )),
+          score = 0,
+          calledKoiKoi = false
+        ),
+        Player(yakusToIgnore = List.empty,
+          name = "",
+          hand = Deck(List.empty),
+          side = Deck(List.empty),
+          score = 0,
+          calledKoiKoi = false
+        )
+      ),
+      deck = Deck.defaultDeck(),
+      board = Deck(List(Card(CardMonth.MARCH, CardType.TANE, CardName.PLAIN, false, 0))),
+      stdout = None,
+      stderr = None
+    )
+
+    val fileIO = new FileIOXML
+
+    fileIO.save(game) should be(true)
+
+    val loadedGameState = fileIO.load
+
+    loadedGameState shouldEqual game
+  }
+
 }

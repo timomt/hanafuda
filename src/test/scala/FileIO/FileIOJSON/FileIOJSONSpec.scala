@@ -7,13 +7,13 @@ import org.scalatest.matchers.should.Matchers
 
 class FileIOJSONSpec extends AnyFlatSpec with Matchers {
 
-  "FileIO/FileIOJSON" should "save and load GameState correctly" in {
+  "FileIO/FileIOJSON" should "save and load GameState correctly for GamestatePlanned" in {
     val fileIO = new FileIOJSON
 
     val game = GameStatePlanned(
       players = List(
-        Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
-        Player("", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
+        Player("test 1", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty),
+        Player("test 2", Deck(List.empty), Deck(List.empty), 0, calledKoiKoi = false, yakusToIgnore = List.empty)
       ),
       deck = Deck.defaultDeck(),
       board = Deck(List(
