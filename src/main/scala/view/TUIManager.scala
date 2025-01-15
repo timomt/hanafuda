@@ -125,6 +125,11 @@ object TUIManager extends Observer {
               |║ 7. exit                                                                ║
               |║    - Exits the game.                                                   ║
               |║                                                                        ║
+              |║ 8. save                                                                ║
+              |║    - save the current GameState                                        ║
+              |║                                                                        ║
+              |║ 9. load                                                                ║
+              |║    - load a GameState                                                  ║
               |╚════════════════════════════════════════════════════════════════════════╝
               |""".stripMargin
         helpText

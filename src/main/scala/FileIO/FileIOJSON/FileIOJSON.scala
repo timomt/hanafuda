@@ -72,8 +72,8 @@ class FileIOJSON extends FileIO {
             "stdout"       -> gameState.stdout,
             "stderr"       -> gameState.stderr,
             "displayType"  -> gameState.displayType.toString,
-            "matchedDeck"  -> (if gameState.matchedDeck.isEmpty then JsNull else Json.toJson {
-                gameState.matchedDeck.get.cards.map { c =>
+            "matchedDeck"  -> (if gameState.matchedDeck.isEmpty then JsNull else Json.obj {
+                "cards"->gameState.matchedDeck.get.cards.map { c =>
                     Json.obj(
                         "month"    -> c.month.toString,
                         "cardType" -> c.cardType.toString,
