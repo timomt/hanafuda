@@ -1,6 +1,5 @@
 package FileIO.FileIOXML
 
-
 import FileIO.FileIO
 import controller.GameController.gameState
 import model.*
@@ -71,8 +70,6 @@ class FileIOXML extends FileIO {
     instanceOf match {
       case "class model.GameStateUninitialized" => GameStateUninitialized(displayType, stderr)
       case "class model.GameStateRandom" => GameStateRandom(players, deck, board, matchedDeck.getOrElse(Deck(Nil)), queuedCard, displayType, stdout, stderr)
-      // case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, matched: Deck, queued: Card, displayType: DisplayType = DisplayType.GAME,
-      //                            stdout: Option[String], stderr: Option[String])(using gameManager: GameManager)
       case "class model.GameStatePlanned" => GameStatePlanned(players, deck, board, displayType, stdout, stderr)
       case "class model.GameStatePendingKoiKoi" => GameStatePendingKoiKoi(players, deck, board, displayType, stdout, stderr)
       case "class model.GameStateSummary" => GameStateSummary(players, deck, board, displayType, stdout, stderr, outOfCardsEnding = false)
@@ -130,7 +127,6 @@ class FileIOXML extends FileIO {
     <combination>{combination.toString}</combination>
   }
 
-  // ????
   private def xmlToCombination(xml: Node): Combination = {
     val combinationName = (xml \ "combination").text
     val combinationClass = Class.forName(s"model.$combinationName$$")

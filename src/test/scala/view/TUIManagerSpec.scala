@@ -563,6 +563,11 @@ class TUIManagerSpec extends AnyFunSpec with Matchers {
             |║ 7. exit                                                                ║
             |║    - Exits the game.                                                   ║
             |║                                                                        ║
+            |║ 8. save                                                                ║
+            |║    - save the current GameState                                        ║
+            |║                                                                        ║
+            |║ 9. load                                                                ║
+            |║    - load a GameState                                                  ║
             |╚════════════════════════════════════════════════════════════════════════╝
             |""".stripMargin
 

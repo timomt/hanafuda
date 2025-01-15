@@ -10,6 +10,6 @@ import net.codingwell.scalaguice.ScalaModule
 class HanafudaModule extends AbstractModule with ScalaModule {
     override def configure(): Unit = {
         bind[CommandManager].to[CommandManagerSaveState]
-        bind[FileIO].to[FileIO.FileIOJSON.FileIOJSON]
+        bind[FileIO].to[FileIO.FileIOXML.FileIOXML]
     }
 }
