@@ -924,6 +924,12 @@ object GUIManager extends JFXApp3 with Observer {
         val button7 = createGameTaskbarButton("Exit", (e: ActionEvent) => {
             GameController.processInput("exit")
         })
+        val button8 = createGameTaskbarButton("Save", (e: ActionEvent) => {
+            GameController.processInput("save")
+        })
+        val button9 = createGameTaskbarButton("Load", (e: ActionEvent) => {
+            GameController.processInput("load")
+        })
 
         val playerTextField = createStyledLabel(s"Player: ${gameState.players.head.name}")
         val playerScoreField = createStyledLabel(s"Score: ${gameState.players.head.score}")
@@ -942,7 +948,7 @@ object GUIManager extends JFXApp3 with Observer {
                 new HBox {
                     alignment = Pos.Center
                     spacing = 20
-                    children = List(button1, button2, button3, button4, button5, button6, button7, playerTextField, playerScoreField)
+                    children = List(button1, button2, button3, button4, button5, button6, button7, playerTextField, playerScoreField, button8, button9)
                 },
                 rightSpacer
             )
