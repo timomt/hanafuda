@@ -66,11 +66,11 @@ class FileIOXML extends FileIO {
     val stderr = Option((xml \ "stderr").text).filter(_.nonEmpty)
     val displayType = DisplayType.valueOf((xml \ "displayType").text)
     val matchedDeck = Option(Deck((xml \ "matchedDeck" \ "card").map(xmlToCard).toList))
-    val queuedCard = (xml \ "queuedCard" \ "card").headOption.map(xmlToCard).getOrElse(throw new NoSuchElementException("No card found in queuedCard"))
+    val queuedCard = (xml \ "queuedCard" \ "card").headOption.map(xmlToCard).orNull
 
     instanceOf match {
       case "class model.GameStateUninitialized" => GameStateUninitialized(displayType, stderr)
-      case "class model.GameStateRandom" => GameStateRandom(players, deck, board, matchedDeck.get, queuedCard, displayType, stdout, stderr)
+      case "class model.GameStateRandom" => GameStateRandom(players, deck, board, matchedDeck.getOrElse(Deck(Nil)), queuedCard, displayType, stdout, stderr)
       // case class GameStateRandom(players: List[Player], deck: Deck, board: Deck, matched: Deck, queued: Card, displayType: DisplayType = DisplayType.GAME,
       //                            stdout: Option[String], stderr: Option[String])(using gameManager: GameManager)
       case "class model.GameStatePlanned" => GameStatePlanned(players, deck, board, displayType, stdout, stderr)
