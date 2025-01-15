@@ -783,7 +783,9 @@ object GUIManager extends JFXApp3 with Observer {
                         createTextField("5. new\n   - takes player names and creates a new game from scratch"),
                         createTextField("6. combinations \n   - Displays the possible combinations of cards."),
                         createTextField("7. help\n   - Displays this help page."),
-                        createTextField("8. exit\n   - Exits the game.")
+                        createTextField("8. exit\n   - Exits the game."),
+                        createTextField("9. save\n   - saves the game."),
+                        createTextField("10. load\n   - loads a game.")
                     )
 
                     val textAreaPane: StackPane = new StackPane {
