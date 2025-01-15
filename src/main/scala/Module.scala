@@ -1,5 +1,6 @@
 import FileIO.FileIOJSON.FileIOJSON
 import FileIO.FileIO
+import _root_.FileIO.FileIOXML.FileIOXML
 import com.google.inject.{AbstractModule, TypeLiteral}
 import controller.CommandManager.CommandManager
 import controller.CommandManager.CommandManagerSaveCommand.CommandManagerSaveCommand

@@ -34,7 +34,8 @@ libraryDependencies ++= {
 // JDK Compatibility
 javacOptions ++= Seq("--release", "21")
 Compile / run / javaOptions ++= Seq(
-    "--module-path", (Compile / fullClasspath).value.map(_.data).mkString(":"),
+    "--module-path", "/opt/openjfx-23.0.1/lib",
+   // "--module-path", (Compile / fullClasspath).value.map(_.data).mkString(":"),
     "--add-modules", "javafx.controls,javafx.fxml"
 )
 jacocoReportSettings := JacocoReportSettings().withFormats(JacocoReportFormats.XML, JacocoReportFormats.HTML)

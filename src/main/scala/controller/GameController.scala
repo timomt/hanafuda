@@ -81,11 +81,10 @@ object GameController extends Observable {
                 commandManager.executeCommand(new NewCommand, gameState)
 
             case "save" =>
-                val succ = fileIO.save(gameState)
-                if succ then gameState else gameState.updateGameStateWithError("Saving failed.")
+                commandManager.executeCommand(new SaveCommand, gameState)
 
             case "load" =>
-                fileIO.load
+                commandManager.executeCommand(new LoadCommand, gameState)
                 
             case _ =>
                 gameState.updateGameStateWithError("Wrong usage, see \"help\".")

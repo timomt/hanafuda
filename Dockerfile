@@ -1,35 +1,26 @@
-#FROM bellsoft/liberica-runtime-container:jdk-23-cds-slim-musl
-#
-#ENV SCALA_VERSION=3.5.1
-#ENV SBT_VERSION=1.5.5
-#
-#
-#
-#RUN \
-#   curl -fsL https://downloads.typesafe.com/scala/$SCALA_VERSION/scala-$SCALA_VERSION.tgz | tar xfz - -C /root/ && \
-#    echo >> /root/.bashrc && \
-#    echo 'export PATH=~/scala-$SCALA_VERSION/bin:$PATH' >> /root/.bashrc
-#
-#RUN \
-#   curl -L -o sbt-$SBT_VERSION.deb https://dl.bintray.com/sbt/debian/sbt-$SBT_VERSION.deb && \
-#    dpkg -i sbt-$SBT_VERSION.deb && \
-#    rm sbt-$SBT_VERSION.deb && \
-#    apt-get update && \
-#    apt-get install sbt && \
-#    sbt sbtVersion
+FROM sbtscala/scala-sbt:eclipse-temurin-23.0.1_11_1.10.7_3.6.2
 
-FROM sbtscala/scala-sbt:amazoncorretto-al2023-21.0.5_1.10.6_3.6.2
-RUN yum update -y && \
-    yum install -y libXxf86vm gtk3 libXtst mesa-libGL alsa-lib alsa-utils
-#RUN yum update -y
+RUN apt-get update && apt-get install -y \
+    libx11-6 libxext6 libxrender1 libxtst6 libxi6 libfreetype6 libxft2 \
+    libfontconfig1 libxinerama1 libxcursor1 libxrandr2 libxcomposite1 \
+    libgl1-mesa-dri mesa-utils libglu1-mesa xvfb x11-xkb-utils xkb-data \
+    libcanberra-gtk3-module alsa-utils unzip wget at-spi2-core
+
+RUN wget https://download2.gluonhq.com/openjfx/23.0.1/openjfx-23.0.1_linux-aarch64_bin-sdk.zip \
+    && unzip openjfx-23.0.1_linux-aarch64_bin-sdk.zip -d /opt \
+    && rm openjfx-23.0.1_linux-aarch64_bin-sdk.zip
+
+# Set the JavaFX environment variables
+ENV PATH=$PATH:/opt/openjfx-23.0.1/lib
+ENV JAVA_MODULE_PATH=/opt/openjfx-23.0.1/lib
 
 WORKDIR /hanafuda
 ADD . /hanafuda
-
-RUN export DISPLAY=:0
 
 # Resolve SBT dependencies (cache optimization step)
 RUN sbt update
 
 # Run SBT
 CMD ["sbt", "run"]
+
+# run:  docker run --rm -it --net=host --env DISPLAY=$DISPLAY -v /tmp/.X11-unix:/tmp/.X11-unix -v /dev/dri:/dev/dri --device /dev/kfd:/dev/kfd hanafuda:v1 /bin/bash

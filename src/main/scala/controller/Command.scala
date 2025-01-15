@@ -139,3 +139,18 @@ class DiscardCommand(xString: String) extends Command {
         (newState, this)
     }
 }
+
+class SaveCommand extends Command {
+    override def execute(currentState: GameState): (GameState, Command) = {
+        previousState = Some(currentState)
+        val succ = GameController.fileIO.save(currentState)
+        if succ then (currentState, this) else (currentState.updateGameStateWithError("Saving failed."), this)
+    }
+}
+
+class LoadCommand extends Command {
+    override def execute(currentState: GameState): (GameState, Command) = {
+        previousState = Some(currentState)
+        (GameController.fileIO.load, this)
+    }
+}
