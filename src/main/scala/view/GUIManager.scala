@@ -26,9 +26,9 @@ import scalafx.scene.shape.{Line, StrokeLineCap}
 import scalafx.stage.Screen
 import scalafx.util.Duration
 import view.ComponentDecoraters.{BasicTextField, StyleDecorator}
-
 import scala.collection.immutable.List
 import scala.util.Random
+import FileIO.FileIOJSON.{Config, ConfigManager}
 
 /**
  * MVC: View
@@ -77,12 +77,24 @@ object GUIManager extends JFXApp3 with Observer {
     override def start(): Unit = {
         /* Initialize vars */
         /* Is necessary here because ScalaFX properties cannot be called outside of ScalaFX Thread */
+        val config = ConfigManager.loadConfig()
+        val cardBackPath = config.cardBack match {
+            case "snowflake" => "/img/card/0-snowflake.png"
+            case "cherry" => "/img/card/0-cherry.png"
+            case "cherry-bright" => "/img/card/0-cherry-bright.png"
+            case "cherry-dark" => "/img/card/0-cherry-dark.png"
+            case "cherry-white" => "/img/card/0-cherry-white.png"
+            case "cherry-white-black" => "/img/card/0-cherry-white-black.png"
+            case _ => "/img/card/0.png"
+        }
         vh = Screen.primary.visualBounds.height
         vw = Screen.primary.visualBounds.width
-        cardCache = (for (i <- 0 until 49) yield {
+        cardCache = (for (i <- 1 until 49) yield {
             i -> new Image(getClass.getResourceAsStream(s"/img/card/$i.png"),
                 requestedWidth = vw*0.055, requestedHeight = vw*0.055*1.5, preserveRatio = true, smooth = true)   // Hanafuda card size ratio is 2/3
-        }).toMap
+        }).prepended(0 -> new Image(getClass.getResourceAsStream(cardBackPath),
+            requestedWidth = vw*0.055, requestedHeight = vw*0.055*1.5, preserveRatio = true, smooth = true)).toMap
+
         /* ---------------- */
 
         stage = new JFXApp3.PrimaryStage {
@@ -90,7 +102,13 @@ object GUIManager extends JFXApp3 with Observer {
             width = vw
             height = vh
             resizable = false
-            icons += new Image(getClass.getResourceAsStream("/img/logo/icon.png"))
+            icons += new Image(getClass.getResourceAsStream(config.icon match {
+                case "logo-black" => "/img/logo/logo-black.png"
+                case "logo-alt" => "/img/logo/logo-alt.png"
+                case "logo-white" => "/img/logo/logo-white.png"
+                case "logo" => "/img/logo/logo.png"
+                case _ => "/img/logo/icon.png"
+            }))
             onCloseRequest = _ => {
                 GameController.processInput("exit")
             }
@@ -107,10 +125,17 @@ object GUIManager extends JFXApp3 with Observer {
      * @return the scene for the uninitialized state
      */
     private def sceneUninitialized(): Scene = new Scene {
+        val config: Config = ConfigManager.loadConfig()
         val rootPane: StackPane = new StackPane {
+            val imgPath = config.mainMenuTheme match {
+                case "mockup" => "/img/background/mockup.png"
+                case "fall" => "/img/background/main_menu_fall.png"
+                case _ => "/img/background/mockup.png"
+            }
+
             background = new Background(Array(
                 new BackgroundImage(
-                    new Image("/img/background/mockup.png", // mockup alternative
+                    new Image(imgPath,
                         requestedWidth = vw, requestedHeight = vh,
                         preserveRatio = true, smooth = true, backgroundLoading = false),
                     BackgroundRepeat.NoRepeat,
@@ -201,7 +226,13 @@ object GUIManager extends JFXApp3 with Observer {
             textField_p2.prefHeight = vh * 0.03
             val logo: ImageView = new ImageView {
                 padding = Insets(vh * 0.2, 0, 0, 0)
-                image = new Image("/img/logo/logo.png", requestedWidth = vw*0.15, requestedHeight = vw*0.15,
+                image = new Image(config.logo match {
+                    case "logo-black" => "/img/logo/logo-black.png"
+                    case "logo-alt" => "/img/logo/logo-alt.png"
+                    case "logo-white" => "/img/logo/logo-white.png"
+                    case "icon" => "/img/logo/icon.png"
+                    case _ => "/img/logo/logo.png"
+                }, requestedWidth = vw*0.15, requestedHeight = vw*0.15,
                     preserveRatio = true, smooth = true, backgroundLoading = false)
                 fitWidth = vw * 0.15
                 preserveRatio = true
@@ -241,7 +272,7 @@ object GUIManager extends JFXApp3 with Observer {
                     }, startButton
                 )
             }
-            children = List(logo, vbox) ++ leaves
+            children = if config.mainMenuAnimation == true then List(logo, vbox) ++ leaves else List(logo, vbox)
         }
         root = new StackPane {
             children = List(rootPane, contentPane)

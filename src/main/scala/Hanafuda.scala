@@ -1,4 +1,5 @@
 import FileIO.FileIO
+import _root_.FileIO.FileIOJSON.ConfigManager
 import com.google.inject.Guice
 import view.TUIManager
 import controller.CommandManager.CommandManager
@@ -20,18 +21,33 @@ object Hanafuda {
     
     @main
     def main(): Unit = {
-        GameController.add(TUIManager)
-        GameController.add(GUIManager)
-        println(TUIManager.printHelp())
+        ConfigManager.loadConfig().concurrency match {
+            case "tui" =>
+                GameController.add(TUIManager)
+                println(TUIManager.printHelp())
+                while (true) {
+                    val input = scala.io.StdIn.readLine(s"\n")
+                    GameController.processInput(input)
+                }
 
-        new Thread(() => {
-            GUIManager.main(Array.empty)
-        }).start()
+            case "gui" =>
+                GameController.add(GUIManager)
+                new Thread(() => {
+                    GUIManager.main(Array.empty)
+                }).start()
 
-        // Run the TUI in the main thread
-        while (true) {
-            val input = scala.io.StdIn.readLine(s"\n")
-            GameController.processInput(input)
+            case _ =>
+                GameController.add(TUIManager)
+                GameController.add(GUIManager)
+                println(TUIManager.printHelp())
+
+                new Thread(() => {
+                    GUIManager.main(Array.empty)
+                }).start()
+                while (true) {
+                    val input = scala.io.StdIn.readLine(s"\n")
+                    GameController.processInput(input)
+                }
         }
     }
 }

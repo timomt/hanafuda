@@ -1,0 +1,8 @@
+{
+  "concurrency": "both",
+  "mainMenuAnimation": false,
+  "mainMenuTheme": "mockup",
+  "cardBack": "default",
+  "logo": "logo",
+  "icon": "icon"
+}

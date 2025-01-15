@@ -17,7 +17,10 @@ libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "3.2.18" % Test,
   "net.codingwell" %% "scala-guice" % "7.0.0",
   "org.scala-lang.modules" %% "scala-xml" % "2.3.0",
-  "com.typesafe.play" %% "play-json" % "2.10.6"
+  "com.typesafe.play" %% "play-json" % "2.10.6",
+    "io.circe" %% "circe-core" % "0.14.10",
+    "io.circe" %% "circe-generic" % "0.14.10",
+    "io.circe" %% "circe-parser" % "0.14.10"
 )
 libraryDependencies ++= {
   // Determine OS version of JavaFX binaries
