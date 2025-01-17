@@ -53,6 +53,12 @@ class FileIOXML extends FileIO {
       <queuedCard>
         {gameState.queuedCard.map(cardToXml).getOrElse(NodeSeq.Empty)}
       </queuedCard>
+      //-------
+      {gameState match {
+      case summary: GameStateSummary => <outOfCardsEnding>{summary.outOfCardsEnding}</outOfCardsEnding>
+      case _ => NodeSeq.Empty
+      }}
+      //-------
     </gameState>
   }
 
@@ -72,7 +78,12 @@ class FileIOXML extends FileIO {
       case "class model.GameStateRandom" => GameStateRandom(players, deck, board, matchedDeck.getOrElse(Deck(Nil)), queuedCard, displayType, stdout, stderr)
       case "class model.GameStatePlanned" => GameStatePlanned(players, deck, board, displayType, stdout, stderr)
       case "class model.GameStatePendingKoiKoi" => GameStatePendingKoiKoi(players, deck, board, displayType, stdout, stderr)
+      /*
       case "class model.GameStateSummary" => GameStateSummary(players, deck, board, displayType, stdout, stderr, outOfCardsEnding = false)
+       */
+      case "class model.GameStateSummary" =>
+        val outOfCardsEnding = (xml \ "outOfCardsEnding").text.toBoolean
+        GameStateSummary(players, deck, board, displayType, stdout, stderr, outOfCardsEnding)
       case other => throw new IllegalArgumentException(s"Unknown GameState: $other")
     }
   }
