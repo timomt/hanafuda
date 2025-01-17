@@ -1,7 +1,13 @@
 package controller
 
-import controller.GameController.notifyObservers
+import FileIO.FileIO
+import com.google.inject.Inject
 import model.{DisplayType, GameState, GameStatePendingKoiKoi, GameStateUninitialized}
+import controller.CommandManager.CommandManager
+import model.GameManager.GameManager
+import model.GameManager.GameManagerInstance.given_GameManager
+
+import scala.compiletime.uninitialized
 
 /**
  * MVC: Controller
@@ -12,8 +18,9 @@ object GameController extends Observable {
      * The current state of the game operated by this object.
      */
     var gameState: GameState = GameStateUninitialized(displayType = DisplayType.HELP, stderr = None)
-    private val commandManager = new CommandManager()
-
+    @Inject var commandManager: CommandManager = uninitialized
+    @Inject var fileIO: FileIO = uninitialized
+    
     /**
      * Processes a String to change the current GameState
      * and notifies observers of the new GameState.
@@ -73,6 +80,12 @@ object GameController extends Observable {
             case "new" =>
                 commandManager.executeCommand(new NewCommand, gameState)
 
+            case "save" =>
+                commandManager.executeCommand(new SaveCommand, gameState)
+
+            case "load" =>
+                commandManager.executeCommand(new LoadCommand, gameState)
+                
             case _ =>
                 gameState.updateGameStateWithError("Wrong usage, see \"help\".")
         }

@@ -1,9 +1,13 @@
 import model.DisplayType.{SPOILER, SUMMARY}
-import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameManager, GameStatePendingKoiKoi, GameStatePlanned, GameStateRandom, GameStateSummary, GameStateUninitialized, Player}
+import model.GameManager.GameManager
+import model.GameManager.GameManagerDefault.GameManagerDefault
+import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameStatePendingKoiKoi, GameStatePlanned, GameStateRandom, GameStateSummary, GameStateUninitialized, Player}
 import org.scalatest.flatspec.AnyFlatSpec
 import org.scalatest.matchers.should.Matchers
 
 class GameSpec extends AnyFlatSpec with Matchers {
+    given gameManager: GameManager = new GameManagerDefault()
+
     /* ------------------------- */
     /* ------ updateGameStateWithError ------ */
     "updateGameStateWithDisplayType[GameStatePlanned]" should "set displayType attribute correctly" in {
@@ -44,13 +48,13 @@ class GameSpec extends AnyFlatSpec with Matchers {
     /* ------------------------- */
     /* ------ handleDiscard ------ */
     "handleDiscard[GameStatePlanned]" should "return error on invalid input" in {
-        val game = GameManager.newGame("", "")
+        val game = gameManager.newGame("", "")
         assert(game.handleDiscard("-1").stderr.isDefined)
         assert(game.handleDiscard("faskdaswd").stderr.isDefined)
         assert(game.handleDiscard("10").stderr.isDefined)
     }
     it should "only discard as last resort" in {
-        val game = GameManager.newGame("", "")
+        val game = gameManager.newGame("", "")
         assert(game.players.head.hand.cards.forall(c => {
             if (game.board.cards.exists(p => c.month == p.month)) {
                 game.handleDiscard(s"${game.players.head.hand.cards.indexOf(c) + 1}").stderr.isDefined
