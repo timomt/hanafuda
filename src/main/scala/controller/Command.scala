@@ -1,6 +1,8 @@
 package controller
 
-import model.{DisplayType, GameManager, GameState}
+import model.GameManager.GameManager
+import model.{DisplayType, GameState}
+import model.GameManager.GameManagerInstance.given
 
 /**
  * Trait representing a command that can be executed, undone, and redone.
@@ -31,78 +33,15 @@ trait Command {
 }
 
 /**
- * Class managing the execution, undoing, and redoing of commands.
- */
-class CommandManager {
-    /**
-     * Stack of commands that can be undone.
-     */
-    private val undoStack = scala.collection.mutable.Stack[Command]()
-
-    /**
-     * Stack of commands that can be redone.
-     */
-    private val redoStack = scala.collection.mutable.Stack[Command]()
-
-    /**
-     * Executes a command and returns the new game state.
-     *
-     * @param command the command to execute
-     * @param currentState the current state of the game
-     * @return the new game state
-     */
-    def executeCommand(command: Command, currentState: GameState): GameState = {
-        val (newState, executedCommand) = command.execute(currentState)
-        undoStack.push(executedCommand)
-        redoStack.clear()
-        newState
-    }
-
-    /**
-     * Undoes the last executed command and returns the new game state.
-     *
-     * @param currentState the current state of the game
-     * @return the new game state
-     */
-    def undo(currentState: GameState): GameState = {
-        if (undoStack.nonEmpty) {
-            val command = undoStack.pop()
-            val newState = command.undo(currentState)
-            redoStack.push(command)
-            newState
-        } else {
-            currentState.updateGameStateWithError("There is nothing to undo.")
-        }
-    }
-
-    /**
-     * Redoes the last undone command and returns the new game state.
-     *
-     * @param currentState the current state of the game
-     * @return the new game state
-     */
-    def redo(currentState: GameState): GameState = {
-        if (redoStack.nonEmpty) {
-            val command = redoStack.pop()
-            val (newState, executedCommand) = command.execute(currentState)
-            undoStack.push(executedCommand)
-            newState
-        } else {
-            currentState.updateGameStateWithError("There is nothing to redo.")
-        }
-    }
-}
-
-/**
  * Command to start a new game.
  *
  * @param firstPlayer the name of the first player
  * @param secondPlayer the name of the second player
  */
-class StartGameCommand(firstPlayer: String, secondPlayer: String) extends Command {
+class StartGameCommand(firstPlayer: String, secondPlayer: String)(using gameManager: GameManager) extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
-        val newState = GameManager.newGame(firstPlayer, secondPlayer)
+        val newState = gameManager.newGame(firstPlayer, secondPlayer)
         (newState, this)
     }
 }
@@ -132,10 +71,10 @@ class CombinationsCommand extends Command {
 /**
  * Command to handle the koi-koi call.
  */
-class KoiKoiCommand extends Command {
+class KoiKoiCommand(using gameManager: GameManager) extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
-        val newState = GameManager.koiKoiCallHandler(currentState)
+        val newState = gameManager.koiKoiCallHandler(currentState)
         (newState, this)
     }
 }
@@ -143,11 +82,11 @@ class KoiKoiCommand extends Command {
 /**
  * Command to finish the game.
  */
-class FinishCommand extends Command {
+class FinishCommand(using gameManager: GameManager) extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
-        val (firstS, secS) = GameManager.evaluateScore(currentState.players, 1, 1)
-        val newState = GameManager.handleKoiKoi(currentState.players, firstS, secS, board = currentState.board, deck = currentState.deck)
+        val (firstS, secS) = gameManager.evaluateScore(currentState.players, 1, 1)
+        val newState = gameManager.handleKoiKoi(currentState.players, firstS, secS, board = currentState.board, deck = currentState.deck)
         (newState, this)
     }
 }
@@ -166,10 +105,10 @@ class ContinueCommand extends Command {
 /**
  * Command to start a new game with the same players.
  */
-class NewCommand extends Command {
+class NewCommand(using gameManager: GameManager) extends Command {
     override def execute(currentState: GameState): (GameState, Command) = {
         previousState = Some(currentState)
-        val newState = GameManager.newGame(currentState.players.head.name, currentState.players(1).name, currentState.players.head.score, currentState.players(1).score)
+        val newState = gameManager.newGame(currentState.players.head.name, currentState.players(1).name, currentState.players.head.score, currentState.players(1).score)
         (newState, this)
     }
 }
@@ -198,5 +137,20 @@ class DiscardCommand(xString: String) extends Command {
         previousState = Some(currentState)
         val newState = currentState.handleDiscard(xString)
         (newState, this)
+    }
+}
+
+class SaveCommand extends Command {
+    override def execute(currentState: GameState): (GameState, Command) = {
+        previousState = Some(currentState)
+        val succ = GameController.fileIO.save(currentState)
+        if succ then (currentState, this) else (currentState.updateGameStateWithError("Saving failed."), this)
+    }
+}
+
+class LoadCommand extends Command {
+    override def execute(currentState: GameState): (GameState, Command) = {
+        previousState = Some(currentState)
+        (GameController.fileIO.load, this)
     }
 }

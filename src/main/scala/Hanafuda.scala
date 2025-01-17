@@ -1,4 +1,8 @@
+import FileIO.FileIO
+import _root_.FileIO.FileIOJSON.ConfigManager
+import com.google.inject.Guice
 import view.TUIManager
+import controller.CommandManager.CommandManager
 import controller.GameController
 import view.GUIManager
 
@@ -9,20 +13,41 @@ object Hanafuda {
     /**
      * Main method to start the application.
      */
+    val injector = Guice.createInjector(new HanafudaModule)
+    val commandManager = injector.getInstance(classOf[CommandManager])
+    val fileIO = injector.getInstance(classOf[FileIO])
+    GameController.commandManager = commandManager
+    GameController.fileIO = fileIO
+    
     @main
     def main(): Unit = {
-        GameController.add(TUIManager)
-        GameController.add(GUIManager)
-        println(TUIManager.printHelp())
+        ConfigManager.loadConfig().concurrency match {
+            case "tui" =>
+                GameController.add(TUIManager)
+                println(TUIManager.printHelp())
+                while (true) {
+                    val input = scala.io.StdIn.readLine(s"\n")
+                    GameController.processInput(input)
+                }
 
-        new Thread(() => {
-            GUIManager.main(Array.empty)
-        }).start()
+            case "gui" =>
+                GameController.add(GUIManager)
+                new Thread(() => {
+                    GUIManager.main(Array.empty)
+                }).start()
 
-        // Run the TUI in the main thread
-        while (true) {
-            val input = scala.io.StdIn.readLine(s"\n")
-            GameController.processInput(input)
+            case _ =>
+                GameController.add(TUIManager)
+                GameController.add(GUIManager)
+                println(TUIManager.printHelp())
+
+                new Thread(() => {
+                    GUIManager.main(Array.empty)
+                }).start()
+                while (true) {
+                    val input = scala.io.StdIn.readLine(s"\n")
+                    GameController.processInput(input)
+                }
         }
     }
 }

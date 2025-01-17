@@ -2,7 +2,7 @@ package view
 
 import controller.{GameController, Observer}
 import model.DisplayType.{GAME, SUMMARY}
-import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameState, GameStatePlanned, GameStateRandom, GameStateSummary, GameStateUninitialized, Player, instantWinCombinations, yakuCombinations}
+import model.{Card, CardMonth, CardName, CardType, Deck, DisplayType, GameState, GameStatePendingKoiKoi, GameStatePlanned, GameStateRandom, GameStateSummary, GameStateUninitialized, Player, instantWinCombinations, yakuCombinations}
 import scalafx.application.{JFXApp3, Platform}
 import scalafx.geometry.{HPos, Insets, Pos, VPos}
 import scalafx.scene.Scene
@@ -19,16 +19,16 @@ import scalafx.event.ActionEvent
 import scalafx.geometry.Pos.TopCenter
 import scalafx.scene.control.Alert.AlertType
 import scalafx.scene.control.cell.TextFieldTableCell
-import scalafx.scene.effect.{DropShadow, GaussianBlur}
+import scalafx.scene.effect.{ColorAdjust, DropShadow, GaussianBlur}
 import scalafx.scene.image.{Image, ImageView}
 import scalafx.scene.input.MouseEvent
 import scalafx.scene.shape.{Line, StrokeLineCap}
 import scalafx.stage.Screen
 import scalafx.util.Duration
 import view.ComponentDecoraters.{BasicTextField, StyleDecorator}
-
 import scala.collection.immutable.List
 import scala.util.Random
+import FileIO.FileIOJSON.{Config, ConfigManager}
 
 /**
  * MVC: View
@@ -77,20 +77,38 @@ object GUIManager extends JFXApp3 with Observer {
     override def start(): Unit = {
         /* Initialize vars */
         /* Is necessary here because ScalaFX properties cannot be called outside of ScalaFX Thread */
+        val config = ConfigManager.loadConfig()
+        val cardBackPath = config.cardBack match {
+            case "snowflake" => "/img/card/0-snowflake.png"
+            case "cherry" => "/img/card/0-cherry.png"
+            case "cherry-bright" => "/img/card/0-cherry-bright.png"
+            case "cherry-dark" => "/img/card/0-cherry-dark.png"
+            case "cherry-white" => "/img/card/0-cherry-white.png"
+            case "cherry-white-black" => "/img/card/0-cherry-white-black.png"
+            case _ => "/img/card/0.png"
+        }
         vh = Screen.primary.visualBounds.height
         vw = Screen.primary.visualBounds.width
-        cardCache = (for (i <- 0 until 49) yield {
+        cardCache = (for (i <- 1 until 49) yield {
             i -> new Image(getClass.getResourceAsStream(s"/img/card/$i.png"),
                 requestedWidth = vw*0.055, requestedHeight = vw*0.055*1.5, preserveRatio = true, smooth = true)   // Hanafuda card size ratio is 2/3
-        }).toMap
+        }).prepended(0 -> new Image(getClass.getResourceAsStream(cardBackPath),
+            requestedWidth = vw*0.055, requestedHeight = vw*0.055*1.5, preserveRatio = true, smooth = true)).toMap
+
         /* ---------------- */
 
         stage = new JFXApp3.PrimaryStage {
-            title = "Hanafuda"
+            title = "Hanafuda - KoiKoi"
             width = vw
             height = vh
             resizable = false
-            icons += new Image(getClass.getResourceAsStream("/img/logo/koikoi.png"))
+            icons += new Image(getClass.getResourceAsStream(config.icon match {
+                case "logo-black" => "/img/logo/logo-black.png"
+                case "logo-alt" => "/img/logo/logo-alt.png"
+                case "logo-white" => "/img/logo/logo-white.png"
+                case "logo" => "/img/logo/logo.png"
+                case _ => "/img/logo/icon.png"
+            }))
             onCloseRequest = _ => {
                 GameController.processInput("exit")
             }
@@ -106,11 +124,18 @@ object GUIManager extends JFXApp3 with Observer {
      *
      * @return the scene for the uninitialized state
      */
-    def sceneUninitialized(): Scene = new Scene {
+    private def sceneUninitialized(): Scene = new Scene {
+        val config: Config = ConfigManager.loadConfig()
         val rootPane: StackPane = new StackPane {
+            val imgPath = config.mainMenuTheme match {
+                case "mockup" => "/img/background/mockup.png"
+                case "fall" => "/img/background/main_menu_fall.png"
+                case _ => "/img/background/mockup.png"
+            }
+
             background = new Background(Array(
                 new BackgroundImage(
-                    new Image("/img/background/main_menu.png",
+                    new Image(imgPath,
                         requestedWidth = vw, requestedHeight = vh,
                         preserveRatio = true, smooth = true, backgroundLoading = false),
                     BackgroundRepeat.NoRepeat,
@@ -121,7 +146,11 @@ object GUIManager extends JFXApp3 with Observer {
                     )
                 )
             ))
-
+            effect = new ColorAdjust {
+                brightness = -0.15
+            }
+        }
+        val contentPane: StackPane = new StackPane {
             //--------------------------------------------------------------------------------
             //animation properties for the falling leaf animation
             def createFallingLeaf(
@@ -197,7 +226,14 @@ object GUIManager extends JFXApp3 with Observer {
             textField_p2.prefHeight = vh * 0.03
             val logo: ImageView = new ImageView {
                 padding = Insets(vh * 0.2, 0, 0, 0)
-                image = new Image("/img/logo/koikoi.png")
+                image = new Image(config.logo match {
+                    case "logo-black" => "/img/logo/logo-black.png"
+                    case "logo-alt" => "/img/logo/logo-alt.png"
+                    case "logo-white" => "/img/logo/logo-white.png"
+                    case "icon" => "/img/logo/icon.png"
+                    case _ => "/img/logo/logo.png"
+                }, requestedWidth = vw*0.15, requestedHeight = vw*0.15,
+                    preserveRatio = true, smooth = true, backgroundLoading = false)
                 fitWidth = vw * 0.15
                 preserveRatio = true
                 alignmentInParent = TopCenter
@@ -236,9 +272,11 @@ object GUIManager extends JFXApp3 with Observer {
                     }, startButton
                 )
             }
-            children = List(logo, vbox) ++ leaves
+            children = if config.mainMenuAnimation == true then List(logo, vbox) ++ leaves else List(logo, vbox)
         }
-        root = rootPane
+        root = new StackPane {
+            children = List(rootPane, contentPane)
+        }
     }
 
     /**
@@ -247,7 +285,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the scene for the game state
      */
-    def gameScene(gameState: GameState): Scene = {
+    private def gameScene(gameState: GameState): Scene = {
         new Scene {
             val rootPane: StackPane = new StackPane {
                 background = new Background(Array(
@@ -392,7 +430,7 @@ object GUIManager extends JFXApp3 with Observer {
      */
 
     // TODO: full functionality of original TUI output
-    def combinationsScene(gameState: GameState): Scene = {
+    private def combinationsScene(gameState: GameState): Scene = {
         new Scene {
             val rootPane = new StackPane {
                 background = new Background(Array(
@@ -512,7 +550,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the scene for the spoiler protection display
      */
-    def spoilerScene(gameState: GameState): Scene = {
+    private def spoilerScene(gameState: GameState, buttons: List[Button], stdout: String): Scene = {
         new Scene {
             val backgroundPane: StackPane = new StackPane {
                 background = new Background(Array(
@@ -609,17 +647,22 @@ object GUIManager extends JFXApp3 with Observer {
                 )
             }
 
-            val continueButton: Button = new Button("Press to Continue") {
-                onAction = (e: ActionEvent) => {
-                    GameController.processInput("continue")
-                }
-                style = "-fx-background-color: #B82025; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20 10 20; -fx-background-radius: 5;"
-                StackPane.setAlignment(this, Pos.Center)
-                StackPane.setMargin(this, Insets(20))
+            val label: Label = new Label(stdout) {
+                style = "-fx-font-size: 24px; " +
+                    "-fx-text-fill: white; " +
+                    "-fx-background-color: #2b2b2b; " +
+                    "-fx-padding: 10px 20px; " +
+                    "-fx-background-radius: 10px;"
+            }
+
+            val buttonLayout: VBox = new VBox {
+                alignment = Pos.Center
+                spacing = 10
+                children = List(label) ++ buttons
             }
 
             val rootPane: StackPane = new StackPane {
-                children = List(backgroundPane, combinedLayout, /*createGameTaskbar(gameState),*/ continueButton)
+                children = List(backgroundPane, combinedLayout, buttonLayout)
             }
             root = rootPane
         }
@@ -631,13 +674,13 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the scene for the summary display
      */
-    case class SummaryRow(yaku: String, player1Score: Int, player2Score: Int) {
+    private case class SummaryRow(yaku: String, player1Score: Int, player2Score: Int) {
         val yakuProperty = new StringProperty(this, "yaku", yaku)
         val player1ScoreProperty = new IntegerProperty(this, "player1Score", player1Score)
         val player2ScoreProperty = new IntegerProperty(this, "player2Score", player2Score)
     }
 
-    def summaryScene(gameState: GameState): Scene = {
+    private def summaryScene(gameState: GameState): Scene = {
         new Scene {
             val backgroundPane: StackPane = new StackPane {
                 background = new Background(Array(
@@ -734,7 +777,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the scene for the help display
      */
-    def helpScene(gameState: GameState): Scene = {
+    private def helpScene(gameState: GameState): Scene = {
         new Scene {
             val rootPane: StackPane = new StackPane {
                 val backgroundPane: StackPane = new StackPane {
@@ -778,7 +821,9 @@ object GUIManager extends JFXApp3 with Observer {
                         createTextField("5. new\n   - takes player names and creates a new game from scratch"),
                         createTextField("6. combinations \n   - Displays the possible combinations of cards."),
                         createTextField("7. help\n   - Displays this help page."),
-                        createTextField("8. exit\n   - Exits the game.")
+                        createTextField("8. exit\n   - Exits the game."),
+                        createTextField("9. save\n   - saves the game."),
+                        createTextField("10. load\n   - loads a game.")
                     )
 
                     val textAreaPane: StackPane = new StackPane {
@@ -846,7 +891,16 @@ object GUIManager extends JFXApp3 with Observer {
         }
     }
 
-
+    private def scenePendingKoiKoi(gameState: GameState) : Scene = {
+        spoilerScene(gameState, List(
+            createGameTaskbarButton("Finish", (e: ActionEvent) => {
+                GameController.processInput("finish")
+            }),
+            createGameTaskbarButton("Koi-Koi", (e: ActionEvent) => {
+                GameController.processInput("koi-koi")
+            })), gameState.stdout.getOrElse("")
+        )
+    }
     /* ------------------------------------------------------- */
 
     /**
@@ -854,7 +908,7 @@ object GUIManager extends JFXApp3 with Observer {
      *
      * @param message
      */
-    def showErrorPopup(message: String): Unit = {
+    private def showErrorPopup(message: String): Unit = {
         val alert = new Alert(AlertType.Error) {
             title = "Error"
             headerText = "An error occurred"
@@ -874,7 +928,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the ToolBar for the game display
      */
-    def createGameTaskbar(gameState: GameState): ToolBar = {
+    private def createGameTaskbar(gameState: GameState): ToolBar = {
         val button1 = createGameTaskbarButton("Help", (e: ActionEvent) => {
             GameController.processInput("help")
         })
@@ -908,6 +962,12 @@ object GUIManager extends JFXApp3 with Observer {
         val button7 = createGameTaskbarButton("Exit", (e: ActionEvent) => {
             GameController.processInput("exit")
         })
+        val button8 = createGameTaskbarButton("Save", (e: ActionEvent) => {
+            GameController.processInput("save")
+        })
+        val button9 = createGameTaskbarButton("Load", (e: ActionEvent) => {
+            GameController.processInput("load")
+        })
 
         val playerTextField = createStyledLabel(s"Player: ${gameState.players.head.name}")
         val playerScoreField = createStyledLabel(s"Score: ${gameState.players.head.score}")
@@ -926,7 +986,7 @@ object GUIManager extends JFXApp3 with Observer {
                 new HBox {
                     alignment = Pos.Center
                     spacing = 20
-                    children = List(button1, button2, button3, button4, button5, button6, button7, playerTextField, playerScoreField)
+                    children = List(button1, button2, button3, button4, button5, button6, button7, playerTextField, playerScoreField, button8, button9)
                 },
                 rightSpacer
             )
@@ -940,7 +1000,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param gameState the current game state
      * @return the simpler ToolBar.
      */
-    def createGameTaskbarSimple(gameState: GameState): ToolBar = {
+    private def createGameTaskbarSimple(gameState: GameState): ToolBar = {
         val button1 = createGameTaskbarButton("Help", (e: ActionEvent) => {
             GameController.processInput("help")
         })
@@ -986,7 +1046,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param action the action to perform when the button is clicked
      * @return the styled Button
      */
-    def createGameTaskbarButton(text: String, action: ActionEvent => Unit): Button = {
+    private def createGameTaskbarButton(text: String, action: ActionEvent => Unit): Button = {
         val button: Button = new Button(text) {
             style = "-fx-background-color: #B82025;" +
               "-fx-text-fill: white;" +
@@ -1014,7 +1074,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param textString the prompt text to display in the text field
      * @return the styled TextField
      */
-    def createStyledTextField(textString: String): TextField = {
+    private def createStyledTextField(textString: String): TextField = {
         val basicTextField = new BasicTextField(textString)
         val styles = Map(
             "-fx-background-color" -> "#231F20",
@@ -1034,7 +1094,7 @@ object GUIManager extends JFXApp3 with Observer {
      * @param textString the prompt text to display in the label
      * @return the styled TLabel
      */
-    def createStyledLabel(textString: String): Label = {
+    private def createStyledLabel(textString: String): Label = {
         val label = new Label(textString)
         label.style = "-fx-background-color: #231F20; " +
                       "-fx-text-fill: White; " +
@@ -1055,26 +1115,35 @@ object GUIManager extends JFXApp3 with Observer {
             if (gameState.stderr.isDefined) {
                 showErrorPopup(gameState.stderr.get)
             }
-            if (gameState.isInstanceOf[GameStateUninitialized]) {
-                stage.scene = sceneUninitialized()
-            } else {
-                gameState.displayType match {
-                    case DisplayType.GAME =>
-                        stage.scene = gameScene(gameState)
+            gameState match
+                case _: GameStateUninitialized =>
+                    stage.scene = sceneUninitialized()
+                case _: GameStatePendingKoiKoi =>
+                    stage.scene = scenePendingKoiKoi(gameState)
+                case _ =>
+                    gameState.displayType match {
+                        case DisplayType.GAME =>
+                            stage.scene = gameScene(gameState)
 
-                    case DisplayType.COMBINATIONS =>
-                        stage.scene = combinationsScene(gameState)
+                        case DisplayType.COMBINATIONS =>
+                            stage.scene = combinationsScene(gameState)
 
-                    case DisplayType.SPOILER =>
-                        stage.scene = spoilerScene(gameState)
+                        case DisplayType.SPOILER =>
+                            stage.scene = spoilerScene(gameState, List(new Button("Press to Continue") {
+                                onAction = (e: ActionEvent) => {
+                                    GameController.processInput("continue")
+                                }
+                                style = "-fx-background-color: #B82025; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10 20 10 20; -fx-background-radius: 5;"
+                                StackPane.setAlignment(this, Pos.Center)
+                                StackPane.setMargin(this, Insets(20))
+                            }), "")
 
-                    case DisplayType.SUMMARY =>
-                        stage.scene = summaryScene(gameState)
+                        case DisplayType.SUMMARY =>
+                            stage.scene = summaryScene(gameState)
 
-                    case DisplayType.HELP =>
-                        stage.scene = helpScene(gameState)
-                }
-            }
+                        case DisplayType.HELP =>
+                            stage.scene = helpScene(gameState)
+                    }
         }
     }
 }

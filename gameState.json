@@ -1,0 +1,343 @@
+{
+  "instanceOf" : "class model.GameStatePlanned",
+  "players" : [ {
+    "name" : "test 1",
+    "hand" : {
+      "cards" : [ ]
+    },
+    "side" : {
+      "cards" : [ ]
+    },
+    "score" : 0,
+    "calledKoiKoi" : false,
+    "yakusToIgnore" : [ ]
+  }, {
+    "name" : "test 2",
+    "hand" : {
+      "cards" : [ ]
+    },
+    "side" : {
+      "cards" : [ ]
+    },
+    "score" : 0,
+    "calledKoiKoi" : false,
+    "yakusToIgnore" : [ ]
+  } ],
+  "deck" : {
+    "cards" : [ {
+      "month" : "JANUARY",
+      "cardType" : "HIKARI",
+      "cardName" : "CRANE",
+      "index" : 1,
+      "grouped" : false
+    }, {
+      "month" : "JANUARY",
+      "cardType" : "TANZAKU",
+      "cardName" : "POETRY_TANZAKU",
+      "index" : 2,
+      "grouped" : false
+    }, {
+      "month" : "JANUARY",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 3,
+      "grouped" : false
+    }, {
+      "month" : "JANUARY",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 4,
+      "grouped" : false
+    }, {
+      "month" : "FEBRUARY",
+      "cardType" : "TANE",
+      "cardName" : "NIGHTINGALE",
+      "index" : 5,
+      "grouped" : false
+    }, {
+      "month" : "FEBRUARY",
+      "cardType" : "TANZAKU",
+      "cardName" : "POETRY_TANZAKU",
+      "index" : 6,
+      "grouped" : false
+    }, {
+      "month" : "FEBRUARY",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 7,
+      "grouped" : false
+    }, {
+      "month" : "FEBRUARY",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 8,
+      "grouped" : false
+    }, {
+      "month" : "MARCH",
+      "cardType" : "HIKARI",
+      "cardName" : "CURTAIN",
+      "index" : 9,
+      "grouped" : false
+    }, {
+      "month" : "MARCH",
+      "cardType" : "TANZAKU",
+      "cardName" : "POETRY_TANZAKU",
+      "index" : 10,
+      "grouped" : false
+    }, {
+      "month" : "MARCH",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 11,
+      "grouped" : false
+    }, {
+      "month" : "MARCH",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 12,
+      "grouped" : false
+    }, {
+      "month" : "APRIL",
+      "cardType" : "TANE",
+      "cardName" : "CUCKOO",
+      "index" : 13,
+      "grouped" : false
+    }, {
+      "month" : "APRIL",
+      "cardType" : "TANZAKU",
+      "cardName" : "PLAIN",
+      "index" : 14,
+      "grouped" : false
+    }, {
+      "month" : "APRIL",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 15,
+      "grouped" : false
+    }, {
+      "month" : "APRIL",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 16,
+      "grouped" : false
+    }, {
+      "month" : "MAY",
+      "cardType" : "TANE",
+      "cardName" : "BRIDGE",
+      "index" : 17,
+      "grouped" : false
+    }, {
+      "month" : "MAY",
+      "cardType" : "TANZAKU",
+      "cardName" : "PLAIN",
+      "index" : 18,
+      "grouped" : false
+    }, {
+      "month" : "MAY",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 19,
+      "grouped" : false
+    }, {
+      "month" : "MAY",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 20,
+      "grouped" : false
+    }, {
+      "month" : "JUNE",
+      "cardType" : "TANE",
+      "cardName" : "BUTTERFLIES",
+      "index" : 21,
+      "grouped" : false
+    }, {
+      "month" : "JUNE",
+      "cardType" : "TANZAKU",
+      "cardName" : "BLUE_TANZAKU",
+      "index" : 22,
+      "grouped" : false
+    }, {
+      "month" : "JUNE",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 23,
+      "grouped" : false
+    }, {
+      "month" : "JUNE",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 24,
+      "grouped" : false
+    }, {
+      "month" : "JULY",
+      "cardType" : "TANE",
+      "cardName" : "BOAR",
+      "index" : 25,
+      "grouped" : false
+    }, {
+      "month" : "JULY",
+      "cardType" : "TANZAKU",
+      "cardName" : "PLAIN",
+      "index" : 26,
+      "grouped" : false
+    }, {
+      "month" : "JULY",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 27,
+      "grouped" : false
+    }, {
+      "month" : "JULY",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 28,
+      "grouped" : false
+    }, {
+      "month" : "AUGUST",
+      "cardType" : "HIKARI",
+      "cardName" : "MOON",
+      "index" : 29,
+      "grouped" : false
+    }, {
+      "month" : "AUGUST",
+      "cardType" : "TANE",
+      "cardName" : "GEESE",
+      "index" : 30,
+      "grouped" : false
+    }, {
+      "month" : "AUGUST",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 31,
+      "grouped" : false
+    }, {
+      "month" : "AUGUST",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 32,
+      "grouped" : false
+    }, {
+      "month" : "SEPTEMBER",
+      "cardType" : "TANE",
+      "cardName" : "SAKE_CUP",
+      "index" : 33,
+      "grouped" : false
+    }, {
+      "month" : "SEPTEMBER",
+      "cardType" : "TANZAKU",
+      "cardName" : "BLUE_TANZAKU",
+      "index" : 34,
+      "grouped" : false
+    }, {
+      "month" : "SEPTEMBER",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 35,
+      "grouped" : false
+    }, {
+      "month" : "SEPTEMBER",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 36,
+      "grouped" : false
+    }, {
+      "month" : "OCTOBER",
+      "cardType" : "TANE",
+      "cardName" : "DEER",
+      "index" : 37,
+      "grouped" : false
+    }, {
+      "month" : "OCTOBER",
+      "cardType" : "TANZAKU",
+      "cardName" : "BLUE_TANZAKU",
+      "index" : 38,
+      "grouped" : false
+    }, {
+      "month" : "OCTOBER",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 39,
+      "grouped" : false
+    }, {
+      "month" : "OCTOBER",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 40,
+      "grouped" : false
+    }, {
+      "month" : "NOVEMBER",
+      "cardType" : "HIKARI",
+      "cardName" : "RAIN",
+      "index" : 41,
+      "grouped" : false
+    }, {
+      "month" : "NOVEMBER",
+      "cardType" : "TANE",
+      "cardName" : "SWALLOW",
+      "index" : 42,
+      "grouped" : false
+    }, {
+      "month" : "NOVEMBER",
+      "cardType" : "TANZAKU",
+      "cardName" : "PLAIN",
+      "index" : 43,
+      "grouped" : false
+    }, {
+      "month" : "NOVEMBER",
+      "cardType" : "KASU",
+      "cardName" : "LIGHTNING",
+      "index" : 44,
+      "grouped" : false
+    }, {
+      "month" : "DECEMBER",
+      "cardType" : "HIKARI",
+      "cardName" : "PHOENIX",
+      "index" : 45,
+      "grouped" : false
+    }, {
+      "month" : "DECEMBER",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 46,
+      "grouped" : false
+    }, {
+      "month" : "DECEMBER",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 47,
+      "grouped" : false
+    }, {
+      "month" : "DECEMBER",
+      "cardType" : "KASU",
+      "cardName" : "PLAIN",
+      "index" : 48,
+      "grouped" : false
+    } ]
+  },
+  "board" : {
+    "cards" : [ {
+      "month" : "MARCH",
+      "cardType" : "TANE",
+      "cardName" : "PLAIN",
+      "index" : 0,
+      "grouped" : true
+    }, {
+      "month" : "MARCH",
+      "cardType" : "TANE",
+      "cardName" : "PLAIN",
+      "index" : 0,
+      "grouped" : true
+    }, {
+      "month" : "MARCH",
+      "cardType" : "TANE",
+      "cardName" : "PLAIN",
+      "index" : 0,
+      "grouped" : true
+    } ]
+  },
+  "stdout" : null,
+  "stderr" : null,
+  "displayType" : "GAME",
+  "matchedDeck" : null,
+  "queuedCard" : null
+}

@@ -1,9 +1,13 @@
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import controller.{Observable, Observer}
-import model.{GameManager, GameState}
+import model.GameManager.GameManager
+import model.GameManager.GameManagerDefault.GameManagerDefault
+import model.GameState
+import model.GameManager.GameManagerInstance.given
 
 class ObservableSpec extends AnyWordSpec with Matchers {
+    given gameManager: GameManager = new GameManagerDefault()
 
     "An Observable" should {
 
@@ -35,7 +39,7 @@ class ObservableSpec extends AnyWordSpec with Matchers {
                 }
             }
             observableTest.add(observer)
-            observableTest.notifyObservers(GameManager.newGame("", ""))
+            observableTest.notifyObservers(gameManager.newGame("", ""))
             updated shouldBe true
         }
     }
