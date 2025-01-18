@@ -277,7 +277,7 @@ case object TeshiCombination extends Combination {
     override val unicode: String = "Teshi (手四) \"Being dealt 4 cards of same suit.\"\t6pts."
     override val unicodeShort: String = "Teshi"
     override def evaluate(player: Player): Int = {
-        if CardMonth.values.exists(m => player.hand.cards.count(_.month == m) == 4) then points else 0
+        if player.hand.cards.size == 8 && CardMonth.values.exists(m => player.hand.cards.count(_.month == m) == 4) then points else 0
     }
 }
 
@@ -290,7 +290,7 @@ case object KuttsukiCombination extends Combination {
     override val unicode: String = "Kuttsuki (くっつき) \"Being dealt four pairs of cards with matching suits.\"\t6pts."
     override val unicodeShort: String = "Kuttsuki"
     override def evaluate(player: Player): Int = {
-        if player.hand.cards.nonEmpty && player.hand.cards.forall(c => player.hand.cards.count(_.month == c.month) == 2) then points else 0
+        if player.hand.cards.size == 8 && player.hand.cards.forall(c => player.hand.cards.count(_.month == c.month) == 2) then points else 0
     }   // Interesting debugging fun fact: List.forall() always returns true if List.isEmpty
 }
 
