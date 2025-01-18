@@ -1,4 +1,5 @@
-FROM azul/zulu-openjdk-alpine:21 as builder
+# Stage 1 - Big JDK to build small custom JRE including openjfx
+FROM azul/zulu-openjdk-alpine:21 AS builder
 
 ENV SBT_VERSION=1.10.7 \
     SCALA_VERSION=3.5.1
@@ -14,15 +15,19 @@ RUN curl -L -o sbt.zip https://github.com/sbt/sbt/releases/download/v${SBT_VERSI
 
 RUN rm -rf /tmp/* /var/cache/apk/*
 
+RUN $JAVA_HOME/bin/jlink \
+    --module-path /usr/lib/openjfx:/opt/java/openjdk/jmods \
+    --add-modules java.base,java.logging,java.management,jdk.compiler,java.sql,javafx.base,javafx.controls,javafx.fxml,jdk.jartool,jdk.zipfs \
+    --output /custom-jre
+
+RUN cp /usr/lib/openjfx/*.so /custom-jre/lib
+
 WORKDIR /hanafuda
 ADD . /hanafuda
 
-RUN $JAVA_HOME/bin/jlink \
-    --module-path /usr/lib/openjfx:/opt/java/openjdk/jmods \
-    --add-modules java.base,javafx.controls,javafx.fxml,jdk.jartool \
-    --output /custom-jre
+RUN sbt compile
 
-
+# Stage 2 - Small custom JRE
 FROM azul/zulu-openjdk-alpine:21-jre
 
 RUN apk add --no-cache bash vim libc6-compat libxxf86vm-dev mesa-gl apk-gtk3 ttf-dejavu
@@ -32,9 +37,9 @@ COPY --from=builder /hanafuda /hanafuda
 COPY --from=builder /usr/local/sbt /usr/local/sbt
 COPY --from=builder /usr/local/bin/sbt /usr/local/bin/sbt
 
-WORKDIR /hanafuda
-
 ENV PATH="/custom-jre/bin:$PATH"
+
+WORKDIR /hanafuda
 
 CMD ["sbt", "run"]
 

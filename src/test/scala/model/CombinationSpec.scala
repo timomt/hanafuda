@@ -148,7 +148,11 @@ class CombinationSpec extends AnyFlatSpec with Matchers {
             Card(CardMonth.JANUARY, CardType.KASU, CardName.PLAIN, false, 0),
             Card(CardMonth.JANUARY, CardType.TANE, CardName.CRANE, false, 0),
             Card(CardMonth.JANUARY, CardType.TANZAKU, CardName.POETRY_TANZAKU, false, 0),
-            Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE, false, 0)
+            Card(CardMonth.JANUARY, CardType.HIKARI, CardName.CRANE, false, 0),
+            Card(CardMonth.JULY, CardType.KASU, CardName.PLAIN, false, 0),
+            Card(CardMonth.MARCH, CardType.TANE, CardName.CRANE, false, 0),
+            Card(CardMonth.MARCH, CardType.TANZAKU, CardName.POETRY_TANZAKU, false, 0),
+            Card(CardMonth.MARCH, CardType.HIKARI, CardName.CRANE, false, 0)
         )), score = 0, calledKoiKoi = false, yakusToIgnore = List.empty)
         TeshiCombination.evaluate(player) should be (6)
     }
