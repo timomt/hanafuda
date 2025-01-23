@@ -1,56 +1,14 @@
 <gameState>
-  <instanceOf>class model.GameStateRandom</instanceOf>
+  <instanceOf>class model.GameStateSummary</instanceOf>
   <players>
     <player>
-      <name>ads</name>
+      <name>test1</name>
       <hand>
         <card>
-          <month>MAY</month>
+          <month>JANUARY</month>
           <cardType>TANZAKU</cardType>
-          <cardName>PLAIN</cardName>
-          <index>18</index>
-          <grouped>false</grouped>
-        </card>
-        <card>
-          <month>SEPTEMBER</month>
-          <cardType>KASU</cardType>
-          <cardName>PLAIN</cardName>
-          <index>36</index>
-          <grouped>false</grouped>
-        </card>
-        <card>
-          <month>APRIL</month>
-          <cardType>KASU</cardType>
-          <cardName>PLAIN</cardName>
-          <index>15</index>
-          <grouped>false</grouped>
-        </card>
-        <card>
-          <month>DECEMBER</month>
-          <cardType>HIKARI</cardType>
-          <cardName>PHOENIX</cardName>
-          <index>45</index>
-          <grouped>false</grouped>
-        </card>
-        <card>
-          <month>JUNE</month>
-          <cardType>TANZAKU</cardType>
-          <cardName>BLUE_TANZAKU</cardName>
-          <index>22</index>
-          <grouped>false</grouped>
-        </card>
-        <card>
-          <month>JULY</month>
-          <cardType>KASU</cardType>
-          <cardName>PLAIN</cardName>
-          <index>27</index>
-          <grouped>false</grouped>
-        </card>
-        <card>
-          <month>SEPTEMBER</month>
-          <cardType>TANE</cardType>
-          <cardName>SAKE_CUP</cardName>
-          <index>33</index>
+          <cardName>POETRY_TANZAKU</cardName>
+          <index>2</index>
           <grouped>false</grouped>
         </card>
       </hand>
@@ -60,62 +18,13 @@
       <yakusToIgnore> </yakusToIgnore>
     </player>
     <player>
-      <name>asd</name>
+      <name>test2</name>
       <hand>
         <card>
-          <month>OCTOBER</month>
-          <cardType>KASU</cardType>
-          <cardName>PLAIN</cardName>
-          <index>39</index>
-          <grouped>false</grouped>
-        </card>
-        <card>
-          <month>MAY</month>
-          <cardType>TANE</cardType>
-          <cardName>BRIDGE</cardName>
-          <index>17</index>
-          <grouped>false</grouped>
-        </card>
-        <card>
-          <month>APRIL</month>
+          <month>FEBRUARY</month>
           <cardType>TANZAKU</cardType>
-          <cardName>PLAIN</cardName>
-          <index>14</index>
-          <grouped>false</grouped>
-        </card>
-        <card>
-          <month>JANUARY</month>
-          <cardType>KASU</cardType>
-          <cardName>PLAIN</cardName>
-          <index>3</index>
-          <grouped>false</grouped>
-        </card>
-        <card>
-          <month>NOVEMBER</month>
-          <cardType>TANE</cardType>
-          <cardName>SWALLOW</cardName>
-          <index>42</index>
-          <grouped>false</grouped>
-        </card>
-        <card>
-          <month>NOVEMBER</month>
-          <cardType>TANZAKU</cardType>
-          <cardName>PLAIN</cardName>
-          <index>43</index>
-          <grouped>false</grouped>
-        </card>
-        <card>
-          <month>AUGUST</month>
-          <cardType>KASU</cardType>
-          <cardName>PLAIN</cardName>
-          <index>31</index>
-          <grouped>false</grouped>
-        </card>
-        <card>
-          <month>JUNE</month>
-          <cardType>KASU</cardType>
-          <cardName>PLAIN</cardName>
-          <index>23</index>
+          <cardName>POETRY_TANZAKU</cardName>
+          <index>6</index>
           <grouped>false</grouped>
         </card>
       </hand>
@@ -131,6 +40,20 @@
       <cardType>HIKARI</cardType>
       <cardName>CRANE</cardName>
       <index>1</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>JANUARY</month>
+      <cardType>TANZAKU</cardType>
+      <cardName>POETRY_TANZAKU</cardName>
+      <index>2</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>JANUARY</month>
+      <cardType>KASU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>3</index>
       <grouped>false</grouped>
     </card>
     <card>
@@ -155,6 +78,20 @@
       <grouped>false</grouped>
     </card>
     <card>
+      <month>FEBRUARY</month>
+      <cardType>KASU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>7</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>FEBRUARY</month>
+      <cardType>KASU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>8</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
       <month>MARCH</month>
       <cardType>HIKARI</cardType>
       <cardName>CURTAIN</cardName>
@@ -166,6 +103,13 @@
       <cardType>TANZAKU</cardType>
       <cardName>POETRY_TANZAKU</cardName>
       <index>10</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>MARCH</month>
+      <cardType>KASU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>11</index>
       <grouped>false</grouped>
     </card>
     <card>
@@ -184,6 +128,20 @@
     </card>
     <card>
       <month>APRIL</month>
+      <cardType>TANZAKU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>14</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>APRIL</month>
+      <cardType>KASU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>15</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>APRIL</month>
       <cardType>KASU</cardType>
       <cardName>PLAIN</cardName>
       <index>16</index>
@@ -191,9 +149,51 @@
     </card>
     <card>
       <month>MAY</month>
+      <cardType>TANE</cardType>
+      <cardName>BRIDGE</cardName>
+      <index>17</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>MAY</month>
+      <cardType>TANZAKU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>18</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>MAY</month>
+      <cardType>KASU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>19</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>MAY</month>
       <cardType>KASU</cardType>
       <cardName>PLAIN</cardName>
       <index>20</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>JUNE</month>
+      <cardType>TANE</cardType>
+      <cardName>BUTTERFLIES</cardName>
+      <index>21</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>JUNE</month>
+      <cardType>TANZAKU</cardType>
+      <cardName>BLUE_TANZAKU</cardName>
+      <index>22</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>JUNE</month>
+      <cardType>KASU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>23</index>
       <grouped>false</grouped>
     </card>
     <card>
@@ -208,6 +208,27 @@
       <cardType>TANE</cardType>
       <cardName>BOAR</cardName>
       <index>25</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>JULY</month>
+      <cardType>TANZAKU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>26</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>JULY</month>
+      <cardType>KASU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>27</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>JULY</month>
+      <cardType>KASU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>28</index>
       <grouped>false</grouped>
     </card>
     <card>
@@ -228,7 +249,21 @@
       <month>AUGUST</month>
       <cardType>KASU</cardType>
       <cardName>PLAIN</cardName>
+      <index>31</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>AUGUST</month>
+      <cardType>KASU</cardType>
+      <cardName>PLAIN</cardName>
       <index>32</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>SEPTEMBER</month>
+      <cardType>TANE</cardType>
+      <cardName>SAKE_CUP</cardName>
+      <index>33</index>
       <grouped>false</grouped>
     </card>
     <card>
@@ -243,6 +278,13 @@
       <cardType>KASU</cardType>
       <cardName>PLAIN</cardName>
       <index>35</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>SEPTEMBER</month>
+      <cardType>KASU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>36</index>
       <grouped>false</grouped>
     </card>
     <card>
@@ -263,6 +305,13 @@
       <month>OCTOBER</month>
       <cardType>KASU</cardType>
       <cardName>PLAIN</cardName>
+      <index>39</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>OCTOBER</month>
+      <cardType>KASU</cardType>
+      <cardName>PLAIN</cardName>
       <index>40</index>
       <grouped>false</grouped>
     </card>
@@ -271,6 +320,34 @@
       <cardType>HIKARI</cardType>
       <cardName>RAIN</cardName>
       <index>41</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>NOVEMBER</month>
+      <cardType>TANE</cardType>
+      <cardName>SWALLOW</cardName>
+      <index>42</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>NOVEMBER</month>
+      <cardType>TANZAKU</cardType>
+      <cardName>PLAIN</cardName>
+      <index>43</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>NOVEMBER</month>
+      <cardType>KASU</cardType>
+      <cardName>LIGHTNING</cardName>
+      <index>44</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>DECEMBER</month>
+      <cardType>HIKARI</cardType>
+      <cardName>PHOENIX</cardName>
+      <index>45</index>
       <grouped>false</grouped>
     </card>
     <card>
@@ -284,89 +361,32 @@
       <month>DECEMBER</month>
       <cardType>KASU</cardType>
       <cardName>PLAIN</cardName>
+      <index>47</index>
+      <grouped>false</grouped>
+    </card>
+    <card>
+      <month>DECEMBER</month>
+      <cardType>KASU</cardType>
+      <cardName>PLAIN</cardName>
       <index>48</index>
       <grouped>false</grouped>
     </card>
   </deck>
   <board>
     <card>
-      <month>FEBRUARY</month>
-      <cardType>KASU</cardType>
-      <cardName>PLAIN</cardName>
-      <index>8</index>
-      <grouped>false</grouped>
-    </card>
-    <card>
-      <month>JUNE</month>
-      <cardType>TANE</cardType>
-      <cardName>BUTTERFLIES</cardName>
-      <index>21</index>
-      <grouped>false</grouped>
-    </card>
-    <card>
-      <month>NOVEMBER</month>
-      <cardType>KASU</cardType>
-      <cardName>LIGHTNING</cardName>
-      <index>44</index>
-      <grouped>false</grouped>
-    </card>
-    <card>
       <month>MARCH</month>
-      <cardType>KASU</cardType>
+      <cardType>TANE</cardType>
       <cardName>PLAIN</cardName>
-      <index>11</index>
-      <grouped>false</grouped>
-    </card>
-    <card>
-      <month>FEBRUARY</month>
-      <cardType>KASU</cardType>
-      <cardName>PLAIN</cardName>
-      <index>7</index>
-      <grouped>false</grouped>
-    </card>
-    <card>
-      <month>MAY</month>
-      <cardType>KASU</cardType>
-      <cardName>PLAIN</cardName>
-      <index>19</index>
-      <grouped>false</grouped>
-    </card>
-    <card>
-      <month>JANUARY</month>
-      <cardType>TANZAKU</cardType>
-      <cardName>POETRY_TANZAKU</cardName>
-      <index>2</index>
+      <index>0</index>
       <grouped>false</grouped>
     </card>
   </board>
-  <stdout>Matched 5 with 7.</stdout>
+  <stdout></stdout>
   <stderr></stderr>
-  <displayType>GAME</displayType>
-  <matchedDeck>
-    <card>
-      <month>JULY</month>
-      <cardType>TANZAKU</cardType>
-      <cardName>PLAIN</cardName>
-      <index>26</index>
-      <grouped>false</grouped>
-    </card>
-    <card>
-      <month>JULY</month>
-      <cardType>KASU</cardType>
-      <cardName>PLAIN</cardName>
-      <index>28</index>
-      <grouped>false</grouped>
-    </card>
-  </matchedDeck>
-  <queuedCard>
-    <card>
-      <month>DECEMBER</month>
-      <cardType>KASU</cardType>
-      <cardName>PLAIN</cardName>
-      <index>47</index>
-      <grouped>false</grouped>
-    </card>
-  </queuedCard>
+  <displayType>SUMMARY</displayType>
+  <matchedDeck> </matchedDeck>
+  <queuedCard> </queuedCard>
   //-------
+  <outOfCardsEnding>true</outOfCardsEnding>
   //-------
 </gameState>

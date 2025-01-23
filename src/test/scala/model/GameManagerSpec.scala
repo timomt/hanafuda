@@ -49,7 +49,11 @@ class GameManagerSpec extends AnyFlatSpec {
                 Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 0),
                 Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 0),
                 Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 0),
-                Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 0)
+                Card(CardMonth.MARCH, CardType.HIKARI, CardName.CURTAIN, false, 0),
+                Card(CardMonth.JULY, CardType.HIKARI, CardName.CURTAIN, false, 0),
+                Card(CardMonth.JULY, CardType.HIKARI, CardName.CURTAIN, false, 0),
+                Card(CardMonth.JULY, CardType.HIKARI, CardName.CURTAIN, false, 0),
+                Card(CardMonth.APRIL, CardType.HIKARI, CardName.CURTAIN, false, 0)
             ))),
         )
         assert(game.players.head.score === TeshiCombination.points)
