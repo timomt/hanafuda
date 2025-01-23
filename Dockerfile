@@ -6,14 +6,14 @@ ENV SBT_VERSION=1.10.7 \
 
 RUN echo "http://dl-cdn.alpinelinux.org/alpine/edge/testing" >> /etc/apk/repositories
 
-RUN apk add --no-cache bash curl unzip openjfx
+RUN apk update && \
+    apk add --no-cache bash curl unzip openjfx && \
+    rm -rf /tmp/* /var/cache/apk/*
 
 RUN curl -L -o sbt.zip https://github.com/sbt/sbt/releases/download/v${SBT_VERSION}/sbt-${SBT_VERSION}.zip && \
     unzip sbt.zip -d /usr/local && \
     rm sbt.zip && \
     ln -s /usr/local/sbt/bin/sbt /usr/local/bin/sbt
-
-RUN rm -rf /tmp/* /var/cache/apk/*
 
 RUN $JAVA_HOME/bin/jlink \
     --module-path /usr/lib/openjfx:/opt/java/openjdk/jmods \
@@ -25,7 +25,7 @@ RUN cp /usr/lib/openjfx/*.so /custom-jre/lib
 WORKDIR /hanafuda
 ADD . /hanafuda
 
-RUN sbt compile
+RUN printf "compile\nexit\n" | sbt
 
 # Stage 2 - Small custom JRE
 FROM azul/zulu-openjdk-alpine:21-jre
